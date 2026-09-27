@@ -42,32 +42,42 @@
         <div class="dashboard-content">
 
             <div class="page-header">
-                <div class="ph-left">
-                    <h2>الأصول الثابتة</h2>
-                    <p>الأصول والإهلاك</p>
-                </div>
-                <div class="ph-right">
-                    <strong>اليوم</strong>
-                    <span id="headerDate">—</span>
-                </div>
+                <div class="ph-left"><h2>الأصول الثابتة</h2><p>تسجيل الأصول ومتابعة القيمة الدفترية</p></div>
+                <div class="ph-right"><strong>اليوم</strong><span id="headerDate">—</span></div>
             </div>
             <div class="stats-grid" id="statsRow"></div>
             <div class="card-panel">
                 <div class="toolbar-erp">
                     <div class="search-erp"><i class="bi bi-search"></i><input type="text" id="searchInput" placeholder="بحث..." /></div>
-                    <button type="button" class="btn-erp btn-erp-primary" onclick="showToast('قريباً','info')"><i class="bi bi-plus-lg"></i> إضافة</button>
+                    <button type="button" class="btn-erp btn-erp-primary" onclick="openA()"><i class="bi bi-plus-lg"></i> إضافة أصل</button>
                 </div>
                 <div class="table-responsive">
                     <table class="table-erp">
-                        <thead><tr><th>الكود</th><th>الاسم</th><th>التكلفة</th><th>القيمة الدفترية</th></tr></thead>
+                        <thead><tr><th>الكود</th><th>الاسم</th><th>التكلفة</th><th>الإهلاك المتراكم</th><th>القيمة الدفترية</th><th>الحالة</th></tr></thead>
                         <tbody id="tbody"></tbody>
                     </table>
                 </div>
-                <div id="pageInfo" style="padding-top:10px;font-size:12px;color:var(--text-secondary);"></div>
+            </div>
+            <div id="aModal" style="display:none;position:fixed;inset:0;background:rgba(14,28,46,.45);z-index:1000;align-items:center;justify-content:center;padding:16px">
+                <div style="background:var(--surface);border-radius:14px;width:100%;max-width:440px">
+                    <div style="display:flex;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)">
+                        <strong>إضافة أصل</strong>
+                        <button type="button" onclick="document.getElementById('aModal').style.display='none'" style="border:none;background:none;font-size:18px;cursor:pointer">&times;</button>
+                    </div>
+                    <div style="padding:16px" class="row g-2">
+                        <div class="col-6"><label class="form-label" style="font-size:12px;font-weight:600">الكود</label><input class="form-control form-control-sm" id="aCode" placeholder="تلقائي"></div>
+                        <div class="col-6"><label class="form-label" style="font-size:12px;font-weight:600">الاسم *</label><input class="form-control form-control-sm" id="aName"></div>
+                        <div class="col-6"><label class="form-label" style="font-size:12px;font-weight:600">التكلفة *</label><input type="number" class="form-control form-control-sm" id="aCost" value="0"></div>
+                        <div class="col-6"><label class="form-label" style="font-size:12px;font-weight:600">إهلاك متراكم</label><input type="number" class="form-control form-control-sm" id="aDep" value="0"></div>
+                    </div>
+                    <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px">
+                        <button type="button" class="btn-erp btn-erp-primary" onclick="saveA()">حفظ</button>
+                        <button type="button" class="btn-erp btn-erp-outline" onclick="document.getElementById('aModal').style.display='none'">إلغاء</button>
+                    </div>
+                </div>
             </div>
 
         </div>
-
         <footer class="footer-custom">
             <div class="footer-content">
                 <div class="footer-right">
@@ -75,34 +85,42 @@
                     <span class="footer-divider">|</span>
                     <span class="footer-copy">© 2026 جميع الحقوق محفوظة — حلول إدارة الأعمال الاحترافية</span>
                 </div>
-                <div class="footer-left">
-                    <span class="footer-version">الإصدار 1.0.0</span>
-                </div>
+                <div class="footer-left"><span class="footer-version">الإصدار 1.0.0</span></div>
             </div>
         </footer>
     </main>
-
     <script src="mock-data.js"></script>
+    <script src="store.js"></script>
     <script src="layout-erp.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function () {
         initERPPage({ title: 'الأصول الثابتة', subtitle: 'الأصول والإهلاك', activeId: 'assets' });
         
-        function render() {
-            var q = (document.getElementById('searchInput').value || '').toLowerCase();
-            var list = (MockData.fixedAssets).filter(function (item) {
-                return !q || JSON.stringify(item).toLowerCase().indexOf(q) >= 0;
-            });
-            var tb = document.getElementById('tbody');
-            if (!list.length) {
-                tb.innerHTML = '<tr><td colspan="4"><div class="empty-erp"><i class="bi bi-inbox"></i>لا توجد بيانات</div></td></tr>';
-            } else {
-                tb.innerHTML = list.map(function (item) { return '<tr><td style="font-weight:600;color:var(--accent)">'+item.code+'</td><td>'+item.name+'</td><td>'+MockData.formatCurrency(item.cost)+'</td><td style="font-weight:700">'+MockData.formatCurrency(item.bookValue)+'</td></tr>'; }).join('');
-            }
-            document.getElementById('pageInfo').textContent = 'عرض ' + list.length + ' سجل';
+        var items = MockStore.get("fixedAssets");
+        function openA(){document.getElementById('aCode').value='';document.getElementById('aName').value='';document.getElementById('aCost').value=0;document.getElementById('aDep').value=0;document.getElementById('aModal').style.display='flex';}
+        function saveA(){
+            var n=document.getElementById('aName').value.trim(), cost=Number(document.getElementById('aCost').value)||0;
+            if(!n||cost<=0){showToast('الاسم والتكلفة مطلوبان','error');return;}
+            var dep=Number(document.getElementById('aDep').value)||0;
+            items.unshift({id:Date.now(),code:document.getElementById('aCode').value.trim()||('FA-'+String(items.length+1).padStart(3,'0')),
+                name:n,cost:cost,accumDep:dep,bookValue:cost-dep,status:'active',purchaseDate:new Date().toISOString().slice(0,10)});
+            MockStore.save("fixedAssets", items); document.getElementById('aModal').style.display='none';render();showToast('تم الحفظ','success');
         }
-        document.getElementById('searchInput').addEventListener('input', render);
-        render();
+        function render(){
+            var q=(document.getElementById('searchInput').value||'').toLowerCase();
+            var list=items.filter(function(a){return !q||(a.code+a.name).toLowerCase().indexOf(q)>=0;});
+            document.getElementById('tbody').innerHTML=list.map(function(a){
+                return '<tr><td style="font-weight:600;color:var(--accent)">'+a.code+'</td><td style="font-weight:600">'+a.name+'</td>'+
+                    '<td>'+MockData.formatCurrency(a.cost)+'</td><td>'+MockData.formatCurrency(a.accumDep)+'</td>'+
+                    '<td style="font-weight:700">'+MockData.formatCurrency(a.bookValue)+'</td><td>'+statusBadge(a.status)+'</td></tr>';
+            }).join('')||'<tr><td colspan="6"><div class="empty-erp"><i class="bi bi-inbox"></i>لا بيانات</div></td></tr>';
+            var cost=items.reduce(function(s,a){return s+a.cost;},0), book=items.reduce(function(s,a){return s+a.bookValue;},0);
+            document.getElementById('statsRow').innerHTML=
+                '<div class="stat-card stat-gold"><div class="stat-number">'+items.length+'</div><div class="stat-label">الأصول</div></div>'+
+                '<div class="stat-card stat-blue"><div class="stat-number" style="font-size:15px">'+MockData.formatCurrency(cost)+'</div><div class="stat-label">إجمالي التكلفة</div></div>'+
+                '<div class="stat-card stat-green"><div class="stat-number" style="font-size:15px">'+MockData.formatCurrency(book)+'</div><div class="stat-label">القيمة الدفترية</div></div>';
+        }
+        document.getElementById('searchInput').addEventListener('input',render);render();
 
     });
     </script>

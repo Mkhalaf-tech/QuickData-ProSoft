@@ -23,7 +23,7 @@
                 <div class="navbar-logo-container">
                     <span class="navbar-logo-text" id="navbarBrandText">QuickData <span>ProSoft</span></span>
                 </div>
-                <h4 class="page-title" id="pageTitleText">الإعدادات<small>إعدادات النظام</small></h4>
+                <h4 class="page-title" id="pageTitleText">الإعدادات<small>إعدادات النظام والشركة</small></h4>
             </div>
             <div class="navbar-right">
                 <button class="nav-btn" id="darkModeToggle" type="button" title="الوضع الليلي"><i class="bi bi-moon-fill"></i></button>
@@ -42,13 +42,66 @@
         <div class="dashboard-content">
 
             <div class="page-header">
-                <div class="ph-left"><h2>الإعدادات</h2><p>إعدادات النظام</p></div>
-                <div class="ph-right"><strong>اليوم</strong><span id="headerDate">—</span></div>
+                <div class="ph-left">
+                    <h2>إعدادات النظام</h2>
+                    <p>بيانات الشركة والتفضيلات العامة</p>
+                </div>
+                <div class="ph-right">
+                    <strong>اليوم</strong>
+                    <span id="headerDate">—</span>
+                </div>
             </div>
-            <div class="card-panel"><div class="empty-erp"><i class="bi bi-inbox"></i>الشاشة جاهزة للربط بالبيانات</div></div>
+
+            <div class="row g-3">
+                <div class="col-lg-7">
+                    <div class="panel">
+                        <div class="panel-header"><h5 class="panel-title"><i class="bi bi-building"></i> بيانات الشركة</h5></div>
+                        <div style="padding:16px">
+                            <div class="row g-2">
+                                <div class="col-12"><label class="form-label" style="font-size:12px;font-weight:600">اسم النظام</label>
+                                    <input class="form-control form-control-sm" value="QuickData ProSoft" id="setName"></div>
+                                <div class="col-12"><label class="form-label" style="font-size:12px;font-weight:600">الوصف</label>
+                                    <input class="form-control form-control-sm" value="حلول إدارة الأعمال الاحترافية" id="setSub"></div>
+                                <div class="col-md-6"><label class="form-label" style="font-size:12px;font-weight:600">اسم الشركة</label>
+                                    <input class="form-control form-control-sm" value="شركة التجارة المتكاملة" id="setCompany"></div>
+                                <div class="col-md-6"><label class="form-label" style="font-size:12px;font-weight:600">الرقم الضريبي</label>
+                                    <input class="form-control form-control-sm" value="123-456-789" id="setTaxNo"></div>
+                                <div class="col-md-6"><label class="form-label" style="font-size:12px;font-weight:600">العملة</label>
+                                    <input class="form-control form-control-sm" value="ج.م — جنيه مصري" id="setCur"></div>
+                                <div class="col-md-6"><label class="form-label" style="font-size:12px;font-weight:600">نسبة الضريبة %</label>
+                                    <input class="form-control form-control-sm" type="number" value="14" id="setTax"></div>
+                                <div class="col-md-6"><label class="form-label" style="font-size:12px;font-weight:600">السنة المالية</label>
+                                    <input class="form-control form-control-sm" value="2024" id="setYear"></div>
+                                <div class="col-md-6"><label class="form-label" style="font-size:12px;font-weight:600">المدينة</label>
+                                    <input class="form-control form-control-sm" value="القاهرة" id="setCity"></div>
+                                <div class="col-12" style="margin-top:8px">
+                                    <button type="button" class="btn-erp btn-erp-primary" onclick="showToast('تم حفظ الإعدادات (تجريبي)','success')"><i class="bi bi-check-lg"></i> حفظ الإعدادات</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    <div class="panel">
+                        <div class="panel-header"><h5 class="panel-title"><i class="bi bi-info-circle"></i> معلومات النظام</h5></div>
+                        <div style="padding:16px;font-size:12.5px;line-height:1.9">
+                            <div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--border);padding:6px 0"><span style="color:var(--text-tertiary)">الإصدار</span><strong>1.0.0</strong></div>
+                            <div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--border);padding:6px 0"><span style="color:var(--text-tertiary)">الواجهة</span><strong>عربي RTL</strong></div>
+                            <div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--border);padding:6px 0"><span style="color:var(--text-tertiary)">البيانات</span><strong>تجريبية (Mock)</strong></div>
+                            <div style="display:flex;justify-content:space-between;padding:6px 0"><span style="color:var(--text-tertiary)">المنتج</span><strong>QuickData ProSoft</strong></div>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-header"><h5 class="panel-title"><i class="bi bi-palette"></i> المظهر</h5></div>
+                        <div style="padding:16px">
+                            <p style="font-size:12.5px;color:var(--text-secondary);margin-bottom:10px">يمكنك تبديل الوضع الليلي من أيقونة القمر في الشريط العلوي.</p>
+                            <button type="button" class="btn-erp btn-erp-outline" onclick="document.getElementById('darkModeToggle').click()"><i class="bi bi-moon-fill"></i> تبديل الوضع الليلي</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
         </div>
-
         <footer class="footer-custom">
             <div class="footer-content">
                 <div class="footer-right">
@@ -56,19 +109,32 @@
                     <span class="footer-divider">|</span>
                     <span class="footer-copy">© 2026 جميع الحقوق محفوظة — حلول إدارة الأعمال الاحترافية</span>
                 </div>
-                <div class="footer-left">
-                    <span class="footer-version">الإصدار 1.0.0</span>
-                </div>
+                <div class="footer-left"><span class="footer-version">الإصدار 1.0.0</span></div>
             </div>
         </footer>
     </main>
-
     <script src="mock-data.js"></script>
+    <script src="store.js"></script>
     <script src="layout-erp.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function () {
-        initERPPage({ title: 'الإعدادات', subtitle: 'إعدادات النظام', activeId: 'settings' });
-        
+        initERPPage({ title: 'الإعدادات', subtitle: 'إعدادات النظام والشركة', activeId: 'settings' });
+        var st=document.getElementById('dataStatus');
+        if(st) st.textContent = MockStore.hasCustomData() ? 'يوجد بيانات محفوظة محلياً' : 'البيانات الافتراضية (بدون تعديلات محفوظة)';
+        var imp = document.getElementById('importJson');
+        if(imp) imp.addEventListener('change', function(e){
+          var f = e.target.files && e.target.files[0];
+          if(!f) return;
+          var reader = new FileReader();
+          reader.onload = function(){
+            try {
+              var obj = JSON.parse(reader.result);
+              if(MockStore.importAllJSON(obj)){ showToast('تمت الاستعادة بنجاح','success'); setTimeout(function(){location.reload()},800); }
+              else showToast('ملف غير صالح','error');
+            } catch(err){ showToast('تعذر قراءة الملف','error'); }
+          };
+          reader.readAsText(f);
+        });
     });
     </script>
 </body>

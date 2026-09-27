@@ -23,7 +23,7 @@
                 <div class="navbar-logo-container">
                     <span class="navbar-logo-text" id="navbarBrandText">QuickData <span>ProSoft</span></span>
                 </div>
-                <h4 class="page-title" id="pageTitleText">كشف حساب<small>حركات العميل</small></h4>
+                <h4 class="page-title" id="pageTitleText">كشف حساب<small>حركات وأرصدة العملاء والموردين</small></h4>
             </div>
             <div class="navbar-right">
                 <button class="nav-btn" id="darkModeToggle" type="button" title="الوضع الليلي"><i class="bi bi-moon-fill"></i></button>
@@ -42,13 +42,39 @@
         <div class="dashboard-content">
 
             <div class="page-header">
-                <div class="ph-left"><h2>كشف حساب</h2><p>حركات العميل</p></div>
+                <div class="ph-left"><h2>كشف الحساب</h2><p>عرض حركات مدين / دائن والرصيد التراكمي</p></div>
                 <div class="ph-right"><strong>اليوم</strong><span id="headerDate">—</span></div>
             </div>
-            <div class="card-panel"><div class="empty-erp"><i class="bi bi-inbox"></i>الشاشة جاهزة للربط بالبيانات</div></div>
+            <div class="card-panel" style="margin-bottom:14px">
+                <div class="row g-2">
+                    <div class="col-md-3"><label class="form-label" style="font-size:12px;font-weight:600">النوع</label>
+                        <select class="form-select form-select-sm" id="partyType" onchange="loadParties()">
+                            <option value="customer">عميل</option>
+                            <option value="supplier">مورد</option>
+                        </select></div>
+                    <div class="col-md-5"><label class="form-label" style="font-size:12px;font-weight:600">الاسم</label>
+                        <select class="form-select form-select-sm" id="partyId" onchange="renderStmt()"></select></div>
+                    <div class="col-md-2"><label class="form-label" style="font-size:12px;font-weight:600">من</label>
+                        <input type="date" class="form-control form-control-sm" id="fromDate" value="2024-01-01" onchange="renderStmt()"></div>
+                    <div class="col-md-2"><label class="form-label" style="font-size:12px;font-weight:600">إلى</label>
+                        <input type="date" class="form-control form-control-sm" id="toDate" value="2024-12-31" onchange="renderStmt()"></div>
+                    <div class="col-md-12" style="margin-top:8px">
+                        <button type="button" class="btn-erp btn-erp-outline" onclick="exportStmt()"><i class="bi bi-download"></i> تصدير CSV</button>
+                        <button type="button" class="btn-erp btn-erp-outline" onclick="window.print()"><i class="bi bi-printer"></i> طباعة</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-panel" id="partyInfo" style="margin-bottom:14px;display:none"></div>
+            <div class="card-panel">
+                <div class="table-responsive">
+                    <table class="table-erp">
+                        <thead><tr><th>التاريخ</th><th>البيان</th><th>المرجع</th><th>مدين</th><th>دائن</th><th>الرصيد</th></tr></thead>
+                        <tbody id="tbody"></tbody>
+                    </table>
+                </div>
+            </div>
 
         </div>
-
         <footer class="footer-custom">
             <div class="footer-content">
                 <div class="footer-right">
@@ -56,19 +82,91 @@
                     <span class="footer-divider">|</span>
                     <span class="footer-copy">© 2026 جميع الحقوق محفوظة — حلول إدارة الأعمال الاحترافية</span>
                 </div>
-                <div class="footer-left">
-                    <span class="footer-version">الإصدار 1.0.0</span>
-                </div>
+                <div class="footer-left"><span class="footer-version">الإصدار 1.0.0</span></div>
             </div>
         </footer>
     </main>
-
     <script src="mock-data.js"></script>
+    <script src="store.js"></script>
     <script src="layout-erp.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function () {
-        initERPPage({ title: 'كشف حساب', subtitle: 'حركات العميل', activeId: 'statement' });
+        initERPPage({ title: 'كشف حساب', subtitle: 'حركات وأرصدة العملاء والموردين', activeId: 'statement' });
         
+        var lastStmtRows = [];
+        function exportStmt(){
+          if(!lastStmtRows.length){ showToast('لا توجد حركات للتصدير','warning'); return; }
+          MockStore.exportCSV('statement.csv', ['التاريخ','البيان','المرجع','مدين','دائن','الرصيد'], lastStmtRows);
+          showToast('تم تصدير الكشف','success');
+        }
+        function loadParties(){
+            var type = document.getElementById('partyType').value;
+            var list = type === 'customer' ? MockData.customers : MockData.suppliers;
+            document.getElementById('partyId').innerHTML = list.map(function(p){
+                return '<option value="'+p.id+'">'+p.code+' — '+p.name+'</option>';
+            }).join('');
+            renderStmt();
+        }
+        function renderStmt(){
+            var type = document.getElementById('partyType').value;
+            var id = Number(document.getElementById('partyId').value);
+            var list = type === 'customer' ? MockData.customers : MockData.suppliers;
+            var party = list.find(function(p){return p.id===id;});
+            if(!party) return;
+            document.getElementById('partyInfo').style.display = 'block';
+            document.getElementById('partyInfo').innerHTML =
+                '<div class="row"><div class="col-md-3"><div style="font-size:11px;color:var(--text-tertiary)">الاسم</div><div style="font-weight:700">'+party.name+'</div></div>'+
+                '<div class="col-md-3"><div style="font-size:11px;color:var(--text-tertiary)">الكود</div><div style="font-weight:600;color:var(--accent)">'+party.code+'</div></div>'+
+                '<div class="col-md-3"><div style="font-size:11px;color:var(--text-tertiary)">الهاتف</div><div>'+party.phone+'</div></div>'+
+                '<div class="col-md-3"><div style="font-size:11px;color:var(--text-tertiary)">الرصيد الحالي</div><div style="font-weight:800;color:var(--danger)">'+MockData.formatCurrency(party.balance)+'</div></div></div>';
+            var txs = [];
+            if(type==='customer'){
+                MockData.salesInvoices.filter(function(i){return i.customerId===id;}).forEach(function(inv){
+                    txs.push({date:inv.date, desc:'فاتورة مبيعات', ref:inv.number, debit:inv.total, credit:0});
+                });
+                MockData.receipts.filter(function(r){return r.customerId===id;}).forEach(function(r){
+                    txs.push({date:r.date, desc:'سند قبض', ref:r.number, debit:0, credit:r.amount});
+                });
+            } else {
+                MockData.purchaseInvoices.filter(function(i){return i.supplierId===id;}).forEach(function(inv){
+                    txs.push({date:inv.date, desc:'فاتورة مشتريات', ref:inv.number, debit:0, credit:inv.total});
+                });
+                MockData.paymentsList.filter(function(p){return p.supplierId===id;}).forEach(function(p){
+                    txs.push({date:p.date, desc:'سند صرف', ref:p.number, debit:p.amount, credit:0});
+                });
+            }
+            txs.sort(function(a,b){return a.date.localeCompare(b.date);});
+            var bal = 0;
+            var rows = txs.map(function(t){
+                if(type==='customer') bal += t.debit - t.credit; else bal += t.credit - t.debit;
+                return '<tr><td>'+MockData.formatDate(t.date)+'</td><td>'+t.desc+'</td><td style="font-weight:600;color:var(--accent)">'+t.ref+'</td>'+
+                    '<td>'+(t.debit?MockData.formatCurrency(t.debit):'—')+'</td>'+
+                    '<td>'+(t.credit?MockData.formatCurrency(t.credit):'—')+'</td>'+
+                    '<td style="font-weight:700;color:'+(bal>0?'var(--danger)':'var(--success)')+'">'+MockData.formatCurrency(bal)+'</td></tr>';
+            }).join('');
+            if(!txs.length) rows = '<tr><td colspan="6"><div class="empty-erp"><i class="bi bi-inbox"></i>لا توجد حركات</div></td></tr>';
+            else {
+                var td = txs.reduce(function(s,t){return s+t.debit;},0);
+                var tc = txs.reduce(function(s,t){return s+t.credit;},0);
+                rows += '<tr style="font-weight:800;background:var(--surface-alt)"><td colspan="3">الإجمالي</td><td>'+MockData.formatCurrency(td)+'</td><td>'+MockData.formatCurrency(tc)+'</td><td style="color:var(--danger)">'+MockData.formatCurrency(bal)+'</td></tr>';
+            }
+            lastStmtRows = txs.map(function(t){
+              var b = 0; // filled below after loop - simplified export of txs
+              return [t.date, t.desc, t.ref, t.debit||0, t.credit||0, ''];
+            });
+            // recompute balances for export
+            var eb=0; lastStmtRows = txs.map(function(t){
+              var type = document.getElementById('partyType').value;
+              if(type==='customer') eb += t.debit - t.credit; else eb += t.credit - t.debit;
+              return [t.date, t.desc, t.ref, t.debit||0, t.credit||0, eb];
+            });
+            document.getElementById('tbody').innerHTML = rows;
+        }
+        var params = new URLSearchParams(location.search);
+        if(params.get('type')==='supplier') document.getElementById('partyType').value = 'supplier';
+        loadParties();
+        if(params.get('id')){ document.getElementById('partyId').value = params.get('id'); renderStmt(); }
+
     });
     </script>
 </body>

@@ -42,32 +42,42 @@
         <div class="dashboard-content">
 
             <div class="page-header">
-                <div class="ph-left">
-                    <h2>سندات القبض</h2>
-                    <p>المبالغ المستلمة من العملاء</p>
-                </div>
-                <div class="ph-right">
-                    <strong>اليوم</strong>
-                    <span id="headerDate">—</span>
-                </div>
+                <div class="ph-left"><h2>سندات القبض</h2><p>تسجيل المقبوضات من العملاء</p></div>
+                <div class="ph-right"><strong>اليوم</strong><span id="headerDate">—</span></div>
             </div>
-            <div class="stats-grid" id="statsRow"></div>
             <div class="card-panel">
                 <div class="toolbar-erp">
                     <div class="search-erp"><i class="bi bi-search"></i><input type="text" id="searchInput" placeholder="بحث..." /></div>
-                    <button type="button" class="btn-erp btn-erp-primary" onclick="showToast('قريباً','info')"><i class="bi bi-plus-lg"></i> إضافة</button>
+                    <button type="button" class="btn-erp btn-erp-primary" onclick="openR()"><i class="bi bi-plus-lg"></i> سند قبض</button>
                 </div>
                 <div class="table-responsive">
                     <table class="table-erp">
-                        <thead><tr><th>الرقم</th><th>التاريخ</th><th>المبلغ</th><th>الحالة</th></tr></thead>
+                        <thead><tr><th>الرقم</th><th>العميل</th><th>التاريخ</th><th>المبلغ</th><th>الحالة</th><th>ملاحظات</th></tr></thead>
                         <tbody id="tbody"></tbody>
                     </table>
                 </div>
-                <div id="pageInfo" style="padding-top:10px;font-size:12px;color:var(--text-secondary);"></div>
+                <div id="pageInfo" style="padding-top:10px;font-size:12px;color:var(--text-secondary)"></div>
+            </div>
+            <div id="rModal" style="display:none;position:fixed;inset:0;background:rgba(14,28,46,.45);z-index:1000;align-items:center;justify-content:center;padding:16px">
+                <div style="background:var(--surface);border-radius:14px;width:100%;max-width:420px">
+                    <div style="display:flex;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)">
+                        <strong>سند قبض جديد</strong>
+                        <button type="button" onclick="document.getElementById('rModal').style.display='none'" style="border:none;background:none;font-size:18px;cursor:pointer">&times;</button>
+                    </div>
+                    <div style="padding:16px" class="row g-2">
+                        <div class="col-12"><label class="form-label" style="font-size:12px;font-weight:600">العميل</label><select class="form-select form-select-sm" id="rCust"></select></div>
+                        <div class="col-6"><label class="form-label" style="font-size:12px;font-weight:600">التاريخ</label><input type="date" class="form-control form-control-sm" id="rDate"></div>
+                        <div class="col-6"><label class="form-label" style="font-size:12px;font-weight:600">المبلغ *</label><input type="number" class="form-control form-control-sm" id="rAmt" min="0" step="0.01"></div>
+                        <div class="col-12"><label class="form-label" style="font-size:12px;font-weight:600">ملاحظات</label><input class="form-control form-control-sm" id="rNotes"></div>
+                    </div>
+                    <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px">
+                        <button type="button" class="btn-erp btn-erp-primary" onclick="saveR()">حفظ</button>
+                        <button type="button" class="btn-erp btn-erp-outline" onclick="document.getElementById('rModal').style.display='none'">إلغاء</button>
+                    </div>
+                </div>
             </div>
 
         </div>
-
         <footer class="footer-custom">
             <div class="footer-content">
                 <div class="footer-right">
@@ -75,33 +85,45 @@
                     <span class="footer-divider">|</span>
                     <span class="footer-copy">© 2026 جميع الحقوق محفوظة — حلول إدارة الأعمال الاحترافية</span>
                 </div>
-                <div class="footer-left">
-                    <span class="footer-version">الإصدار 1.0.0</span>
-                </div>
+                <div class="footer-left"><span class="footer-version">الإصدار 1.0.0</span></div>
             </div>
         </footer>
     </main>
-
     <script src="mock-data.js"></script>
+    <script src="store.js"></script>
     <script src="layout-erp.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function () {
         initERPPage({ title: 'سندات القبض', subtitle: 'المبالغ المستلمة من العملاء', activeId: 'receipts' });
         
-        function render() {
-            var q = (document.getElementById('searchInput').value || '').toLowerCase();
-            var list = (MockData.receipts).filter(function (item) {
-                return !q || JSON.stringify(item).toLowerCase().indexOf(q) >= 0;
-            });
-            var tb = document.getElementById('tbody');
-            if (!list.length) {
-                tb.innerHTML = '<tr><td colspan="4"><div class="empty-erp"><i class="bi bi-inbox"></i>لا توجد بيانات</div></td></tr>';
-            } else {
-                tb.innerHTML = list.map(function (item) { return '<tr><td style="font-weight:600;color:var(--accent)">'+item.number+'</td><td>'+MockData.formatDate(item.date)+'</td><td style="font-weight:700;color:var(--success)">'+MockData.formatCurrency(item.amount)+'</td><td>'+statusBadge(item.status)+'</td></tr>'; }).join('');
-            }
-            document.getElementById('pageInfo').textContent = 'عرض ' + list.length + ' سجل';
+        var items = MockStore.get("receipts");
+        var custMap={}; MockData.customers.forEach(function(c){custMap[c.id]=c.name;});
+        function openR(){
+            document.getElementById('rDate').value=new Date().toISOString().slice(0,10);
+            document.getElementById('rAmt').value=''; document.getElementById('rNotes').value='';
+            document.getElementById('rCust').innerHTML=MockData.customers.map(function(c){return '<option value="'+c.id+'">'+c.name+'</option>';}).join('');
+            document.getElementById('rModal').style.display='flex';
         }
-        document.getElementById('searchInput').addEventListener('input', render);
+        function saveR(){
+            var amt=Number(document.getElementById('rAmt').value);
+            if(!amt||amt<=0){showToast('أدخل مبلغاً صحيحاً','error');return;}
+            items.unshift({id:Date.now(), number:'RCP-'+String(items.length+1).padStart(3,'0'),
+                customerId:Number(document.getElementById('rCust').value),
+                date:document.getElementById('rDate').value, amount:amt, method:'cash',
+                status:'confirmed', notes:document.getElementById('rNotes').value});
+            MockStore.save('receipts', items); document.getElementById('rModal').style.display='none'; render(); showToast('تم حفظ سند القبض','success');
+        }
+        function render(){
+            var q=(document.getElementById('searchInput').value||'').toLowerCase();
+            var list=items.filter(function(r){return !q||(r.number+(custMap[r.customerId]||'')+(r.notes||'')).toLowerCase().indexOf(q)>=0;});
+            document.getElementById('tbody').innerHTML=list.length?list.map(function(r){
+                return '<tr><td style="font-weight:600;color:var(--accent)">'+r.number+'</td><td>'+(custMap[r.customerId]||'—')+'</td>'+
+                    '<td>'+MockData.formatDate(r.date)+'</td><td style="font-weight:700;color:var(--success)">'+MockData.formatCurrency(r.amount)+'</td>'+
+                    '<td>'+statusBadge(r.status)+'</td><td>'+(r.notes||'—')+'</td></tr>';
+            }).join(''):'<tr><td colspan="6"><div class="empty-erp"><i class="bi bi-inbox"></i>لا توجد سندات</div></td></tr>';
+            document.getElementById('pageInfo').textContent='عرض '+list.length+' سند';
+        }
+        document.getElementById('searchInput').addEventListener('input',render);
         render();
 
     });

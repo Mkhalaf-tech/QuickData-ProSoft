@@ -23,7 +23,7 @@
                 <div class="navbar-logo-container">
                     <span class="navbar-logo-text" id="navbarBrandText">QuickData <span>ProSoft</span></span>
                 </div>
-                <h4 class="page-title" id="pageTitleText">الحسابات البنكية<small>حسابات البنوك</small></h4>
+                <h4 class="page-title" id="pageTitleText">الحسابات البنكية<small>حسابات البنوك والأرصدة</small></h4>
             </div>
             <div class="navbar-right">
                 <button class="nav-btn" id="darkModeToggle" type="button" title="الوضع الليلي"><i class="bi bi-moon-fill"></i></button>
@@ -42,32 +42,42 @@
         <div class="dashboard-content">
 
             <div class="page-header">
-                <div class="ph-left">
-                    <h2>الحسابات البنكية</h2>
-                    <p>حسابات البنوك</p>
-                </div>
-                <div class="ph-right">
-                    <strong>اليوم</strong>
-                    <span id="headerDate">—</span>
-                </div>
+                <div class="ph-left"><h2>الحسابات البنكية</h2><p>إدارة حسابات البنوك</p></div>
+                <div class="ph-right"><strong>اليوم</strong><span id="headerDate">—</span></div>
             </div>
             <div class="stats-grid" id="statsRow"></div>
             <div class="card-panel">
                 <div class="toolbar-erp">
                     <div class="search-erp"><i class="bi bi-search"></i><input type="text" id="searchInput" placeholder="بحث..." /></div>
-                    <button type="button" class="btn-erp btn-erp-primary" onclick="showToast('قريباً','info')"><i class="bi bi-plus-lg"></i> إضافة</button>
+                    <button type="button" class="btn-erp btn-erp-primary" onclick="openB()"><i class="bi bi-plus-lg"></i> إضافة حساب</button>
                 </div>
                 <div class="table-responsive">
                     <table class="table-erp">
-                        <thead><tr><th>الاسم</th><th>البنك</th><th>الرقم</th><th>الرصيد</th></tr></thead>
+                        <thead><tr><th>الاسم</th><th>البنك</th><th>رقم الحساب</th><th>الرصيد</th><th>الحالة</th></tr></thead>
                         <tbody id="tbody"></tbody>
                     </table>
                 </div>
-                <div id="pageInfo" style="padding-top:10px;font-size:12px;color:var(--text-secondary);"></div>
+            </div>
+            <div id="bModal" style="display:none;position:fixed;inset:0;background:rgba(14,28,46,.45);z-index:1000;align-items:center;justify-content:center;padding:16px">
+                <div style="background:var(--surface);border-radius:14px;width:100%;max-width:440px">
+                    <div style="display:flex;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)">
+                        <strong>إضافة حساب بنكي</strong>
+                        <button type="button" onclick="document.getElementById('bModal').style.display='none'" style="border:none;background:none;font-size:18px;cursor:pointer">&times;</button>
+                    </div>
+                    <div style="padding:16px" class="row g-2">
+                        <div class="col-12"><label class="form-label" style="font-size:12px;font-weight:600">اسم الحساب *</label><input class="form-control form-control-sm" id="bName"></div>
+                        <div class="col-6"><label class="form-label" style="font-size:12px;font-weight:600">البنك</label><input class="form-control form-control-sm" id="bBank"></div>
+                        <div class="col-6"><label class="form-label" style="font-size:12px;font-weight:600">رقم الحساب</label><input class="form-control form-control-sm" id="bNum"></div>
+                        <div class="col-12"><label class="form-label" style="font-size:12px;font-weight:600">الرصيد</label><input type="number" class="form-control form-control-sm" id="bBal" value="0"></div>
+                    </div>
+                    <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px">
+                        <button type="button" class="btn-erp btn-erp-primary" onclick="saveB()">حفظ</button>
+                        <button type="button" class="btn-erp btn-erp-outline" onclick="document.getElementById('bModal').style.display='none'">إلغاء</button>
+                    </div>
+                </div>
             </div>
 
         </div>
-
         <footer class="footer-custom">
             <div class="footer-content">
                 <div class="footer-right">
@@ -75,34 +85,37 @@
                     <span class="footer-divider">|</span>
                     <span class="footer-copy">© 2026 جميع الحقوق محفوظة — حلول إدارة الأعمال الاحترافية</span>
                 </div>
-                <div class="footer-left">
-                    <span class="footer-version">الإصدار 1.0.0</span>
-                </div>
+                <div class="footer-left"><span class="footer-version">الإصدار 1.0.0</span></div>
             </div>
         </footer>
     </main>
-
     <script src="mock-data.js"></script>
+    <script src="store.js"></script>
     <script src="layout-erp.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function () {
-        initERPPage({ title: 'الحسابات البنكية', subtitle: 'حسابات البنوك', activeId: 'banks' });
+        initERPPage({ title: 'الحسابات البنكية', subtitle: 'حسابات البنوك والأرصدة', activeId: 'banks' });
         
-        function render() {
-            var q = (document.getElementById('searchInput').value || '').toLowerCase();
-            var list = (MockData.bankAccounts).filter(function (item) {
-                return !q || JSON.stringify(item).toLowerCase().indexOf(q) >= 0;
-            });
-            var tb = document.getElementById('tbody');
-            if (!list.length) {
-                tb.innerHTML = '<tr><td colspan="4"><div class="empty-erp"><i class="bi bi-inbox"></i>لا توجد بيانات</div></td></tr>';
-            } else {
-                tb.innerHTML = list.map(function (item) { return '<tr><td style="font-weight:600">'+item.name+'</td><td>'+item.bank+'</td><td>'+item.number+'</td><td style="font-weight:700">'+MockData.formatCurrency(item.balance)+'</td></tr>'; }).join('');
-            }
-            document.getElementById('pageInfo').textContent = 'عرض ' + list.length + ' سجل';
+        var items = MockStore.get("bankAccounts");
+        function openB(){['bName','bBank','bNum'].forEach(function(i){document.getElementById(i).value='';});document.getElementById('bBal').value=0;document.getElementById('bModal').style.display='flex';}
+        function saveB(){
+            var n=document.getElementById('bName').value.trim();
+            if(!n){showToast('الاسم مطلوب','error');return;}
+            items.unshift({id:Date.now(),name:n,bank:document.getElementById('bBank').value||'—',number:document.getElementById('bNum').value||'—',balance:Number(document.getElementById('bBal').value)||0,status:'active'});
+            MockStore.save("bankAccounts", items); document.getElementById('bModal').style.display='none';render();showToast('تم الحفظ','success');
         }
-        document.getElementById('searchInput').addEventListener('input', render);
-        render();
+        function render(){
+            var q=(document.getElementById('searchInput').value||'').toLowerCase();
+            var list=items.filter(function(b){return !q||(b.name+b.bank+b.number).toLowerCase().indexOf(q)>=0;});
+            document.getElementById('tbody').innerHTML=list.map(function(b){
+                return '<tr><td style="font-weight:600">'+b.name+'</td><td>'+b.bank+'</td><td>'+b.number+'</td><td style="font-weight:700">'+MockData.formatCurrency(b.balance)+'</td><td>'+statusBadge(b.status)+'</td></tr>';
+            }).join('')||'<tr><td colspan="5"><div class="empty-erp"><i class="bi bi-inbox"></i>لا بيانات</div></td></tr>';
+            var sum=items.reduce(function(s,b){return s+b.balance;},0);
+            document.getElementById('statsRow').innerHTML=
+                '<div class="stat-card stat-gold"><div class="stat-number">'+items.length+'</div><div class="stat-label">الحسابات</div></div>'+
+                '<div class="stat-card stat-green"><div class="stat-number" style="font-size:15px">'+MockData.formatCurrency(sum)+'</div><div class="stat-label">إجمالي الأرصدة</div></div>';
+        }
+        document.getElementById('searchInput').addEventListener('input',render);render();
 
     });
     </script>

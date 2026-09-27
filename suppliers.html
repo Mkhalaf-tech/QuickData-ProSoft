@@ -23,7 +23,7 @@
                 <div class="navbar-logo-container">
                     <span class="navbar-logo-text" id="navbarBrandText">QuickData <span>ProSoft</span></span>
                 </div>
-                <h4 class="page-title" id="pageTitleText">الموردون<small>إدارة الموردين والأرصدة</small></h4>
+                <h4 class="page-title" id="pageTitleText">الموردون<small>إدارة الموردين والأرصدة الدائنة</small></h4>
             </div>
             <div class="navbar-right">
                 <button class="nav-btn" id="darkModeToggle" type="button" title="الوضع الليلي"><i class="bi bi-moon-fill"></i></button>
@@ -42,32 +42,47 @@
         <div class="dashboard-content">
 
             <div class="page-header">
-                <div class="ph-left">
-                    <h2>الموردون</h2>
-                    <p>إدارة الموردين والأرصدة</p>
-                </div>
-                <div class="ph-right">
-                    <strong>اليوم</strong>
-                    <span id="headerDate">—</span>
-                </div>
+                <div class="ph-left"><h2>الموردون</h2><p>إدارة الموردين والأرصدة الدائنة</p></div>
+                <div class="ph-right"><strong>اليوم</strong><span id="headerDate">—</span></div>
             </div>
             <div class="stats-grid" id="statsRow"></div>
             <div class="card-panel">
                 <div class="toolbar-erp">
                     <div class="search-erp"><i class="bi bi-search"></i><input type="text" id="searchInput" placeholder="بحث..." /></div>
-                    <button type="button" class="btn-erp btn-erp-primary" onclick="showToast('قريباً','info')"><i class="bi bi-plus-lg"></i> إضافة</button>
+                    <button type="button" class="btn-erp btn-erp-outline" onclick="MockStore.exportCSV('suppliers.csv',['الكود','الاسم','الهاتف','الرصيد'],items.map(function(x){return[x.code,x.name,x.phone,x.balance];}));showToast('تم التصدير','success')"><i class="bi bi-download"></i> تصدير</button>
+                    <button type="button" class="btn-erp btn-erp-primary" onclick="openS()"><i class="bi bi-plus-lg"></i> إضافة مورد</button>
                 </div>
                 <div class="table-responsive">
                     <table class="table-erp">
-                        <thead><tr><th>الكود</th><th>الاسم</th><th>الهاتف</th><th>الرصيد</th><th>الحالة</th></tr></thead>
+                        <thead><tr><th>الكود</th><th>الاسم</th><th>الهاتف</th><th>المدينة</th><th>الرصيد</th><th>الحالة</th><th></th></tr></thead>
                         <tbody id="tbody"></tbody>
                     </table>
                 </div>
-                <div id="pageInfo" style="padding-top:10px;font-size:12px;color:var(--text-secondary);"></div>
+                <div id="pageInfo" style="padding-top:10px;font-size:12px;color:var(--text-secondary)"></div>
+            </div>
+            <div id="sModal" style="display:none;position:fixed;inset:0;background:rgba(14,28,46,.45);z-index:1000;align-items:center;justify-content:center;padding:16px">
+                <div style="background:var(--surface);border-radius:14px;width:100%;max-width:520px;max-height:90vh;overflow:auto">
+                    <div style="display:flex;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)">
+                        <strong id="sTitle">إضافة مورد</strong>
+                        <button type="button" onclick="document.getElementById('sModal').style.display='none'" style="border:none;background:none;font-size:18px;cursor:pointer">&times;</button>
+                    </div>
+                    <div style="padding:16px" class="row g-2">
+                        <div class="col-6"><label class="form-label" style="font-size:12px;font-weight:600">الكود</label><input class="form-control form-control-sm" id="sCode" placeholder="تلقائي"></div>
+                        <div class="col-6"><label class="form-label" style="font-size:12px;font-weight:600">الاسم *</label><input class="form-control form-control-sm" id="sName"></div>
+                        <div class="col-6"><label class="form-label" style="font-size:12px;font-weight:600">الهاتف *</label><input class="form-control form-control-sm" id="sPhone"></div>
+                        <div class="col-6"><label class="form-label" style="font-size:12px;font-weight:600">المدينة</label><input class="form-control form-control-sm" id="sCity"></div>
+                        <div class="col-6"><label class="form-label" style="font-size:12px;font-weight:600">رصيد افتتاحي</label><input type="number" class="form-control form-control-sm" id="sBal" value="0"></div>
+                        <div class="col-6"><label class="form-label" style="font-size:12px;font-weight:600">الحالة</label>
+                            <select class="form-select form-select-sm" id="sStatus"><option value="active">نشط</option><option value="inactive">غير نشط</option></select></div>
+                    </div>
+                    <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px">
+                        <button type="button" class="btn-erp btn-erp-primary" onclick="saveS()">حفظ</button>
+                        <button type="button" class="btn-erp btn-erp-outline" onclick="document.getElementById('sModal').style.display='none'">إلغاء</button>
+                    </div>
+                </div>
             </div>
 
         </div>
-
         <footer class="footer-custom">
             <div class="footer-content">
                 <div class="footer-right">
@@ -75,33 +90,60 @@
                     <span class="footer-divider">|</span>
                     <span class="footer-copy">© 2026 جميع الحقوق محفوظة — حلول إدارة الأعمال الاحترافية</span>
                 </div>
-                <div class="footer-left">
-                    <span class="footer-version">الإصدار 1.0.0</span>
-                </div>
+                <div class="footer-left"><span class="footer-version">الإصدار 1.0.0</span></div>
             </div>
         </footer>
     </main>
-
     <script src="mock-data.js"></script>
+    <script src="store.js"></script>
     <script src="layout-erp.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function () {
-        initERPPage({ title: 'الموردون', subtitle: 'إدارة الموردين والأرصدة', activeId: 'suppliers' });
+        initERPPage({ title: 'الموردون', subtitle: 'إدارة الموردين والأرصدة الدائنة', activeId: 'suppliers' });
         
-        function render() {
-            var q = (document.getElementById('searchInput').value || '').toLowerCase();
-            var list = (MockData.suppliers).filter(function (item) {
-                return !q || JSON.stringify(item).toLowerCase().indexOf(q) >= 0;
-            });
-            var tb = document.getElementById('tbody');
-            if (!list.length) {
-                tb.innerHTML = '<tr><td colspan="5"><div class="empty-erp"><i class="bi bi-inbox"></i>لا توجد بيانات</div></td></tr>';
-            } else {
-                tb.innerHTML = list.map(function (item) { return '<tr><td style="font-weight:600;color:var(--accent)">'+item.code+'</td><td style="font-weight:600">'+item.name+'</td><td>'+item.phone+'</td><td style="font-weight:700;color:var(--danger)">'+MockData.formatCurrency(item.balance)+'</td><td>'+statusBadge(item.status)+'</td></tr>'; }).join('');
-            }
-            document.getElementById('pageInfo').textContent = 'عرض ' + list.length + ' سجل';
+        var items=MockStore.get("suppliers");
+        var editId=null;
+        function openS(id){
+            editId=id||null;
+            document.getElementById('sTitle').textContent=id?'تعديل مورد':'إضافة مورد';
+            var s=id?items.find(function(x){return x.id===id;}):null;
+            document.getElementById('sCode').value=s?s.code:'';
+            document.getElementById('sName').value=s?s.name:'';
+            document.getElementById('sPhone').value=s?s.phone:'';
+            document.getElementById('sCity').value=s?(s.city||''):'';
+            document.getElementById('sBal').value=s?s.balance:0;
+            document.getElementById('sStatus').value=s?s.status:'active';
+            document.getElementById('sModal').style.display='flex';
         }
-        document.getElementById('searchInput').addEventListener('input', render);
+        function saveS(){
+            var name=document.getElementById('sName').value.trim(), phone=document.getElementById('sPhone').value.trim();
+            if(!name||!phone){showToast('الاسم والهاتف مطلوبان','error');return;}
+            var data={code:document.getElementById('sCode').value.trim()||('S-'+String(items.length+1).padStart(3,'0')),
+                name:name,phone:phone,city:document.getElementById('sCity').value||'—',
+                balance:Number(document.getElementById('sBal').value)||0,status:document.getElementById('sStatus').value,
+                email:'',address:'',taxNumber:'',createdAt:new Date().toISOString().slice(0,10)};
+            if(editId){var i=items.findIndex(function(x){return x.id===editId;}); if(i>=0){data.id=editId;data.createdAt=items[i].createdAt;items[i]=data;} showToast('تم التحديث','success');}
+            else {data.id=Date.now();items.unshift(data);showToast('تم الإضافة','success');}
+            MockStore.save('suppliers', items); document.getElementById('sModal').style.display='none'; render();
+        }
+        function delS(id){ if(!confirm('حذف المورد؟'))return; items=items.filter(function(x){return x.id!==id;}); MockStore.save('suppliers', items); render(); showToast('تم الحذف','success'); }
+        function render(){
+            var q=(document.getElementById('searchInput').value||'').toLowerCase();
+            var list=items.filter(function(s){return !q||(s.code+s.name+s.phone).toLowerCase().indexOf(q)>=0;});
+            document.getElementById('tbody').innerHTML=list.length?list.map(function(s){
+                return '<tr><td style="font-weight:600;color:var(--accent)">'+s.code+'</td><td style="font-weight:600">'+s.name+'</td><td>'+s.phone+'</td><td>'+s.city+'</td>'+
+                    '<td style="font-weight:700;color:var(--danger)">'+MockData.formatCurrency(s.balance)+'</td><td>'+statusBadge(s.status)+'</td>'+
+                    '<td style="white-space:nowrap"><button class="btn-erp btn-erp-outline" style="padding:3px 8px;font-size:11px" onclick="openS('+s.id+')">تعديل</button> '+
+                    '<a class="btn-erp btn-erp-outline" style="padding:3px 8px;font-size:11px" href="customer-statement.html?type=supplier&id='+s.id+'">كشف</a> '+
+                    '<button class="btn-erp btn-erp-outline" style="padding:3px 8px;font-size:11px;color:var(--danger)" onclick="delS('+s.id+')">حذف</button></td></tr>';
+            }).join(''):'<tr><td colspan="7"><div class="empty-erp"><i class="bi bi-inbox"></i>لا توجد بيانات</div></td></tr>';
+            document.getElementById('pageInfo').textContent='عرض '+list.length+' مورد';
+            var sum=items.reduce(function(a,s){return a+s.balance;},0);
+            document.getElementById('statsRow').innerHTML=
+                '<div class="stat-card"><div class="stat-label">الموردون</div><div class="stat-value">'+items.length+'</div></div>'+
+                '<div class="stat-card"><div class="stat-label">إجمالي الدائن</div><div class="stat-value" style="font-size:15px">'+MockData.formatCurrency(sum)+'</div></div>';
+        }
+        document.getElementById('searchInput').addEventListener('input',render);
         render();
 
     });

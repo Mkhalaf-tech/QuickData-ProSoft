@@ -4,44 +4,98 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>طباعة فاتورة - QuickData ProSoft</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
-  <link rel="stylesheet" href="css/erp-theme.css" />
-  
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Cairo, sans-serif; background: #f3f1eb; color: #181712; font-size: 13px; }
+    .bar { background: #0e1c2e; color: #fff; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+    .bar button, .bar select { font-family: inherit; padding: 6px 14px; border-radius: 6px; border: none; font-size: 13px; font-weight: 600; cursor: pointer; }
+    .bar button { background: #9c7a3c; color: #fff; }
+    .bar a { color: rgba(255,255,255,.7); text-decoration: none; font-size: 13px; }
+    .paper { max-width: 800px; margin: 20px auto; background: #fff; padding: 36px 44px; box-shadow: 0 2px 12px rgba(0,0,0,.08); }
+    .head { display: flex; justify-content: space-between; border-bottom: 2px solid #0e1c2e; padding-bottom: 16px; margin-bottom: 20px; }
+    .co { font-size: 20px; font-weight: 800; color: #0e1c2e; }
+    .co small { display: block; font-size: 11px; color: #5c5648; font-weight: 400; margin-top: 4px; }
+    .inv-t { font-size: 18px; font-weight: 800; color: #9c7a3c; text-align: left; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+    .box { background: #faf8f3; border: 1px solid #e0dccf; border-radius: 8px; padding: 12px 14px; }
+    .box .l { font-size: 10px; color: #928c79; font-weight: 600; margin-bottom: 4px; }
+    .box .v { font-weight: 700; font-size: 14px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+    th { background: #0e1c2e; color: #fff; padding: 9px 12px; text-align: right; font-size: 12px; }
+    td { padding: 9px 12px; border-bottom: 1px solid #ebe7db; }
+    tr:nth-child(even) td { background: #faf8f3; }
+    .tot { display: flex; justify-content: flex-end; }
+    .tot-box { width: 260px; }
+    .tr { display: flex; justify-content: space-between; padding: 5px 0; font-size: 13px; }
+    .tr.g { border-top: 2px solid #0e1c2e; margin-top: 6px; padding-top: 10px; font-size: 16px; font-weight: 800; }
+    .ft { margin-top: 28px; padding-top: 12px; border-top: 1px solid #e0dccf; text-align: center; font-size: 11px; color: #928c79; }
+    @media print { body { background: #fff; } .bar { display: none !important; } .paper { box-shadow: none; margin: 0; max-width: 100%; } }
+  </style>
 </head>
 <body>
-  <div class="sidebar" id="sidebar"></div>
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
-  <div class="main-content" id="main-content">
-    <header class="top-header">
-      <div class="header-right">
-        <button class="sidebar-toggle" id="sidebarToggle"><i class="bi bi-list"></i></button>
-        <div>
-          <div class="breadcrumb"><a href="index.html">الرئيسية</a><span class="sep">/</span><span>طباعة فاتورة</span></div>
-          <div class="page-title-header">طباعة فاتورة</div>
-        </div>
-      </div>
-      <div class="header-left">
-        <div class="user-chip"><div class="user-avatar">م</div><span class="user-name">مدير النظام</span></div>
-      </div>
-    </header>
-    <div class="content-area">
-
-      <div class="page-header">
-        <div><h1>طباعة فاتورة</h1><div class="page-desc">صفحة طباعة فاتورة</div></div>
-      </div>
-      <div class="card"><div class="card-body"><div class="empty-state"><i class="bi bi-inbox"></i><p>الشاشة جاهزة — طباعة فاتورة</p></div></div></div>
-
+  <div class="bar">
+    <a href="sales-invoices.html">← العودة للفواتير</a>
+    <div style="display:flex;gap:8px;align-items:center">
+      <select id="invSel" onchange="load()"></select>
+      <button type="button" onclick="window.print()">طباعة</button>
     </div>
-    <footer class="app-footer"><span id="footerText"></span></footer>
   </div>
-  <script src="js/mock-data.js"></script>
-  <script src="js/app.js"></script>
+  <div class="paper" id="paper">
+    <div class="head">
+      <div><div class="co">شركة التجارة المتكاملة<small>القاهرة — مصر · الرقم الضريبي: 123-456-789</small></div></div>
+      <div><div class="inv-t">فاتورة مبيعات</div><div id="invNum" style="text-align:left;margin-top:4px;color:#5c5648"></div></div>
+    </div>
+    <div class="grid">
+      <div class="box"><div class="l">العميل</div><div class="v" id="custName">—</div><div id="custPhone" style="font-size:12px;color:#5c5648;margin-top:4px"></div></div>
+      <div class="box"><div class="l">بيانات الفاتورة</div>
+        <div style="font-size:12px">التاريخ: <strong id="invDate">—</strong></div>
+        <div style="font-size:12px">الاستحقاق: <strong id="invDue">—</strong></div>
+        <div style="font-size:12px;margin-top:4px">الحالة: <strong id="invSt">—</strong></div>
+      </div>
+    </div>
+    <table>
+      <thead><tr><th>#</th><th>البيان</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr></thead>
+      <tbody id="items"></tbody>
+    </table>
+    <div class="tot"><div class="tot-box">
+      <div class="tr"><span>المجموع الفرعي</span><strong id="tSub">0</strong></div>
+      <div class="tr"><span>الخصم</span><strong id="tDisc">0</strong></div>
+      <div class="tr"><span>الضريبة 14%</span><strong id="tTax">0</strong></div>
+      <div class="tr g"><span>الإجمالي</span><span id="tTot">0</span></div>
+      <div class="tr"><span>المدفوع</span><strong id="tPaid">0</strong></div>
+      <div class="tr"><span>المتبقي</span><strong id="tRem" style="color:#ad3f39">0</strong></div>
+    </div></div>
+    <div class="ft">شكراً لتعاملكم معنا · مدعوم من QuickData ProSoft</div>
+  </div>
+  <script src="mock-data.js"></script>
+    <script src="store.js"></script>
   <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      App.initPage({ title: "طباعة فاتورة", activeId: "sales-invoices" });
-      
-    });
+    var stMap = { paid:'مدفوع', unpaid:'غير مدفوع', partial:'جزئي', draft:'مسودة', overdue:'متأخر', approved:'معتمد' };
+    function load() {
+      var id = Number(document.getElementById('invSel').value);
+      var inv = MockData.salesInvoices.find(function(i){ return i.id === id; });
+      if (!inv) return;
+      var cust = MockData.customers.find(function(c){ return c.id === inv.customerId; }) || {};
+      document.getElementById('invNum').textContent = inv.number;
+      document.getElementById('custName').textContent = cust.name || '—';
+      document.getElementById('custPhone').textContent = cust.phone || '';
+      document.getElementById('invDate').textContent = MockData.formatDate(inv.date);
+      document.getElementById('invDue').textContent = MockData.formatDate(inv.dueDate);
+      document.getElementById('invSt').textContent = stMap[inv.status] || inv.status;
+      document.getElementById('items').innerHTML = '<tr><td>1</td><td>بنود الفاتورة (إجمالي)</td><td>1</td><td>'+MockData.formatCurrency(inv.subtotal)+'</td><td style="font-weight:700">'+MockData.formatCurrency(inv.subtotal)+'</td></tr>';
+      document.getElementById('tSub').textContent = MockData.formatCurrency(inv.subtotal);
+      document.getElementById('tDisc').textContent = MockData.formatCurrency(inv.discount);
+      document.getElementById('tTax').textContent = MockData.formatCurrency(inv.tax);
+      document.getElementById('tTot').textContent = MockData.formatCurrency(inv.total);
+      document.getElementById('tPaid').textContent = MockData.formatCurrency(inv.paid);
+      document.getElementById('tRem').textContent = MockData.formatCurrency(inv.total - inv.paid);
+      document.title = inv.number + ' - فاتورة';
+    }
+    document.getElementById('invSel').innerHTML = MockData.salesInvoices.map(function(i){ return '<option value="'+i.id+'">'+i.number+'</option>'; }).join('');
+    var p = new URLSearchParams(location.search);
+    if (p.get('id')) document.getElementById('invSel').value = p.get('id');
+    load();
   </script>
 </body>
 </html>

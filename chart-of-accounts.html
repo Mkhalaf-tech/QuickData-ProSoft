@@ -23,7 +23,7 @@
                 <div class="navbar-logo-container">
                     <span class="navbar-logo-text" id="navbarBrandText">QuickData <span>ProSoft</span></span>
                 </div>
-                <h4 class="page-title" id="pageTitleText">دليل الحسابات<small>شجرة الحسابات</small></h4>
+                <h4 class="page-title" id="pageTitleText">دليل الحسابات<small>شجرة الحسابات المحاسبية</small></h4>
             </div>
             <div class="navbar-right">
                 <button class="nav-btn" id="darkModeToggle" type="button" title="الوضع الليلي"><i class="bi bi-moon-fill"></i></button>
@@ -42,32 +42,32 @@
         <div class="dashboard-content">
 
             <div class="page-header">
-                <div class="ph-left">
-                    <h2>دليل الحسابات</h2>
-                    <p>شجرة الحسابات</p>
-                </div>
-                <div class="ph-right">
-                    <strong>اليوم</strong>
-                    <span id="headerDate">—</span>
-                </div>
+                <div class="ph-left"><h2>دليل الحسابات</h2><p>شجرة الحسابات والأرصدة</p></div>
+                <div class="ph-right"><strong>اليوم</strong><span id="headerDate">—</span></div>
             </div>
             <div class="stats-grid" id="statsRow"></div>
             <div class="card-panel">
                 <div class="toolbar-erp">
-                    <div class="search-erp"><i class="bi bi-search"></i><input type="text" id="searchInput" placeholder="بحث..." /></div>
-                    <button type="button" class="btn-erp btn-erp-primary" onclick="showToast('قريباً','info')"><i class="bi bi-plus-lg"></i> إضافة</button>
+                    <div class="search-erp"><i class="bi bi-search"></i><input type="text" id="searchInput" placeholder="بحث بالكود أو الاسم..." /></div>
+                    <select id="typeFilter" class="form-select form-select-sm" style="width:140px;font-size:12.5px">
+                        <option value="">كل الأنواع</option>
+                        <option value="asset">أصول</option>
+                        <option value="liability">خصوم</option>
+                        <option value="equity">حقوق ملكية</option>
+                        <option value="revenue">إيرادات</option>
+                        <option value="expense">مصروفات</option>
+                    </select>
                 </div>
                 <div class="table-responsive">
                     <table class="table-erp">
-                        <thead><tr><th>الكود</th><th>الاسم</th><th>النوع</th><th>الرصيد</th></tr></thead>
+                        <thead><tr><th>الكود</th><th>الاسم</th><th>النوع</th><th>مستوى</th><th>الرصيد</th></tr></thead>
                         <tbody id="tbody"></tbody>
                     </table>
                 </div>
-                <div id="pageInfo" style="padding-top:10px;font-size:12px;color:var(--text-secondary);"></div>
+                <div id="pageInfo" style="padding-top:10px;font-size:12px;color:var(--text-secondary)"></div>
             </div>
 
         </div>
-
         <footer class="footer-custom">
             <div class="footer-content">
                 <div class="footer-right">
@@ -75,33 +75,43 @@
                     <span class="footer-divider">|</span>
                     <span class="footer-copy">© 2026 جميع الحقوق محفوظة — حلول إدارة الأعمال الاحترافية</span>
                 </div>
-                <div class="footer-left">
-                    <span class="footer-version">الإصدار 1.0.0</span>
-                </div>
+                <div class="footer-left"><span class="footer-version">الإصدار 1.0.0</span></div>
             </div>
         </footer>
     </main>
-
     <script src="mock-data.js"></script>
+    <script src="store.js"></script>
     <script src="layout-erp.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function () {
-        initERPPage({ title: 'دليل الحسابات', subtitle: 'شجرة الحسابات', activeId: 'coa' });
+        initERPPage({ title: 'دليل الحسابات', subtitle: 'شجرة الحسابات المحاسبية', activeId: 'coa' });
         
-        function render() {
-            var q = (document.getElementById('searchInput').value || '').toLowerCase();
-            var list = (MockData.accounts).filter(function (item) {
-                return !q || JSON.stringify(item).toLowerCase().indexOf(q) >= 0;
+        var typeAr={asset:'أصل',liability:'خصم',equity:'حقوق ملكية',revenue:'إيراد',expense:'مصروف'};
+        function render(){
+            var q=(document.getElementById('searchInput').value||'').toLowerCase();
+            var tf=document.getElementById('typeFilter').value;
+            var list=MockData.accounts.filter(function(a){
+                if(tf&&a.type!==tf)return false;
+                if(q&&(a.code+a.name).toLowerCase().indexOf(q)<0)return false;
+                return true;
             });
-            var tb = document.getElementById('tbody');
-            if (!list.length) {
-                tb.innerHTML = '<tr><td colspan="4"><div class="empty-erp"><i class="bi bi-inbox"></i>لا توجد بيانات</div></td></tr>';
-            } else {
-                tb.innerHTML = list.map(function (item) { return '<tr><td style="font-weight:600;color:var(--accent)">'+item.code+'</td><td>'+item.name+'</td><td>'+(item.type||'—')+'</td><td>'+(item.balance!=null?MockData.formatCurrency(item.balance):'—')+'</td></tr>'; }).join('');
-            }
-            document.getElementById('pageInfo').textContent = 'عرض ' + list.length + ' سجل';
+            document.getElementById('tbody').innerHTML=list.map(function(a){
+                var pad=a.isGroup?0:12;
+                return '<tr style="'+(a.isGroup?'font-weight:800;background:var(--surface-alt)':'')+'">'+
+                    '<td style="font-weight:600;color:var(--accent);padding-right:'+(8+pad)+'px">'+a.code+'</td>'+
+                    '<td style="padding-right:'+pad+'px">'+a.name+'</td>'+
+                    '<td>'+(typeAr[a.type]||a.type||'—')+'</td>'+
+                    '<td>'+(a.isGroup?'مجموعة':'حساب')+'</td>'+
+                    '<td style="font-weight:700">'+(a.balance!=null?MockData.formatCurrency(a.balance):'—')+'</td></tr>';
+            }).join('')||'<tr><td colspan="5"><div class="empty-erp"><i class="bi bi-inbox"></i>لا بيانات</div></td></tr>';
+            document.getElementById('pageInfo').textContent='عرض '+list.length+' حساب';
+            var leaf=MockData.accounts.filter(function(a){return !a.isGroup;});
+            document.getElementById('statsRow').innerHTML=
+                '<div class="stat-card stat-gold"><div class="stat-number">'+MockData.accounts.length+'</div><div class="stat-label">إجمالي الحسابات</div></div>'+
+                '<div class="stat-card stat-blue"><div class="stat-number">'+leaf.length+'</div><div class="stat-label">حسابات فرعية</div></div>';
         }
-        document.getElementById('searchInput').addEventListener('input', render);
+        document.getElementById('searchInput').addEventListener('input',render);
+        document.getElementById('typeFilter').addEventListener('change',render);
         render();
 
     });

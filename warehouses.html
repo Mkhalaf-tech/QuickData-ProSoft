@@ -42,20 +42,14 @@
         <div class="dashboard-content">
 
             <div class="page-header">
-                <div class="ph-left">
-                    <h2>المخازن</h2>
-                    <p>مواقع التخزين</p>
-                </div>
-                <div class="ph-right">
-                    <strong>اليوم</strong>
-                    <span id="headerDate">—</span>
-                </div>
+                <div class="ph-left"><h2>المخازن</h2><p>إدارة مواقع التخزين</p></div>
+                <div class="ph-right"><strong>اليوم</strong><span id="headerDate">—</span></div>
             </div>
             <div class="stats-grid" id="statsRow"></div>
             <div class="card-panel">
                 <div class="toolbar-erp">
                     <div class="search-erp"><i class="bi bi-search"></i><input type="text" id="searchInput" placeholder="بحث..." /></div>
-                    <button type="button" class="btn-erp btn-erp-primary" onclick="showToast('قريباً','info')"><i class="bi bi-plus-lg"></i> إضافة</button>
+                    <button type="button" class="btn-erp btn-erp-primary" onclick="openW()"><i class="bi bi-plus-lg"></i> إضافة مخزن</button>
                 </div>
                 <div class="table-responsive">
                     <table class="table-erp">
@@ -63,11 +57,25 @@
                         <tbody id="tbody"></tbody>
                     </table>
                 </div>
-                <div id="pageInfo" style="padding-top:10px;font-size:12px;color:var(--text-secondary);"></div>
+            </div>
+            <div id="wModal" style="display:none;position:fixed;inset:0;background:rgba(14,28,46,.45);z-index:1000;align-items:center;justify-content:center;padding:16px">
+                <div style="background:var(--surface);border-radius:14px;width:100%;max-width:400px">
+                    <div style="display:flex;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)">
+                        <strong>إضافة مخزن</strong>
+                        <button type="button" onclick="document.getElementById('wModal').style.display='none'" style="border:none;background:none;font-size:18px;cursor:pointer">&times;</button>
+                    </div>
+                    <div style="padding:16px" class="row g-2">
+                        <div class="col-12"><label class="form-label" style="font-size:12px;font-weight:600">الاسم *</label><input class="form-control form-control-sm" id="wName"></div>
+                        <div class="col-12"><label class="form-label" style="font-size:12px;font-weight:600">الموقع</label><input class="form-control form-control-sm" id="wLoc"></div>
+                    </div>
+                    <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px">
+                        <button type="button" class="btn-erp btn-erp-primary" onclick="saveW()">حفظ</button>
+                        <button type="button" class="btn-erp btn-erp-outline" onclick="document.getElementById('wModal').style.display='none'">إلغاء</button>
+                    </div>
+                </div>
             </div>
 
         </div>
-
         <footer class="footer-custom">
             <div class="footer-content">
                 <div class="footer-right">
@@ -75,34 +83,34 @@
                     <span class="footer-divider">|</span>
                     <span class="footer-copy">© 2026 جميع الحقوق محفوظة — حلول إدارة الأعمال الاحترافية</span>
                 </div>
-                <div class="footer-left">
-                    <span class="footer-version">الإصدار 1.0.0</span>
-                </div>
+                <div class="footer-left"><span class="footer-version">الإصدار 1.0.0</span></div>
             </div>
         </footer>
     </main>
-
     <script src="mock-data.js"></script>
+    <script src="store.js"></script>
     <script src="layout-erp.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function () {
         initERPPage({ title: 'المخازن', subtitle: 'مواقع التخزين', activeId: 'warehouses' });
         
-        function render() {
-            var q = (document.getElementById('searchInput').value || '').toLowerCase();
-            var list = (MockData.warehouses).filter(function (item) {
-                return !q || JSON.stringify(item).toLowerCase().indexOf(q) >= 0;
-            });
-            var tb = document.getElementById('tbody');
-            if (!list.length) {
-                tb.innerHTML = '<tr><td colspan="3"><div class="empty-erp"><i class="bi bi-inbox"></i>لا توجد بيانات</div></td></tr>';
-            } else {
-                tb.innerHTML = list.map(function (item) { return '<tr><td style="font-weight:600">'+item.name+'</td><td>'+item.location+'</td><td>'+statusBadge(item.status)+'</td></tr>'; }).join('');
-            }
-            document.getElementById('pageInfo').textContent = 'عرض ' + list.length + ' سجل';
+        var items = MockStore.get("warehouses");
+        function openW(){document.getElementById('wName').value='';document.getElementById('wLoc').value='';document.getElementById('wModal').style.display='flex';}
+        function saveW(){
+            var n=document.getElementById('wName').value.trim();
+            if(!n){showToast('الاسم مطلوب','error');return;}
+            items.unshift({id:Date.now(),name:n,location:document.getElementById('wLoc').value||'—',status:'active'});
+            MockStore.save("warehouses", items); document.getElementById('wModal').style.display='none';render();showToast('تم الحفظ','success');
         }
-        document.getElementById('searchInput').addEventListener('input', render);
-        render();
+        function render(){
+            var q=(document.getElementById('searchInput').value||'').toLowerCase();
+            var list=items.filter(function(w){return !q||(w.name+w.location).toLowerCase().indexOf(q)>=0;});
+            document.getElementById('tbody').innerHTML=list.map(function(w){
+                return '<tr><td style="font-weight:600">'+w.name+'</td><td>'+w.location+'</td><td>'+statusBadge(w.status)+'</td></tr>';
+            }).join('')||'<tr><td colspan="3"><div class="empty-erp"><i class="bi bi-inbox"></i>لا بيانات</div></td></tr>';
+            document.getElementById('statsRow').innerHTML='<div class="stat-card stat-gold"><div class="stat-number">'+items.length+'</div><div class="stat-label">المخازن</div></div>';
+        }
+        document.getElementById('searchInput').addEventListener('input',render);render();
 
     });
     </script>

@@ -42,29 +42,80 @@
         <div class="dashboard-content">
 
             <div class="page-header">
-                <div class="ph-left"><h2>لوحة التحكم</h2><p>نظرة شاملة على أداء الشركة</p></div>
-                <div class="ph-right"><strong>اليوم</strong><span id="headerDate">—</span></div>
+                <div class="ph-left">
+                    <h2>لوحة التحكم</h2>
+                    <p>نظرة شاملة على أداء الشركة — اضغط <strong>Ctrl+K</strong> للبحث السريع</p>
+                </div>
+                <div class="ph-right">
+                    <strong>اليوم</strong>
+                    <span id="headerDate">—</span>
+                </div>
             </div>
+
             <div class="stats-grid" id="statsRow"></div>
-            <div class="card-panel" style="margin-bottom:14px;">
-                <div style="font-weight:700;font-size:13px;margin-bottom:10px;">آخر فواتير المبيعات</div>
-                <div class="table-responsive">
-                    <table class="table-erp">
-                        <thead><tr><th>الرقم</th><th>التاريخ</th><th>الإجمالي</th><th>الحالة</th></tr></thead>
+
+            <div class="chart-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h6><i class="bi bi-bar-chart-fill"></i> المبيعات والمشتريات</h6>
+                        <span class="chart-badge">آخر 6 أشهر</span>
+                    </div>
+                    <div class="chart-bars" id="dashChart"></div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h6><i class="bi bi-lightning-fill"></i> إجراءات سريعة</h6>
+                        <span class="chart-badge">اختصارات</span>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:8px;padding-top:4px">
+                        <a class="btn-erp btn-erp-primary" href="sales-invoices.html" style="justify-content:center"><i class="bi bi-receipt"></i> فاتورة مبيعات</a>
+                        <a class="btn-erp btn-erp-outline" href="receipts.html" style="justify-content:center"><i class="bi bi-cash-coin"></i> سند قبض</a>
+                        <a class="btn-erp btn-erp-outline" href="customers.html" style="justify-content:center"><i class="bi bi-people"></i> العملاء</a>
+                        <a class="btn-erp btn-erp-outline" href="products.html" style="justify-content:center"><i class="bi bi-box-seam"></i> المنتجات</a>
+                        <a class="btn-erp btn-erp-outline" href="financial-reports.html" style="justify-content:center"><i class="bi bi-file-earmark-bar-graph"></i> التقارير المالية</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <h5 class="panel-title"><i class="bi bi-receipt"></i> آخر فواتير المبيعات</h5>
+                    <a href="sales-invoices.html" style="font-size:12px;color:var(--accent);font-weight:600">عرض الكل</a>
+                </div>
+                <div class="table-wrap">
+                    <table class="table-custom">
+                        <thead><tr><th>الرقم</th><th>التاريخ</th><th>الإجمالي</th><th>المدفوع</th><th>الحالة</th></tr></thead>
                         <tbody id="recentInv"></tbody>
                     </table>
                 </div>
             </div>
-            <div style="display:flex;flex-wrap:wrap;gap:8px;">
-                <a class="btn-erp btn-erp-primary" href="sales-invoices.html"><i class="bi bi-receipt"></i> فاتورة مبيعات</a>
-                <a class="btn-erp btn-erp-outline" href="customers.html"><i class="bi bi-people"></i> العملاء</a>
-                <a class="btn-erp btn-erp-outline" href="products.html"><i class="bi bi-box-seam"></i> المنتجات</a>
-                <a class="btn-erp btn-erp-outline" href="receipts.html"><i class="bi bi-cash-coin"></i> سند قبض</a>
-                <a class="btn-erp btn-erp-outline" href="low-stock.html"><i class="bi bi-exclamation-triangle"></i> مخزون منخفض</a>
+
+            <div class="chart-grid" style="margin-top:14px">
+                <div class="panel" style="margin:0">
+                    <div class="panel-header">
+                        <h5 class="panel-title"><i class="bi bi-star-fill"></i> أفضل المنتجات مبيعاً</h5>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="table-custom">
+                            <thead><tr><th>#</th><th>المنتج</th><th>المبيعات</th></tr></thead>
+                            <tbody id="topProdBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="panel" style="margin:0">
+                    <div class="panel-header">
+                        <h5 class="panel-title"><i class="bi bi-info-circle"></i> تلميحات سريعة</h5>
+                    </div>
+                    <div style="padding:14px 16px;font-size:12.5px;line-height:1.8;color:var(--text-secondary)">
+                        <div><kbd style="padding:2px 6px;border:1px solid var(--border);border-radius:4px;font-size:11px">Ctrl+K</kbd> بحث سريع في الصفحات</div>
+                        <div><kbd style="padding:2px 6px;border:1px solid var(--border);border-radius:4px;font-size:11px">Ctrl+D</kbd> الوضع الليلي</div>
+                        <div style="margin-top:8px">الإضافات تُحفظ في المتصفح تلقائياً حتى إعادة التعيين من الإعدادات.</div>
+                    </div>
+                </div>
             </div>
 
-        </div>
 
+        </div>
         <footer class="footer-custom">
             <div class="footer-content">
                 <div class="footer-right">
@@ -72,30 +123,55 @@
                     <span class="footer-divider">|</span>
                     <span class="footer-copy">© 2026 جميع الحقوق محفوظة — حلول إدارة الأعمال الاحترافية</span>
                 </div>
-                <div class="footer-left">
-                    <span class="footer-version">الإصدار 1.0.0</span>
-                </div>
+                <div class="footer-left"><span class="footer-version">الإصدار 1.0.0</span></div>
             </div>
         </footer>
     </main>
-
     <script src="mock-data.js"></script>
+    <script src="store.js"></script>
     <script src="layout-erp.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function () {
         initERPPage({ title: 'لوحة التحكم', subtitle: 'نظرة شاملة على أداء الشركة', activeId: 'dashboard' });
+
         
-        var s = MockData.dashboardStats;
+        var invs = MockStore.get('salesInvoices');
+        var custs = MockStore.get('customers');
+        var prods = MockStore.get('products');
+        var banks = MockStore.get('bankAccounts');
+        var s = {
+            salesMonth: invs.reduce(function(a,i){return a+i.total;},0),
+            receiptsMonth: MockStore.get('receipts').reduce(function(a,r){return a+r.amount;},0),
+            receivables: custs.reduce(function(a,c){return a+c.balance;},0),
+            payables: MockStore.get('suppliers').reduce(function(a,c){return a+c.balance;},0),
+            bankBalance: banks.reduce(function(a,b){return a+b.balance;},0),
+            lowStockCount: prods.filter(function(p){return p.qty<=p.minQty;}).length
+        };
+
         document.getElementById('statsRow').innerHTML = [
-            {l:'مبيعات الشهر', v: MockData.formatCurrency(s.salesMonth)},
-            {l:'المقبوضات', v: MockData.formatCurrency(s.receiptsMonth)},
-            {l:'الذمم المدينة', v: MockData.formatCurrency(s.receivables)},
-            {l:'الذمم الدائنة', v: MockData.formatCurrency(s.payables)},
-            {l:'رصيد البنوك', v: MockData.formatCurrency(s.bankBalance)},
-            {l:'منخفض المخزون', v: s.lowStockCount}
-        ].map(function(x){ return '<div class="stat-card"><div class="stat-label">'+x.l+'</div><div class="stat-value">'+x.v+'</div></div>'; }).join('');
-        document.getElementById('recentInv').innerHTML = MockData.salesInvoices.slice(0,6).map(function(i){
-            return '<tr><td style="font-weight:600;color:var(--accent)">'+i.number+'</td><td>'+MockData.formatDate(i.date)+'</td><td style="font-weight:700">'+MockData.formatCurrency(i.total)+'</td><td>'+statusBadge(i.status)+'</td></tr>';
+            {l:'مبيعات الشهر', v:MockData.formatCurrency(s.salesMonth), c:'stat-gold', i:'bi-graph-up-arrow'},
+            {l:'المقبوضات', v:MockData.formatCurrency(s.receiptsMonth), c:'stat-green', i:'bi-cash-coin'},
+            {l:'الذمم المدينة', v:MockData.formatCurrency(s.receivables), c:'stat-red', i:'bi-people-fill'},
+            {l:'الذمم الدائنة', v:MockData.formatCurrency(s.payables), c:'stat-blue', i:'bi-truck'},
+            {l:'رصيد البنوك', v:MockData.formatCurrency(s.bankBalance), c:'stat-gold', i:'bi-bank'},
+            {l:'مخزون منخفض', v:String(s.lowStockCount), c:'stat-red', i:'bi-exclamation-triangle-fill'}
+        ].map(function(x){
+            return '<div class="stat-card '+x.c+'"><span class="stat-icon"><i class="bi '+x.i+'"></i></span><div class="stat-number" style="font-size:17px">'+x.v+'</div><div class="stat-label">'+x.l+'</div></div>';
+        }).join('');
+
+        var chart = MockData.salesChart || {labels:[], sales:[], purchases:[]};
+        var maxV = Math.max.apply(null, chart.sales.concat(chart.purchases).concat([1]));
+        document.getElementById('dashChart').innerHTML = chart.labels.map(function(lab,i){
+            var sH=Math.round((chart.sales[i]/maxV)*100), pH=Math.round((chart.purchases[i]/maxV)*100);
+            return '<div class="chart-bar-col"><div class="chart-bar-group"><div class="chart-bar" style="height:'+sH+'%"></div><div class="chart-bar sec" style="height:'+pH+'%"></div></div><div class="chart-bar-label">'+lab+'</div></div>';
+        }).join('');
+
+        document.getElementById('topProdBody').innerHTML = (MockData.topProducts||[]).map(function(p,i){
+            return '<tr><td>'+(i+1)+'</td><td style="font-weight:600">'+p.name+'</td><td style="font-weight:700">'+p.sales+'</td></tr>';
+        }).join('');
+        document.getElementById('recentInv').innerHTML = invs.slice(0,7).map(function(i){
+            return '<tr><td style="font-weight:600;color:var(--accent)">'+i.number+'</td><td>'+MockData.formatDate(i.date)+'</td>'+
+                '<td style="font-weight:700">'+MockData.formatCurrency(i.total)+'</td><td>'+MockData.formatCurrency(i.paid)+'</td><td>'+statusBadge(i.status)+'</td></tr>';
         }).join('');
 
     });

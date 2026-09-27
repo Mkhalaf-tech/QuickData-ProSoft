@@ -23,7 +23,7 @@
                 <div class="navbar-logo-container">
                     <span class="navbar-logo-text" id="navbarBrandText">QuickData <span>ProSoft</span></span>
                 </div>
-                <h4 class="page-title" id="pageTitleText">القيود اليومية<small>القيود المحاسبية</small></h4>
+                <h4 class="page-title" id="pageTitleText">القيود اليومية<small>تسجيل وترحيل القيود المحاسبية</small></h4>
             </div>
             <div class="navbar-right">
                 <button class="nav-btn" id="darkModeToggle" type="button" title="الوضع الليلي"><i class="bi bi-moon-fill"></i></button>
@@ -42,32 +42,53 @@
         <div class="dashboard-content">
 
             <div class="page-header">
-                <div class="ph-left">
-                    <h2>القيود اليومية</h2>
-                    <p>القيود المحاسبية</p>
-                </div>
-                <div class="ph-right">
-                    <strong>اليوم</strong>
-                    <span id="headerDate">—</span>
-                </div>
+                <div class="ph-left"><h2>القيود اليومية</h2><p>تسجيل وترحيل القيود مع التحقق من التوازن</p></div>
+                <div class="ph-right"><strong>اليوم</strong><span id="headerDate">—</span></div>
             </div>
-            <div class="stats-grid" id="statsRow"></div>
             <div class="card-panel">
                 <div class="toolbar-erp">
                     <div class="search-erp"><i class="bi bi-search"></i><input type="text" id="searchInput" placeholder="بحث..." /></div>
-                    <button type="button" class="btn-erp btn-erp-primary" onclick="showToast('قريباً','info')"><i class="bi bi-plus-lg"></i> إضافة</button>
+                    <button type="button" class="btn-erp btn-erp-primary" onclick="openJE()"><i class="bi bi-plus-lg"></i> قيد جديد</button>
                 </div>
                 <div class="table-responsive">
                     <table class="table-erp">
-                        <thead><tr><th>الرقم</th><th>التاريخ</th><th>الوصف</th><th>مدين</th><th>دائن</th><th>الحالة</th></tr></thead>
+                        <thead><tr><th>الرقم</th><th>التاريخ</th><th>الوصف</th><th>مدين</th><th>دائن</th><th>الحالة</th><th></th></tr></thead>
                         <tbody id="tbody"></tbody>
                     </table>
                 </div>
-                <div id="pageInfo" style="padding-top:10px;font-size:12px;color:var(--text-secondary);"></div>
+                <div id="pageInfo" style="padding-top:10px;font-size:12px;color:var(--text-secondary)"></div>
+            </div>
+            <div id="jeModal" style="display:none;position:fixed;inset:0;background:rgba(14,28,46,.45);z-index:1000;align-items:center;justify-content:center;padding:16px">
+                <div style="background:var(--surface);border-radius:14px;width:100%;max-width:780px;max-height:92vh;overflow:auto">
+                    <div style="display:flex;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)">
+                        <strong>قيد يومي جديد</strong>
+                        <button type="button" onclick="closeJE()" style="border:none;background:none;font-size:18px;cursor:pointer">&times;</button>
+                    </div>
+                    <div style="padding:16px">
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-4"><label class="form-label" style="font-size:12px;font-weight:600">التاريخ</label><input type="date" class="form-control form-control-sm" id="jeDate"></div>
+                            <div class="col-md-8"><label class="form-label" style="font-size:12px;font-weight:600">الوصف *</label><input class="form-control form-control-sm" id="jeDesc" placeholder="وصف القيد"></div>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+                            <strong style="font-size:12.5px">بنود القيد</strong>
+                            <button type="button" class="btn-erp btn-erp-outline" style="padding:4px 10px;font-size:12px" onclick="addJELine()"><i class="bi bi-plus"></i> سطر</button>
+                        </div>
+                        <table class="table-erp"><thead><tr><th>الحساب</th><th>مدين</th><th>دائن</th><th></th></tr></thead><tbody id="jeLines"></tbody></table>
+                        <div style="display:flex;justify-content:flex-end;gap:18px;margin-top:12px;font-size:13px">
+                            <div>مدين: <strong id="jeD">0.00</strong></div>
+                            <div>دائن: <strong id="jeC">0.00</strong></div>
+                            <div id="jeBal" style="font-weight:800"></div>
+                        </div>
+                    </div>
+                    <div style="padding:12px 18px;border-top:1px solid var(--border);display:flex;gap:8px">
+                        <button type="button" class="btn-erp btn-erp-primary" onclick="saveJE(false)"><i class="bi bi-check2-all"></i> حفظ وترحيل</button>
+                        <button type="button" class="btn-erp btn-erp-outline" onclick="saveJE(true)">مسودة</button>
+                        <button type="button" class="btn-erp btn-erp-outline" onclick="closeJE()">إلغاء</button>
+                    </div>
+                </div>
             </div>
 
         </div>
-
         <footer class="footer-custom">
             <div class="footer-content">
                 <div class="footer-right">
@@ -75,33 +96,72 @@
                     <span class="footer-divider">|</span>
                     <span class="footer-copy">© 2026 جميع الحقوق محفوظة — حلول إدارة الأعمال الاحترافية</span>
                 </div>
-                <div class="footer-left">
-                    <span class="footer-version">الإصدار 1.0.0</span>
-                </div>
+                <div class="footer-left"><span class="footer-version">الإصدار 1.0.0</span></div>
             </div>
         </footer>
     </main>
-
     <script src="mock-data.js"></script>
+    <script src="store.js"></script>
     <script src="layout-erp.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function () {
-        initERPPage({ title: 'القيود اليومية', subtitle: 'القيود المحاسبية', activeId: 'journal' });
+        initERPPage({ title: 'القيود اليومية', subtitle: 'تسجيل وترحيل القيود المحاسبية', activeId: 'journal' });
         
-        function render() {
-            var q = (document.getElementById('searchInput').value || '').toLowerCase();
-            var list = (MockData.journalEntries).filter(function (item) {
-                return !q || JSON.stringify(item).toLowerCase().indexOf(q) >= 0;
-            });
-            var tb = document.getElementById('tbody');
-            if (!list.length) {
-                tb.innerHTML = '<tr><td colspan="6"><div class="empty-erp"><i class="bi bi-inbox"></i>لا توجد بيانات</div></td></tr>';
-            } else {
-                tb.innerHTML = list.map(function (item) { return '<tr><td style="font-weight:600;color:var(--accent)">'+item.number+'</td><td>'+MockData.formatDate(item.date)+'</td><td>'+item.description+'</td><td>'+MockData.formatCurrency(item.totalDebit)+'</td><td>'+MockData.formatCurrency(item.totalCredit)+'</td><td>'+statusBadge(item.status)+'</td></tr>'; }).join('');
-            }
-            document.getElementById('pageInfo').textContent = 'عرض ' + list.length + ' سجل';
+        var entries = MockStore.get("journalEntries");
+        var accounts = MockData.accounts.filter(function(a){return !a.isGroup;});
+        function openJE(){
+            document.getElementById('jeDate').value=new Date().toISOString().slice(0,10);
+            document.getElementById('jeDesc').value='';
+            document.getElementById('jeLines').innerHTML='';
+            addJELine(); addJELine();
+            document.getElementById('jeModal').style.display='flex';
         }
-        document.getElementById('searchInput').addEventListener('input', render);
+        function closeJE(){ document.getElementById('jeModal').style.display='none'; }
+        function addJELine(){
+            var tr=document.createElement('tr');
+            tr.innerHTML='<td><select class="form-select form-select-sm je-acc">'+accounts.map(function(a){return '<option value="'+a.id+'">'+a.code+' — '+a.name+'</option>';}).join('')+'</select></td>'+
+                '<td><input type="number" class="form-control form-control-sm je-d" value="0" min="0" step="0.01" style="width:100px" oninput="calcJE()"></td>'+
+                '<td><input type="number" class="form-control form-control-sm je-c" value="0" min="0" step="0.01" style="width:100px" oninput="calcJE()"></td>'+
+                '<td><button type="button" class="btn-erp btn-erp-outline" style="padding:2px 6px;color:var(--danger)" onclick="this.closest(\'tr\').remove();calcJE()"><i class="bi bi-trash"></i></button></td>';
+            document.getElementById('jeLines').appendChild(tr);
+            calcJE();
+        }
+        function calcJE(){
+            var d=0,c=0;
+            document.querySelectorAll('#jeLines tr').forEach(function(tr){
+                d+=Number(tr.querySelector('.je-d').value)||0;
+                c+=Number(tr.querySelector('.je-c').value)||0;
+            });
+            document.getElementById('jeD').textContent=MockData.formatCurrency(d);
+            document.getElementById('jeC').textContent=MockData.formatCurrency(c);
+            var msg=document.getElementById('jeBal');
+            if(d===0&&c===0) msg.textContent='';
+            else if(Math.abs(d-c)<0.01){ msg.textContent='✓ متوازن'; msg.style.color='var(--success)'; }
+            else { msg.textContent='✗ غير متوازن — الفرق: '+MockData.formatCurrency(Math.abs(d-c)); msg.style.color='var(--danger)'; }
+            return {d:d,c:c};
+        }
+        function saveJE(draft){
+            var desc=document.getElementById('jeDesc').value.trim();
+            if(!desc){showToast('أدخل وصف القيد','error');return;}
+            var t=calcJE();
+            if(t.d===0){showToast('أضف بنوداً','error');return;}
+            if(!draft && Math.abs(t.d-t.c)>=0.01){showToast('القيد غير متوازن','error');return;}
+            entries.unshift({id:Date.now(), number:'JE-'+String(entries.length+1).padStart(3,'0'),
+                date:document.getElementById('jeDate').value, description:desc,
+                status:draft?'draft':'posted', totalDebit:t.d, totalCredit:t.c});
+            MockStore.save('journalEntries', entries); closeJE(); render(); showToast(draft?'تم حفظ المسودة':'تم ترحيل القيد','success');
+        }
+        function render(){
+            var q=(document.getElementById('searchInput').value||'').toLowerCase();
+            var list=entries.filter(function(e){return !q||(e.number+e.description).toLowerCase().indexOf(q)>=0;});
+            document.getElementById('tbody').innerHTML=list.length?list.map(function(e){
+                return '<tr><td style="font-weight:600;color:var(--accent)">'+e.number+'</td><td>'+MockData.formatDate(e.date)+'</td><td>'+e.description+'</td>'+
+                    '<td>'+MockData.formatCurrency(e.totalDebit)+'</td><td>'+MockData.formatCurrency(e.totalCredit)+'</td>'+
+                    '<td>'+statusBadge(e.status)+'</td><td></td></tr>';
+            }).join(''):'<tr><td colspan="7"><div class="empty-erp"><i class="bi bi-inbox"></i>لا توجد قيود</div></td></tr>';
+            document.getElementById('pageInfo').textContent='عرض '+list.length+' قيد';
+        }
+        document.getElementById('searchInput').addEventListener('input',render);
         render();
 
     });

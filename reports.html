@@ -23,7 +23,7 @@
                 <div class="navbar-logo-container">
                     <span class="navbar-logo-text" id="navbarBrandText">QuickData <span>ProSoft</span></span>
                 </div>
-                <h4 class="page-title" id="pageTitleText">التقارير<small>مركز التقارير</small></h4>
+                <h4 class="page-title" id="pageTitleText">التقارير<small>مركز التقارير والتحليلات</small></h4>
             </div>
             <div class="navbar-right">
                 <button class="nav-btn" id="darkModeToggle" type="button" title="الوضع الليلي"><i class="bi bi-moon-fill"></i></button>
@@ -42,13 +42,83 @@
         <div class="dashboard-content">
 
             <div class="page-header">
-                <div class="ph-left"><h2>التقارير</h2><p>مركز التقارير</p></div>
-                <div class="ph-right"><strong>اليوم</strong><span id="headerDate">—</span></div>
+                <div class="ph-left">
+                    <h2>مركز التقارير</h2>
+                    <p>تقارير مالية وتشغيلية جاهزة للعرض والطباعة</p>
+                </div>
+                <div class="ph-right">
+                    <strong>اليوم</strong>
+                    <span id="headerDate">—</span>
+                </div>
             </div>
-            <div class="card-panel"><div class="empty-erp"><i class="bi bi-inbox"></i>الشاشة جاهزة للربط بالبيانات</div></div>
+
+            <div class="stats-grid" style="margin-bottom:20px">
+                <div class="stat-card stat-gold">
+                    <span class="stat-icon"><i class="bi bi-file-earmark-bar-graph"></i></span>
+                    <div class="stat-number">6</div>
+                    <div class="stat-label">تقارير متاحة</div>
+                </div>
+                <div class="stat-card stat-green">
+                    <span class="stat-icon"><i class="bi bi-receipt"></i></span>
+                    <div class="stat-number" id="rSales">0</div>
+                    <div class="stat-label">فواتير مبيعات</div>
+                </div>
+                <div class="stat-card stat-blue">
+                    <span class="stat-icon"><i class="bi bi-people"></i></span>
+                    <div class="stat-number" id="rCust">0</div>
+                    <div class="stat-label">عملاء</div>
+                </div>
+                <div class="stat-card stat-red">
+                    <span class="stat-icon"><i class="bi bi-exclamation-triangle"></i></span>
+                    <div class="stat-number" id="rLow">0</div>
+                    <div class="stat-label">مخزون منخفض</div>
+                </div>
+            </div>
+
+            <div class="report-cards-grid">
+                <a class="report-link-card" href="financial-reports.html">
+                    <div class="ric-icon"><i class="bi bi-file-earmark-bar-graph-fill"></i></div>
+                    <h5>التقارير المالية</h5>
+                    <p>ميزان مراجعة · أرباح وخسائر · مركز مالي · نظرة عامة</p>
+                </a>
+                <a class="report-link-card" href="customer-statement.html">
+                    <div class="ric-icon"><i class="bi bi-file-text"></i></div>
+                    <h5>كشف حساب عميل / مورد</h5>
+                    <p>حركات مدين ودائن والرصيد التراكمي</p>
+                </a>
+                <a class="report-link-card" href="sales-invoices.html">
+                    <div class="ric-icon"><i class="bi bi-receipt"></i></div>
+                    <h5>تقرير المبيعات</h5>
+                    <p>فواتير المبيعات والحالة والتحصيل</p>
+                </a>
+                <a class="report-link-card" href="purchase-invoices.html">
+                    <div class="ric-icon"><i class="bi bi-receipt-cutoff"></i></div>
+                    <h5>تقرير المشتريات</h5>
+                    <p>فواتير الشراء من الموردين</p>
+                </a>
+                <a class="report-link-card" href="expenses.html">
+                    <div class="ric-icon"><i class="bi bi-cash"></i></div>
+                    <h5>تقرير المصروفات</h5>
+                    <p>المصروفات التشغيلية حسب النوع</p>
+                </a>
+                <a class="report-link-card" href="low-stock.html">
+                    <div class="ric-icon" style="background:rgba(173,63,57,.1);color:var(--danger)"><i class="bi bi-exclamation-triangle-fill"></i></div>
+                    <h5>تقرير المخزون المنخفض</h5>
+                    <p>منتجات تحت الحد الأدنى للكمية</p>
+                </a>
+                <a class="report-link-card" href="chart-of-accounts.html">
+                    <div class="ric-icon"><i class="bi bi-diagram-3-fill"></i></div>
+                    <h5>دليل الحسابات</h5>
+                    <p>شجرة الحسابات والأرصدة</p>
+                </a>
+                <a class="report-link-card" href="print-invoice.html">
+                    <div class="ric-icon"><i class="bi bi-printer"></i></div>
+                    <h5>طباعة فاتورة</h5>
+                    <p>نموذج طباعة فاتورة مبيعات</p>
+                </a>
+            </div>
 
         </div>
-
         <footer class="footer-custom">
             <div class="footer-content">
                 <div class="footer-right">
@@ -56,19 +126,21 @@
                     <span class="footer-divider">|</span>
                     <span class="footer-copy">© 2026 جميع الحقوق محفوظة — حلول إدارة الأعمال الاحترافية</span>
                 </div>
-                <div class="footer-left">
-                    <span class="footer-version">الإصدار 1.0.0</span>
-                </div>
+                <div class="footer-left"><span class="footer-version">الإصدار 1.0.0</span></div>
             </div>
         </footer>
     </main>
-
     <script src="mock-data.js"></script>
+    <script src="store.js"></script>
     <script src="layout-erp.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function () {
-        initERPPage({ title: 'التقارير', subtitle: 'مركز التقارير', activeId: 'reports' });
+        initERPPage({ title: 'التقارير', subtitle: 'مركز التقارير والتحليلات', activeId: 'reports' });
         
+        document.getElementById('rSales').textContent = MockData.salesInvoices.length;
+        document.getElementById('rCust').textContent = MockData.customers.length;
+        document.getElementById('rLow').textContent = MockData.products.filter(function(p){return p.qty<=p.minQty;}).length;
+
     });
     </script>
 </body>

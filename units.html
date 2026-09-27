@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3EQ%3C/text%3E%3C/svg%3E" />
-    <title>منخفض المخزون - QuickData ProSoft</title>
+    <title>وحدات القياس - QuickData ProSoft</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" />
@@ -23,7 +23,7 @@
                 <div class="navbar-logo-container">
                     <span class="navbar-logo-text" id="navbarBrandText">QuickData <span>ProSoft</span></span>
                 </div>
-                <h4 class="page-title" id="pageTitleText">منخفض المخزون<small>منتجات تحت الحد الأدنى</small></h4>
+                <h4 class="page-title" id="pageTitleText">وحدات القياس<small>وحدات الأصناف</small></h4>
             </div>
             <div class="navbar-right">
                 <button class="nav-btn" id="darkModeToggle" type="button" title="الوضع الليلي"><i class="bi bi-moon-fill"></i></button>
@@ -42,18 +42,17 @@
         <div class="dashboard-content">
 
             <div class="page-header">
-                <div class="ph-left"><h2>منخفض المخزون</h2><p>منتجات تحتاج إعادة طلب</p></div>
+                <div class="ph-left"><h2>وحدات القياس</h2><p>الوحدات المستخدمة في المنتجات</p></div>
                 <div class="ph-right"><strong>اليوم</strong><span id="headerDate">—</span></div>
             </div>
-            <div class="stats-grid" id="statsRow"></div>
             <div class="card-panel">
                 <div class="toolbar-erp">
                     <div class="search-erp"><i class="bi bi-search"></i><input type="text" id="searchInput" placeholder="بحث..." /></div>
-                    <a class="btn-erp btn-erp-outline" href="products.html"><i class="bi bi-box-seam"></i> كل المنتجات</a>
+                    <a class="btn-erp btn-erp-outline" href="products.html"><i class="bi bi-box-seam"></i> المنتجات</a>
                 </div>
                 <div class="table-responsive">
                     <table class="table-erp">
-                        <thead><tr><th>الكود</th><th>الاسم</th><th>الكمية الحالية</th><th>الحد الأدنى</th><th>النقص</th><th>سعر الشراء</th></tr></thead>
+                        <thead><tr><th>#</th><th>الوحدة</th><th>عدد المنتجات</th></tr></thead>
                         <tbody id="tbody"></tbody>
                     </table>
                 </div>
@@ -76,22 +75,18 @@
     <script src="layout-erp.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function () {
-        initERPPage({ title: 'منخفض المخزون', subtitle: 'منتجات تحت الحد الأدنى', activeId: 'low-stock' });
-        
+        initERPPage({ title: 'وحدات القياس', subtitle: 'وحدات الأصناف', activeId: 'products' });
+
         function render(){
             var q=(document.getElementById('searchInput').value||'').toLowerCase();
-            var list=MockData.products.filter(function(p){return p.qty<=p.minQty && (!q||(p.code+p.name).toLowerCase().indexOf(q)>=0);});
-            document.getElementById('tbody').innerHTML=list.length?list.map(function(p){
-                var gap=p.minQty-p.qty;
-                return '<tr><td style="font-weight:600;color:var(--accent)">'+p.code+'</td><td style="font-weight:600">'+p.name+'</td>'+
-                    '<td style="font-weight:700;color:var(--danger)">'+p.qty+'</td><td>'+p.minQty+'</td>'+
-                    '<td><span class="badge badge-danger">'+gap+'</span></td><td>'+MockData.formatCurrency(p.purchasePrice)+'</td></tr>';
-            }).join(''):'<tr><td colspan="6"><div class="empty-erp"><i class="bi bi-check-circle" style="color:var(--success)"></i>لا يوجد نقص في المخزون</div></td></tr>';
-            document.getElementById('statsRow').innerHTML=
-                '<div class="stat-card stat-red"><div class="stat-number">'+list.length+'</div><div class="stat-label">أصناف منخفضة</div></div>'+
-                '<div class="stat-card stat-gold"><div class="stat-number">'+MockData.products.length+'</div><div class="stat-label">إجمالي الأصناف</div></div>';
+            var units=MockData.units||[];
+            var list=units.filter(function(u){return !q||u.name.toLowerCase().indexOf(q)>=0;});
+            document.getElementById('tbody').innerHTML=list.map(function(u,i){
+                var cnt=MockData.products.filter(function(p){return p.unitId===u.id;}).length;
+                return '<tr><td>'+(i+1)+'</td><td style="font-weight:600">'+u.name+'</td><td>'+cnt+'</td></tr>';
+            }).join('')||'<tr><td colspan="3"><div class="empty-erp"><i class="bi bi-inbox"></i>لا وحدات</div></td></tr>';
         }
-        document.getElementById('searchInput').addEventListener('input',render);render();
+        document.getElementById('searchInput').addEventListener('input',render); render();
 
     });
     </script>

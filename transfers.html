@@ -23,7 +23,7 @@
                 <div class="navbar-logo-container">
                     <span class="navbar-logo-text" id="navbarBrandText">QuickData <span>ProSoft</span></span>
                 </div>
-                <h4 class="page-title" id="pageTitleText">التحويلات<small>بين الخزائن والبنوك</small></h4>
+                <h4 class="page-title" id="pageTitleText">التحويلات<small>تحويلات بين الخزائن والبنوك</small></h4>
             </div>
             <div class="navbar-right">
                 <button class="nav-btn" id="darkModeToggle" type="button" title="الوضع الليلي"><i class="bi bi-moon-fill"></i></button>
@@ -42,13 +42,47 @@
         <div class="dashboard-content">
 
             <div class="page-header">
-                <div class="ph-left"><h2>التحويلات</h2><p>بين الخزائن والبنوك</p></div>
+                <div class="ph-left"><h2>التحويلات</h2><p>تحويل مبالغ بين الخزائن والحسابات البنكية</p></div>
                 <div class="ph-right"><strong>اليوم</strong><span id="headerDate">—</span></div>
             </div>
-            <div class="card-panel"><div class="empty-erp"><i class="bi bi-inbox"></i>الشاشة جاهزة للربط بالبيانات</div></div>
+            <div class="card-panel">
+                <div class="toolbar-erp">
+                    <div class="search-erp"><i class="bi bi-search"></i><input type="text" id="searchInput" placeholder="بحث..." /></div>
+                    <button type="button" class="btn-erp btn-erp-primary" onclick="openTr()"><i class="bi bi-plus-lg"></i> تحويل جديد</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table-erp">
+                        <thead><tr><th>الرقم</th><th>من</th><th>إلى</th><th>التاريخ</th><th>المبلغ</th><th>الحالة</th></tr></thead>
+                        <tbody id="tbody"></tbody>
+                    </table>
+                </div>
+                <div id="pageInfo" style="padding-top:10px;font-size:12px;color:var(--text-secondary)"></div>
+            </div>
+            <div id="trModal" style="display:none;position:fixed;inset:0;background:rgba(14,28,46,.45);z-index:1000;align-items:center;justify-content:center;padding:16px">
+                <div style="background:var(--surface);border-radius:14px;width:100%;max-width:480px">
+                    <div style="display:flex;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)">
+                        <strong>تحويل جديد</strong>
+                        <button type="button" onclick="document.getElementById('trModal').style.display='none'" style="border:none;background:none;font-size:18px;cursor:pointer">&times;</button>
+                    </div>
+                    <div style="padding:16px" class="row g-2">
+                        <div class="col-6"><label class="form-label" style="font-size:12px;font-weight:600">من (نوع)</label>
+                            <select class="form-select form-select-sm" id="fromType" onchange="fillFrom()"><option value="treasury">خزينة</option><option value="bank">بنك</option></select></div>
+                        <div class="col-6"><label class="form-label" style="font-size:12px;font-weight:600">من (حساب)</label><select class="form-select form-select-sm" id="fromId"></select></div>
+                        <div class="col-6"><label class="form-label" style="font-size:12px;font-weight:600">إلى (نوع)</label>
+                            <select class="form-select form-select-sm" id="toType" onchange="fillTo()"><option value="bank">بنك</option><option value="treasury">خزينة</option></select></div>
+                        <div class="col-6"><label class="form-label" style="font-size:12px;font-weight:600">إلى (حساب)</label><select class="form-select form-select-sm" id="toId"></select></div>
+                        <div class="col-6"><label class="form-label" style="font-size:12px;font-weight:600">التاريخ</label><input type="date" class="form-control form-control-sm" id="trDate"></div>
+                        <div class="col-6"><label class="form-label" style="font-size:12px;font-weight:600">المبلغ *</label><input type="number" class="form-control form-control-sm" id="trAmt" min="0" step="0.01"></div>
+                        <div class="col-12"><label class="form-label" style="font-size:12px;font-weight:600">ملاحظات</label><input class="form-control form-control-sm" id="trNotes"></div>
+                    </div>
+                    <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px">
+                        <button type="button" class="btn-erp btn-erp-primary" onclick="saveTr()">حفظ</button>
+                        <button type="button" class="btn-erp btn-erp-outline" onclick="document.getElementById('trModal').style.display='none'">إلغاء</button>
+                    </div>
+                </div>
+            </div>
 
         </div>
-
         <footer class="footer-custom">
             <div class="footer-content">
                 <div class="footer-right">
@@ -56,19 +90,60 @@
                     <span class="footer-divider">|</span>
                     <span class="footer-copy">© 2026 جميع الحقوق محفوظة — حلول إدارة الأعمال الاحترافية</span>
                 </div>
-                <div class="footer-left">
-                    <span class="footer-version">الإصدار 1.0.0</span>
-                </div>
+                <div class="footer-left"><span class="footer-version">الإصدار 1.0.0</span></div>
             </div>
         </footer>
     </main>
-
     <script src="mock-data.js"></script>
+    <script src="store.js"></script>
     <script src="layout-erp.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function () {
-        initERPPage({ title: 'التحويلات', subtitle: 'بين الخزائن والبنوك', activeId: 'transfers' });
+        initERPPage({ title: 'التحويلات', subtitle: 'تحويلات بين الخزائن والبنوك', activeId: 'transfers' });
         
+        var items = MockStore.get("transfers");
+        var tMap={}, bMap={};
+        MockData.treasuries.forEach(function(t){tMap[t.id]=t.name;});
+        MockData.bankAccounts.forEach(function(b){bMap[b.id]=b.name;});
+        function nameOf(type,id){ return type==='treasury'?(tMap[id]||'—'):(bMap[id]||'—'); }
+        function fillSel(selId, type){
+            var list=type==='treasury'?MockData.treasuries:MockData.bankAccounts;
+            document.getElementById(selId).innerHTML=list.map(function(x){
+                return '<option value="'+x.id+'">'+x.name+' ('+MockData.formatCurrency(x.balance)+')</option>';
+            }).join('');
+        }
+        function fillFrom(){ fillSel('fromId', document.getElementById('fromType').value); }
+        function fillTo(){ fillSel('toId', document.getElementById('toType').value); }
+        function openTr(){
+            document.getElementById('trDate').value=new Date().toISOString().slice(0,10);
+            document.getElementById('trAmt').value=''; document.getElementById('trNotes').value='';
+            fillFrom(); fillTo();
+            document.getElementById('trModal').style.display='flex';
+        }
+        function saveTr(){
+            var amt=Number(document.getElementById('trAmt').value);
+            if(!amt||amt<=0){showToast('أدخل مبلغاً صحيحاً','error');return;}
+            var ft=document.getElementById('fromType').value, tt=document.getElementById('toType').value;
+            var fi=Number(document.getElementById('fromId').value), ti=Number(document.getElementById('toId').value);
+            if(ft===tt&&fi===ti){showToast('لا يمكن التحويل لنفس الحساب','error');return;}
+            items.unshift({id:Date.now(), number:'TRF-'+String(items.length+1).padStart(3,'0'),
+                fromType:ft, fromId:fi, toType:tt, toId:ti,
+                date:document.getElementById('trDate').value, amount:amt, status:'confirmed',
+                notes:document.getElementById('trNotes').value});
+            MockStore.save('transfers', items); document.getElementById('trModal').style.display='none'; render(); showToast('تم حفظ التحويل','success');
+        }
+        function render(){
+            var q=(document.getElementById('searchInput').value||'').toLowerCase();
+            var list=items.filter(function(t){return !q||(t.number+(t.notes||'')).toLowerCase().indexOf(q)>=0;});
+            document.getElementById('tbody').innerHTML=list.length?list.map(function(t){
+                return '<tr><td style="font-weight:600;color:var(--accent)">'+t.number+'</td><td>'+nameOf(t.fromType,t.fromId)+'</td><td>'+nameOf(t.toType,t.toId)+'</td>'+
+                    '<td>'+MockData.formatDate(t.date)+'</td><td style="font-weight:700">'+MockData.formatCurrency(t.amount)+'</td><td>'+statusBadge(t.status)+'</td></tr>';
+            }).join(''):'<tr><td colspan="6"><div class="empty-erp"><i class="bi bi-inbox"></i>لا توجد تحويلات</div></td></tr>';
+            document.getElementById('pageInfo').textContent='عرض '+list.length+' تحويل';
+        }
+        document.getElementById('searchInput').addEventListener('input',render);
+        render();
+
     });
     </script>
 </body>

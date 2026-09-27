@@ -23,7 +23,7 @@
                 <div class="navbar-logo-container">
                     <span class="navbar-logo-text" id="navbarBrandText">QuickData <span>ProSoft</span></span>
                 </div>
-                <h4 class="page-title" id="pageTitleText">التقارير المالية<small>ميزان ومالية</small></h4>
+                <h4 class="page-title" id="pageTitleText">التقارير المالية<small>تحليل شامل للإيرادات والمصروفات والأداء المالي</small></h4>
             </div>
             <div class="navbar-right">
                 <button class="nav-btn" id="darkModeToggle" type="button" title="الوضع الليلي"><i class="bi bi-moon-fill"></i></button>
@@ -42,13 +42,128 @@
         <div class="dashboard-content">
 
             <div class="page-header">
-                <div class="ph-left"><h2>التقارير المالية</h2><p>ميزان ومالية</p></div>
-                <div class="ph-right"><strong>اليوم</strong><span id="headerDate">—</span></div>
+                <div class="ph-left">
+                    <h2>التقارير المالية</h2>
+                    <p>تحليل شامل للإيرادات والمصروفات والأداء المالي</p>
+                </div>
+                <div class="ph-right">
+                    <strong>اليوم</strong>
+                    <span id="headerDate">—</span>
+                </div>
             </div>
-            <div class="card-panel"><div class="empty-erp"><i class="bi bi-inbox"></i>الشاشة جاهزة للربط بالبيانات</div></div>
+
+            <div class="stats-grid">
+                <div class="stat-card stat-gold">
+                    <span class="stat-icon"><i class="bi bi-wallet-fill"></i></span>
+                    <div class="stat-number" id="totalIncome">0</div>
+                    <div class="stat-label">إجمالي الإيرادات</div>
+                </div>
+                <div class="stat-card stat-red">
+                    <span class="stat-icon"><i class="bi bi-arrow-up-circle-fill"></i></span>
+                    <div class="stat-number" id="totalExpense">0</div>
+                    <div class="stat-label">إجمالي المصروفات</div>
+                </div>
+                <div class="stat-card stat-green">
+                    <span class="stat-icon"><i class="bi bi-graph-up-arrow"></i></span>
+                    <div class="stat-number" id="netProfit">0</div>
+                    <div class="stat-label">صافي الربح</div>
+                </div>
+                <div class="stat-card stat-blue">
+                    <span class="stat-icon"><i class="bi bi-receipt"></i></span>
+                    <div class="stat-number" id="totalTransactions">0</div>
+                    <div class="stat-label">إجمالي المعاملات</div>
+                </div>
+            </div>
+
+            <div class="report-tabs">
+                <button type="button" class="report-tab active" data-tab="overview" onclick="switchTab('overview')"><i class="bi bi-graph-up"></i> نظرة عامة</button>
+                <button type="button" class="report-tab" data-tab="trialBalance" onclick="switchTab('trialBalance')"><i class="bi bi-journal-check"></i> ميزان المراجعة</button>
+                <button type="button" class="report-tab" data-tab="incomeStatement" onclick="switchTab('incomeStatement')"><i class="bi bi-cash-coin"></i> الأرباح والخسائر</button>
+                <button type="button" class="report-tab" data-tab="balanceSheet" onclick="switchTab('balanceSheet')"><i class="bi bi-building"></i> المركز المالي</button>
+            </div>
+
+            <!-- TAB: overview -->
+            <div id="tab-overview" class="report-tab-panel active">
+                <div class="chart-grid">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h6><i class="bi bi-bar-chart-fill"></i> الإيرادات والمصروفات</h6>
+                            <span class="chart-badge">حسب الشهر</span>
+                        </div>
+                        <div class="chart-bars" id="mainChartBars"></div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h6><i class="bi bi-pie-chart-fill"></i> توزيع المبيعات</h6>
+                            <span class="chart-badge">حسب الحالة</span>
+                        </div>
+                        <div id="statusDist" style="padding:8px 0"></div>
+                    </div>
+                </div>
+                <div class="panel">
+                    <div class="panel-header">
+                        <h5 class="panel-title"><i class="bi bi-clock-history"></i> آخر المعاملات</h5>
+                        <span class="record-count" id="recordCount">0 سجل</span>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="table-custom">
+                            <thead><tr><th>#</th><th>التاريخ</th><th>البيان</th><th>النوع</th><th>المبلغ</th></tr></thead>
+                            <tbody id="txBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: trial balance -->
+            <div id="tab-trialBalance" class="report-tab-panel">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h5 class="panel-title"><i class="bi bi-journal-check"></i> ميزان المراجعة</h5>
+                        <button type="button" class="btn-erp btn-erp-outline" style="padding:4px 10px;font-size:12px" onclick="window.print()"><i class="bi bi-printer"></i> طباعة</button>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="table-custom">
+                            <thead><tr><th>الكود</th><th>الحساب</th><th>النوع</th><th>مدين</th><th>دائن</th></tr></thead>
+                            <tbody id="tbBody"></tbody>
+                            <tfoot id="tbFoot"></tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: income -->
+            <div id="tab-incomeStatement" class="report-tab-panel">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h5 class="panel-title"><i class="bi bi-cash-coin"></i> قائمة الأرباح والخسائر</h5>
+                        <button type="button" class="btn-erp btn-erp-outline" style="padding:4px 10px;font-size:12px" onclick="window.print()"><i class="bi bi-printer"></i> طباعة</button>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="table-custom">
+                            <thead><tr><th>البند</th><th>المبلغ</th></tr></thead>
+                            <tbody id="isBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: balance sheet -->
+            <div id="tab-balanceSheet" class="report-tab-panel">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h5 class="panel-title"><i class="bi bi-building"></i> قائمة المركز المالي</h5>
+                        <button type="button" class="btn-erp btn-erp-outline" style="padding:4px 10px;font-size:12px" onclick="window.print()"><i class="bi bi-printer"></i> طباعة</button>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="table-custom">
+                            <thead><tr><th>البند</th><th>المبلغ</th></tr></thead>
+                            <tbody id="bsBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
         </div>
-
         <footer class="footer-custom">
             <div class="footer-content">
                 <div class="footer-right">
@@ -56,19 +171,116 @@
                     <span class="footer-divider">|</span>
                     <span class="footer-copy">© 2026 جميع الحقوق محفوظة — حلول إدارة الأعمال الاحترافية</span>
                 </div>
-                <div class="footer-left">
-                    <span class="footer-version">الإصدار 1.0.0</span>
-                </div>
+                <div class="footer-left"><span class="footer-version">الإصدار 1.0.0</span></div>
             </div>
         </footer>
     </main>
-
     <script src="mock-data.js"></script>
+    <script src="store.js"></script>
     <script src="layout-erp.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function () {
-        initERPPage({ title: 'التقارير المالية', subtitle: 'ميزان ومالية', activeId: 'fin-reports' });
+        initERPPage({ title: 'التقارير المالية', subtitle: 'تحليل شامل للإيرادات والمصروفات والأداء المالي', activeId: 'fin-reports' });
         
+        function switchTab(name) {
+            document.querySelectorAll('.report-tab').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-tab')===name); });
+            document.querySelectorAll('.report-tab-panel').forEach(function(p){ p.classList.remove('active'); });
+            var el = document.getElementById('tab-'+name);
+            if (el) el.classList.add('active');
+        }
+
+        var accounts = MockData.accounts.filter(function(a){ return !a.isGroup; });
+        var sales = MockData.salesInvoices;
+        var expenses = MockData.expenses;
+        var income = accounts.filter(function(a){return a.type==='revenue';}).reduce(function(s,a){return s+(a.balance||0);},0);
+        if (!income) income = sales.reduce(function(s,i){return s+i.total;},0);
+        var expense = accounts.filter(function(a){return a.type==='expense';}).reduce(function(s,a){return s+(a.balance||0);},0);
+        if (!expense) expense = expenses.reduce(function(s,e){return s+e.amount;},0);
+        var net = income - expense;
+
+        document.getElementById('totalIncome').textContent = MockData.formatCurrency(income);
+        document.getElementById('totalExpense').textContent = MockData.formatCurrency(expense);
+        document.getElementById('netProfit').textContent = MockData.formatCurrency(net);
+        document.getElementById('totalTransactions').textContent = sales.length + expenses.length + MockData.receipts.length;
+
+        // chart bars from salesChart
+        var chart = MockData.salesChart || {labels:[], sales:[], purchases:[]};
+        var maxV = Math.max.apply(null, chart.sales.concat(chart.purchases).concat([1]));
+        document.getElementById('mainChartBars').innerHTML = chart.labels.map(function(lab, i){
+            var sH = Math.round((chart.sales[i]/maxV)*100);
+            var pH = Math.round((chart.purchases[i]/maxV)*100);
+            return '<div class="chart-bar-col"><div class="chart-bar-group">'+
+                '<div class="chart-bar" style="height:'+sH+'%" title="مبيعات"></div>'+
+                '<div class="chart-bar sec" style="height:'+pH+'%" title="مشتريات"></div>'+
+                '</div><div class="chart-bar-label">'+lab+'</div></div>';
+        }).join('');
+
+        // status distribution
+        var statuses = {};
+        sales.forEach(function(i){ statuses[i.status]=(statuses[i.status]||0)+1; });
+        var labels = MockData.statusLabels || {};
+        document.getElementById('statusDist').innerHTML = Object.keys(statuses).map(function(k){
+            var name = (labels[k]&&labels[k].text)||k;
+            var pct = Math.round(statuses[k]/sales.length*100);
+            return '<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>'+name+'</span><strong>'+statuses[k]+' ('+pct+'%)</strong></div>'+
+                '<div style="height:8px;background:var(--border);border-radius:4px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:var(--accent);border-radius:4px"></div></div></div>';
+        }).join('') || '<div class="empty-erp">لا بيانات</div>';
+
+        // transactions
+        var txs = [];
+        sales.slice(0,8).forEach(function(i){ txs.push({date:i.date, desc:'فاتورة مبيعات '+i.number, type:'مبيعات', amount:i.total}); });
+        expenses.slice(0,5).forEach(function(e){ txs.push({date:e.date, desc:e.description, type:'مصروف', amount:e.amount}); });
+        txs.sort(function(a,b){ return b.date.localeCompare(a.date); });
+        document.getElementById('txBody').innerHTML = txs.map(function(t,i){
+            return '<tr><td>'+(i+1)+'</td><td>'+MockData.formatDate(t.date)+'</td><td>'+t.desc+'</td><td>'+t.type+'</td><td style="font-weight:700">'+MockData.formatCurrency(t.amount)+'</td></tr>';
+        }).join('');
+        document.getElementById('recordCount').textContent = txs.length + ' سجل';
+
+        // trial balance
+        var td=0, tc=0, rows='';
+        accounts.forEach(function(a){
+            var d=0, c=0;
+            if (a.type==='asset'||a.type==='expense'){ d=a.balance||0; td+=d; }
+            else { c=a.balance||0; tc+=c; }
+            rows += '<tr><td style="font-weight:600;color:var(--accent)">'+a.code+'</td><td>'+a.name+'</td><td>'+(a.type||'—')+'</td>'+
+                '<td>'+(d?MockData.formatCurrency(d):'—')+'</td><td>'+(c?MockData.formatCurrency(c):'—')+'</td></tr>';
+        });
+        document.getElementById('tbBody').innerHTML = rows;
+        document.getElementById('tbFoot').innerHTML = '<tr><td colspan="3">الإجمالي</td><td>'+MockData.formatCurrency(td)+'</td><td>'+MockData.formatCurrency(tc)+'</td></tr>';
+
+        // income statement
+        document.getElementById('isBody').innerHTML =
+            '<tr><td style="font-weight:700">الإيرادات</td><td></td></tr>'+
+            accounts.filter(function(a){return a.type==='revenue';}).map(function(a){
+                return '<tr><td style="padding-right:24px">'+a.name+'</td><td style="color:var(--success)">'+MockData.formatCurrency(a.balance||0)+'</td></tr>';
+            }).join('')+
+            '<tr style="font-weight:700"><td>إجمالي الإيرادات</td><td style="color:var(--success)">'+MockData.formatCurrency(income)+'</td></tr>'+
+            '<tr><td style="font-weight:700">المصروفات</td><td></td></tr>'+
+            accounts.filter(function(a){return a.type==='expense';}).map(function(a){
+                return '<tr><td style="padding-right:24px">'+a.name+'</td><td style="color:var(--danger)">'+MockData.formatCurrency(a.balance||0)+'</td></tr>';
+            }).join('')+
+            '<tr style="font-weight:700"><td>إجمالي المصروفات</td><td style="color:var(--danger)">'+MockData.formatCurrency(expense)+'</td></tr>'+
+            '<tr style="font-weight:800;background:var(--surface-alt)"><td>صافي الربح / الخسارة</td><td style="color:'+(net>=0?'var(--success)':'var(--danger)')+'">'+MockData.formatCurrency(net)+'</td></tr>';
+
+        // balance sheet
+        var assets = accounts.filter(function(a){return a.type==='asset';});
+        var liab = accounts.filter(function(a){return a.type==='liability';});
+        var eq = accounts.filter(function(a){return a.type==='equity';});
+        var aSum = assets.reduce(function(s,a){return s+(a.balance||0);},0);
+        var lSum = liab.reduce(function(s,a){return s+(a.balance||0);},0);
+        var eSum = eq.reduce(function(s,a){return s+(a.balance||0);},0);
+        document.getElementById('bsBody').innerHTML =
+            '<tr><td colspan="2" style="font-weight:700;background:var(--surface-alt)">الأصول</td></tr>'+
+            assets.map(function(a){return '<tr><td style="padding-right:24px">'+a.name+'</td><td>'+MockData.formatCurrency(a.balance||0)+'</td></tr>';}).join('')+
+            '<tr style="font-weight:700"><td>إجمالي الأصول</td><td>'+MockData.formatCurrency(aSum)+'</td></tr>'+
+            '<tr><td colspan="2" style="font-weight:700;background:var(--surface-alt)">الخصوم</td></tr>'+
+            liab.map(function(a){return '<tr><td style="padding-right:24px">'+a.name+'</td><td>'+MockData.formatCurrency(a.balance||0)+'</td></tr>';}).join('')+
+            '<tr style="font-weight:700"><td>إجمالي الخصوم</td><td>'+MockData.formatCurrency(lSum)+'</td></tr>'+
+            '<tr><td colspan="2" style="font-weight:700;background:var(--surface-alt)">حقوق الملكية</td></tr>'+
+            eq.map(function(a){return '<tr><td style="padding-right:24px">'+a.name+'</td><td>'+MockData.formatCurrency(a.balance||0)+'</td></tr>';}).join('')+
+            '<tr style="font-weight:700"><td>إجمالي حقوق الملكية</td><td>'+MockData.formatCurrency(eSum)+'</td></tr>'+
+            '<tr style="font-weight:800;background:var(--surface-alt)"><td>إجمالي الخصوم وحقوق الملكية</td><td>'+MockData.formatCurrency(lSum+eSum)+'</td></tr>';
+
     });
     </script>
 </body>
