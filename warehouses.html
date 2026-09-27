@@ -5,36 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3EQ%3C/text%3E%3C/svg%3E" />
     <title>المخازن - QuickData ProSoft</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     <link rel="stylesheet" href="theme.css" />
     <link rel="stylesheet" href="page-layout.css" />
-    <style>
-      /* badges for ERP statuses */
-      .badge { display:inline-block; padding:3px 10px; border-radius:9999px; font-size:11px; font-weight:600; }
-      .badge-success { background:#e6f3ec; color:#1c7a4e; }
-      .badge-danger { background:#f7e8e6; color:#ad3f39; }
-      .badge-warning { background:#f6eee1; color:#ad7f2e; }
-      .badge-info { background:#e6edf4; color:#2d6088; }
-      .badge-secondary { background:#f0eee8; color:#5c5648; }
-      .table-erp { width:100%; border-collapse:collapse; }
-      .table-erp thead th { background:var(--surface-alt,#faf8f3); padding:10px 14px; text-align:right; font-size:11.5px; font-weight:700; color:var(--text-secondary,#5c5648); border-bottom:1px solid var(--border,#e0dccf); white-space:nowrap; }
-      .table-erp tbody td { padding:11px 14px; border-bottom:1px solid var(--border-light,#ebe7db); font-size:13px; }
-      .table-erp tbody tr:hover { background:rgba(156,122,60,0.06); }
-      .toolbar-erp { display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between; margin-bottom:14px; }
-      .search-erp { display:flex; align-items:center; gap:8px; background:var(--surface,#fff); border:1px solid var(--border,#e0dccf); border-radius:8px; padding:8px 14px; min-width:240px; }
-      .search-erp input { border:none; outline:none; background:transparent; font-family:inherit; font-size:13px; width:100%; }
-      .btn-erp { display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border-radius:8px; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; border:1px solid transparent; }
-      .btn-erp-primary { background:var(--accent,#9c7a3c); color:#fff; }
-      .btn-erp-outline { background:var(--surface,#fff); border-color:var(--border,#e0dccf); color:var(--text-secondary,#5c5648); }
-      .empty-erp { text-align:center; padding:48px 20px; color:var(--text-tertiary,#928c79); }
-      .empty-erp i { font-size:40px; display:block; margin-bottom:12px; opacity:0.35; }
-    </style>
 </head>
 <body>
-<script>(function(){try{if(localStorage.getItem('darkMode')==='true'){document.body.classList.add('dark-mode');}}catch(e){}})();</script>
+<script>(function(){try{if(localStorage.getItem('darkMode')==='true')document.body.classList.add('dark-mode');}catch(e){}})();</script>
     <aside class="sidebar" id="sidebar"></aside>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <main class="main-content" id="mainContent">
@@ -44,37 +23,47 @@
                 <div class="navbar-logo-container">
                     <span class="navbar-logo-text" id="navbarBrandText">QuickData <span>ProSoft</span></span>
                 </div>
-                <h4 class="page-title" id="pageTitleText">العملاء<small>إدارة العملاء والأرصدة المدينة</small></h4>
+                <h4 class="page-title" id="pageTitleText">المخازن<small>مواقع التخزين</small></h4>
             </div>
             <div class="navbar-right">
-                <button class="nav-btn" id="darkModeToggle" type="button"><i class="bi bi-moon-fill"></i></button>
-                <button class="nav-btn" id="refreshBtn" type="button"><i class="bi bi-arrow-clockwise"></i></button>
-                <button class="nav-btn" id="notifBtn" type="button"><i class="bi bi-bell-fill"></i></button>
+                <button class="nav-btn" id="darkModeToggle" type="button" title="الوضع الليلي"><i class="bi bi-moon-fill"></i></button>
+                <button class="nav-btn" id="refreshBtn" type="button" title="تحديث"><i class="bi bi-arrow-clockwise"></i></button>
+                <button class="nav-btn" id="notifBtn" type="button" title="الإشعارات"><i class="bi bi-bell-fill"></i></button>
                 <div class="user-profile">
                     <div class="user-info">
-                        <span class="user-name" id="userName">مدير النظام</span>
+                        <span class="user-name">مدير النظام</span>
                         <span class="user-role" id="userRole">QuickData ProSoft</span>
                     </div>
-                    <div class="user-avatar" id="userAvatar">م</div>
+                    <div class="user-avatar">م</div>
                 </div>
             </div>
         </nav>
+
         <div class="dashboard-content">
 
             <div class="page-header">
-                <div class="ph-left"><h2>المخازن</h2><p>مواقع التخزين</p></div>
-                <div class="ph-right"><strong>اليوم</strong><span id="headerDate">—</span></div>
+                <div class="ph-left">
+                    <h2>المخازن</h2>
+                    <p>مواقع التخزين</p>
+                </div>
+                <div class="ph-right">
+                    <strong>اليوم</strong>
+                    <span id="headerDate">—</span>
+                </div>
             </div>
             <div class="stats-grid" id="statsRow"></div>
-            <div class="card-panel" style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;">
+            <div class="card-panel">
                 <div class="toolbar-erp">
                     <div class="search-erp"><i class="bi bi-search"></i><input type="text" id="searchInput" placeholder="بحث..." /></div>
-                    <button class="btn-erp btn-erp-primary" type="button" onclick="showToast('قريباً','info')"><i class="bi bi-plus-lg"></i> إضافة</button>
+                    <button type="button" class="btn-erp btn-erp-primary" onclick="showToast('قريباً','info')"><i class="bi bi-plus-lg"></i> إضافة</button>
                 </div>
                 <div class="table-responsive">
-                    <table class="table-erp"><thead><tr><th>الاسم</th><th>الموقع</th><th>الحالة</th></tr></thead><tbody id="tbody"></tbody></table>
+                    <table class="table-erp">
+                        <thead><tr><th>الاسم</th><th>الموقع</th><th>الحالة</th></tr></thead>
+                        <tbody id="tbody"></tbody>
+                    </table>
                 </div>
-                <div style="padding:12px 4px;font-size:12.5px;color:var(--text-secondary);" id="pageInfo"></div>
+                <div id="pageInfo" style="padding-top:10px;font-size:12px;color:var(--text-secondary);"></div>
             </div>
 
         </div>
@@ -92,65 +81,30 @@
             </div>
         </footer>
     </main>
+
     <script src="mock-data.js"></script>
     <script src="layout-erp.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            initERPPage({ title: 'المخازن', subtitle: 'مواقع التخزين', activeId: 'warehouses' });
-            
-            function render() {
-                var q = (document.getElementById('searchInput').value || '').toLowerCase();
-                var list = (MockData.warehouses).filter(function(item) {
-                    return !q || JSON.stringify(item).toLowerCase().indexOf(q) >= 0;
-                });
-                var tbody = document.getElementById('tbody');
-                if (!list.length) tbody.innerHTML = '<tr><td colspan="3"><div class="empty-erp"><i class="bi bi-inbox"></i>لا توجد بيانات</div></td></tr>';
-                else tbody.innerHTML = list.map(function(item) { return '<tr><td style="font-weight:600">'+item.name+'</td><td>'+item.location+'</td><td>'+statusBadge(item.status)+'</td></tr>'; }).join('');
-                document.getElementById('pageInfo').textContent = 'عرض ' + list.length + ' سجل';
-                
+    document.addEventListener('DOMContentLoaded', function () {
+        initERPPage({ title: 'المخازن', subtitle: 'مواقع التخزين', activeId: 'warehouses' });
+        
+        function render() {
+            var q = (document.getElementById('searchInput').value || '').toLowerCase();
+            var list = (MockData.warehouses).filter(function (item) {
+                return !q || JSON.stringify(item).toLowerCase().indexOf(q) >= 0;
+            });
+            var tb = document.getElementById('tbody');
+            if (!list.length) {
+                tb.innerHTML = '<tr><td colspan="3"><div class="empty-erp"><i class="bi bi-inbox"></i>لا توجد بيانات</div></td></tr>';
+            } else {
+                tb.innerHTML = list.map(function (item) { return '<tr><td style="font-weight:600">'+item.name+'</td><td>'+item.location+'</td><td>'+statusBadge(item.status)+'</td></tr>'; }).join('');
             }
-            document.getElementById('searchInput').addEventListener('input', render);
-            render();
+            document.getElementById('pageInfo').textContent = 'عرض ' + list.length + ' سجل';
+        }
+        document.getElementById('searchInput').addEventListener('input', render);
+        render();
 
-            
-            var list = MockData.customers.slice();
-            function render() {
-                var q = (document.getElementById('searchInput').value || '').toLowerCase();
-                var st = document.getElementById('statusFilter').value;
-                var rows = list.filter(function(c) {
-                    if (st && c.status !== st) return false;
-                    if (q && (c.code + c.name + c.phone + (c.city||'')).toLowerCase().indexOf(q) < 0) return false;
-                    return true;
-                });
-                var tbody = document.getElementById('tbody');
-                if (!rows.length) {
-                    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-erp"><i class="bi bi-inbox"></i>لا توجد بيانات</div></td></tr>';
-                } else {
-                    tbody.innerHTML = rows.map(function(c) {
-                        return '<tr>' +
-                            '<td style="font-weight:600;color:var(--accent)">' + c.code + '</td>' +
-                            '<td style="font-weight:600">' + c.name + '</td>' +
-                            '<td>' + c.phone + '</td>' +
-                            '<td>' + (c.city || '—') + '</td>' +
-                            '<td style="font-weight:700;color:' + (c.balance > 0 ? 'var(--danger)' : 'var(--success)') + '">' + MockData.formatCurrency(c.balance) + '</td>' +
-                            '<td>' + statusBadge(c.status) + '</td>' +
-                            '<td><a href="customer-statement.html?id=' + c.id + '" class="btn-erp btn-erp-outline" style="padding:4px 10px;font-size:12px;">كشف حساب</a></td>' +
-                            '</tr>';
-                    }).join('');
-                }
-                document.getElementById('pageInfo').textContent = 'عرض ' + rows.length + ' من ' + list.length + ' عميل';
-                var active = list.filter(function(c){return c.status==='active';}).length;
-                var sum = list.reduce(function(s,c){return s+c.balance;},0);
-                document.getElementById('statsRow').innerHTML =
-                    '<div class="stat-card"><div class="stat-label">إجمالي العملاء</div><div class="stat-value">' + list.length + '</div></div>' +
-                    '<div class="stat-card"><div class="stat-label">نشط</div><div class="stat-value">' + active + '</div></div>' +
-                    '<div class="stat-card"><div class="stat-label">إجمالي المدين</div><div class="stat-value" style="font-size:16px">' + MockData.formatCurrency(sum) + '</div></div>';
-            }
-            document.getElementById('searchInput').addEventListener('input', render);
-            document.getElementById('statusFilter').addEventListener('change', render);
-            render();
-
-        });
+    });
     </script>
 </body>
 </html>

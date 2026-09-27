@@ -5,36 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3EQ%3C/text%3E%3C/svg%3E" />
     <title>فواتير المبيعات - QuickData ProSoft</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     <link rel="stylesheet" href="theme.css" />
     <link rel="stylesheet" href="page-layout.css" />
-    <style>
-      /* badges for ERP statuses */
-      .badge { display:inline-block; padding:3px 10px; border-radius:9999px; font-size:11px; font-weight:600; }
-      .badge-success { background:#e6f3ec; color:#1c7a4e; }
-      .badge-danger { background:#f7e8e6; color:#ad3f39; }
-      .badge-warning { background:#f6eee1; color:#ad7f2e; }
-      .badge-info { background:#e6edf4; color:#2d6088; }
-      .badge-secondary { background:#f0eee8; color:#5c5648; }
-      .table-erp { width:100%; border-collapse:collapse; }
-      .table-erp thead th { background:var(--surface-alt,#faf8f3); padding:10px 14px; text-align:right; font-size:11.5px; font-weight:700; color:var(--text-secondary,#5c5648); border-bottom:1px solid var(--border,#e0dccf); white-space:nowrap; }
-      .table-erp tbody td { padding:11px 14px; border-bottom:1px solid var(--border-light,#ebe7db); font-size:13px; }
-      .table-erp tbody tr:hover { background:rgba(156,122,60,0.06); }
-      .toolbar-erp { display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between; margin-bottom:14px; }
-      .search-erp { display:flex; align-items:center; gap:8px; background:var(--surface,#fff); border:1px solid var(--border,#e0dccf); border-radius:8px; padding:8px 14px; min-width:240px; }
-      .search-erp input { border:none; outline:none; background:transparent; font-family:inherit; font-size:13px; width:100%; }
-      .btn-erp { display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border-radius:8px; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; border:1px solid transparent; }
-      .btn-erp-primary { background:var(--accent,#9c7a3c); color:#fff; }
-      .btn-erp-outline { background:var(--surface,#fff); border-color:var(--border,#e0dccf); color:var(--text-secondary,#5c5648); }
-      .empty-erp { text-align:center; padding:48px 20px; color:var(--text-tertiary,#928c79); }
-      .empty-erp i { font-size:40px; display:block; margin-bottom:12px; opacity:0.35; }
-    </style>
 </head>
 <body>
-<script>(function(){try{if(localStorage.getItem('darkMode')==='true'){document.body.classList.add('dark-mode');}}catch(e){}})();</script>
+<script>(function(){try{if(localStorage.getItem('darkMode')==='true')document.body.classList.add('dark-mode');}catch(e){}})();</script>
     <aside class="sidebar" id="sidebar"></aside>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <main class="main-content" id="mainContent">
@@ -47,43 +26,48 @@
                 <h4 class="page-title" id="pageTitleText">فواتير المبيعات<small>إصدار ومتابعة فواتير البيع</small></h4>
             </div>
             <div class="navbar-right">
-                <button class="nav-btn" id="darkModeToggle" type="button"><i class="bi bi-moon-fill"></i></button>
-                <button class="nav-btn" id="refreshBtn" type="button"><i class="bi bi-arrow-clockwise"></i></button>
-                <button class="nav-btn" id="notifBtn" type="button"><i class="bi bi-bell-fill"></i></button>
+                <button class="nav-btn" id="darkModeToggle" type="button" title="الوضع الليلي"><i class="bi bi-moon-fill"></i></button>
+                <button class="nav-btn" id="refreshBtn" type="button" title="تحديث"><i class="bi bi-arrow-clockwise"></i></button>
+                <button class="nav-btn" id="notifBtn" type="button" title="الإشعارات"><i class="bi bi-bell-fill"></i></button>
                 <div class="user-profile">
                     <div class="user-info">
-                        <span class="user-name" id="userName">مدير النظام</span>
+                        <span class="user-name">مدير النظام</span>
                         <span class="user-role" id="userRole">QuickData ProSoft</span>
                     </div>
-                    <div class="user-avatar" id="userAvatar">م</div>
+                    <div class="user-avatar">م</div>
                 </div>
             </div>
         </nav>
+
         <div class="dashboard-content">
 
             <div class="page-header">
                 <div class="ph-left">
                     <h2>فواتير المبيعات</h2>
-                    <p>إصدار ومتابعة فواتير البيع والتحصيل</p>
+                    <p>إصدار ومتابعة فواتير البيع</p>
                 </div>
-                <div class="ph-right"><strong>اليوم</strong><span id="headerDate">—</span></div>
+                <div class="ph-right">
+                    <strong>اليوم</strong>
+                    <span id="headerDate">—</span>
+                </div>
             </div>
             <div class="stats-grid" id="statsRow"></div>
-            <div class="card-panel" style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;">
+            <div class="card-panel">
                 <div class="toolbar-erp">
-                    <div class="search-erp"><i class="bi bi-search"></i><input type="text" id="searchInput" placeholder="بحث برقم الفاتورة..." /></div>
-                    <button class="btn-erp btn-erp-primary" type="button" onclick="showToast('نموذج الفاتورة جاهز للمرحلة القادمة','info')"><i class="bi bi-plus-lg"></i> فاتورة جديدة</button>
+                    <div class="search-erp"><i class="bi bi-search"></i><input type="text" id="searchInput" placeholder="بحث..." /></div>
+                    <button type="button" class="btn-erp btn-erp-primary" onclick="showToast('قريباً','info')"><i class="bi bi-plus-lg"></i> إضافة</button>
                 </div>
                 <div class="table-responsive">
                     <table class="table-erp">
-                        <thead><tr><th>الرقم</th><th>التاريخ</th><th>الاستحقاق</th><th>الإجمالي</th><th>المدفوع</th><th>المتبقي</th><th>الحالة</th></tr></thead>
+                        <thead><tr><th>الرقم</th><th>التاريخ</th><th>الإجمالي</th><th>المدفوع</th><th>المتبقي</th><th>الحالة</th></tr></thead>
                         <tbody id="tbody"></tbody>
                     </table>
                 </div>
-                <div style="padding:12px 4px;font-size:12.5px;color:var(--text-secondary);" id="pageInfo"></div>
+                <div id="pageInfo" style="padding-top:10px;font-size:12px;color:var(--text-secondary);"></div>
             </div>
 
         </div>
+
         <footer class="footer-custom">
             <div class="footer-content">
                 <div class="footer-right">
@@ -97,33 +81,30 @@
             </div>
         </footer>
     </main>
+
     <script src="mock-data.js"></script>
     <script src="layout-erp.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            initERPPage({ title: 'فواتير المبيعات', subtitle: 'إصدار ومتابعة فواتير البيع', activeId: 'sales-invoices' });
-            
-            var list = MockData.salesInvoices.slice();
-            function render() {
-                var q = (document.getElementById('searchInput').value || '').toLowerCase();
-                var rows = list.filter(function(i){ return !q || i.number.toLowerCase().indexOf(q) >= 0; });
-                document.getElementById('tbody').innerHTML = rows.length ? rows.map(function(i){
-                    var rem = i.total - i.paid;
-                    return '<tr><td style="font-weight:600;color:var(--accent)">'+i.number+'</td><td>'+MockData.formatDate(i.date)+'</td><td>'+MockData.formatDate(i.dueDate)+'</td><td style="font-weight:700">'+MockData.formatCurrency(i.total)+'</td><td>'+MockData.formatCurrency(i.paid)+'</td><td style="font-weight:600;color:'+(rem>0?'var(--danger)':'var(--success)')+'">'+MockData.formatCurrency(rem)+'</td><td>'+statusBadge(i.status)+'</td></tr>';
-                }).join('') : '<tr><td colspan="7"><div class="empty-erp"><i class="bi bi-inbox"></i>لا توجد فواتير</div></td></tr>';
-                document.getElementById('pageInfo').textContent = 'عرض ' + rows.length + ' فاتورة';
-                var total = list.reduce(function(s,i){return s+i.total;},0);
-                var paid = list.reduce(function(s,i){return s+i.paid;},0);
-                document.getElementById('statsRow').innerHTML =
-                    '<div class="stat-card"><div class="stat-label">عدد الفواتير</div><div class="stat-value">'+list.length+'</div></div>' +
-                    '<div class="stat-card"><div class="stat-label">إجمالي المبيعات</div><div class="stat-value" style="font-size:15px">'+MockData.formatCurrency(total)+'</div></div>' +
-                    '<div class="stat-card"><div class="stat-label">المحصّل</div><div class="stat-value" style="font-size:15px">'+MockData.formatCurrency(paid)+'</div></div>' +
-                    '<div class="stat-card"><div class="stat-label">المتبقي</div><div class="stat-value" style="font-size:15px">'+MockData.formatCurrency(total-paid)+'</div></div>';
+    document.addEventListener('DOMContentLoaded', function () {
+        initERPPage({ title: 'فواتير المبيعات', subtitle: 'إصدار ومتابعة فواتير البيع', activeId: 'sales-invoices' });
+        
+        function render() {
+            var q = (document.getElementById('searchInput').value || '').toLowerCase();
+            var list = (MockData.salesInvoices).filter(function (item) {
+                return !q || JSON.stringify(item).toLowerCase().indexOf(q) >= 0;
+            });
+            var tb = document.getElementById('tbody');
+            if (!list.length) {
+                tb.innerHTML = '<tr><td colspan="6"><div class="empty-erp"><i class="bi bi-inbox"></i>لا توجد بيانات</div></td></tr>';
+            } else {
+                tb.innerHTML = list.map(function (item) { return '<tr><td style="font-weight:600;color:var(--accent)">'+item.number+'</td><td>'+MockData.formatDate(item.date)+'</td><td style="font-weight:700">'+MockData.formatCurrency(item.total)+'</td><td>'+MockData.formatCurrency(item.paid)+'</td><td style="font-weight:600">'+MockData.formatCurrency(item.total-item.paid)+'</td><td>'+statusBadge(item.status)+'</td></tr>'; }).join('');
             }
-            document.getElementById('searchInput').addEventListener('input', render);
-            render();
+            document.getElementById('pageInfo').textContent = 'عرض ' + list.length + ' سجل';
+        }
+        document.getElementById('searchInput').addEventListener('input', render);
+        render();
 
-        });
+    });
     </script>
 </body>
 </html>

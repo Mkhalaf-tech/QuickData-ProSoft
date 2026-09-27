@@ -1,4 +1,4 @@
-/* QuickData ProSoft — تخطيط الصفحات (من تصميم النظام الأصلي) */
+/* من تصميم النظام الأصلي + تحسينات التذييل والخطوط */
 
 
         /* ================================================================
@@ -1449,3 +1449,84 @@
         .status-info { background: var(--info-bg); color: var(--info); }
 
     
+
+/* ===== تثبيت التذييل أسفل الشاشة بدون تمرير إجباري ===== */
+html, body {
+    height: 100%;
+    margin: 0;
+}
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font-size: 13.5px !important;
+}
+body > .sidebar { flex-shrink: 0; }
+body > .main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+.dashboard-content {
+    flex: 1 0 auto;
+}
+.footer-custom {
+    flex-shrink: 0;
+    margin-top: auto;
+}
+/* توحيد أحجام الخطوط كما في الأصل */
+.page-title { font-size: 15px !important; }
+.page-title small { font-size: 11px !important; }
+.page-header h2 { font-size: 17px !important; }
+.page-header p { font-size: 12.5px !important; }
+.stat-value { font-size: 21px !important; }
+.stat-label { font-size: 11px !important; }
+.nav-list a { font-size: 12.5px !important; }
+.navbar-logo-text { font-size: 14px !important; }
+.table-erp { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.table-erp thead th {
+    background: var(--surface-alt, #faf8f3);
+    padding: 9px 12px;
+    text-align: right;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-secondary, #5c5648);
+    border-bottom: 1px solid var(--border, #e0dccf);
+    white-space: nowrap;
+}
+.table-erp tbody td {
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--border-light, #ebe7db);
+    font-size: 12.5px;
+}
+.table-erp tbody tr:hover { background: rgba(156,122,60,0.05); }
+.toolbar-erp { display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.search-erp {
+    display:flex; align-items:center; gap:8px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 7px 12px; min-width: 220px;
+}
+.search-erp input { border:none; outline:none; background:transparent; font-family:inherit; font-size:12.5px; width:100%; color:var(--text); }
+.btn-erp {
+    display:inline-flex; align-items:center; gap:6px; padding:7px 14px;
+    border-radius: 8px; font-family:inherit; font-size:12.5px; font-weight:600;
+    cursor:pointer; border:1px solid transparent;
+}
+.btn-erp-primary { background: var(--accent); color:#fff; }
+.btn-erp-outline { background: var(--surface); border-color: var(--border); color: var(--text-secondary); }
+.badge { display:inline-block; padding:2px 9px; border-radius:9999px; font-size:10.5px; font-weight:600; }
+.badge-success { background:#e6f3ec; color:#1c7a4e; }
+.badge-danger { background:#f7e8e6; color:#ad3f39; }
+.badge-warning { background:#f6eee1; color:#ad7f2e; }
+.badge-info { background:#e6edf4; color:#2d6088; }
+.badge-secondary { background:#f0eee8; color:#5c5648; }
+.empty-erp { text-align:center; padding:36px 16px; color:var(--text-tertiary); font-size:12.5px; }
+.empty-erp i { font-size:28px; display:block; margin-bottom:8px; opacity:0.35; }
+.card-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    box-shadow: var(--shadow-sm);
+}
