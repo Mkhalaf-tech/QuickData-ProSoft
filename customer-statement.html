@@ -167,6 +167,9 @@
         loadParties();
         if(params.get('id')){ document.getElementById('partyId').value = params.get('id'); renderStmt(); }
 
+        // تعريض الدوال للـ onclick العام
+        window.exportStmt = exportStmt;
+
     });
     </script>
 </body>

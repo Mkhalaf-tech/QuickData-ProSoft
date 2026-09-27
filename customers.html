@@ -210,6 +210,13 @@
         document.getElementById('statusFilter').addEventListener('change', render);
         render();
 
+        // تعريض الدوال للـ onclick العام
+        window.closeForm = closeForm;
+        window.delCustomer = delCustomer;
+        window.exportCustomers = exportCustomers;
+        window.openForm = openForm;
+        window.saveCustomer = saveCustomer;
+
     });
     </script>
 </body>

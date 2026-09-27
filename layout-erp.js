@@ -113,21 +113,27 @@
     if (!el) { console.error('Modal not found:', id); return; }
     if (el.parentElement !== document.body) document.body.appendChild(el);
     el.classList.add('erp-modal-overlay', 'is-open');
-    el.style.display = 'flex';
-    el.style.zIndex = '10000';
+    el.style.setProperty('display', 'flex', 'important');
+    el.style.setProperty('z-index', '10000', 'important');
+    el.style.setProperty('align-items', 'center', 'important');
+    el.style.setProperty('justify-content', 'center', 'important');
+    el.style.setProperty('opacity', '1', 'important');
+    el.style.setProperty('visibility', 'visible', 'important');
+    el.style.setProperty('pointer-events', 'auto', 'important');
     document.body.style.overflow = 'hidden';
   };
   window.closeErpModal = function (id) {
     var el = document.getElementById(id);
     if (!el) return;
     el.classList.remove('is-open');
-    el.style.display = 'none';
+    el.style.setProperty('display', 'none', 'important');
     document.body.style.overflow = '';
   };
+  // إغلاق بالضغط على الخلفية فقط (وليس على محتوى النافذة)
   document.addEventListener('click', function (e) {
     if (e.target && e.target.classList && e.target.classList.contains('erp-modal-overlay') && e.target.classList.contains('is-open')) {
       e.target.classList.remove('is-open');
-      e.target.style.display = 'none';
+      e.target.style.setProperty('display', 'none', 'important');
       document.body.style.overflow = '';
     }
   });

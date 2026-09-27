@@ -262,6 +262,14 @@
         var sf=document.getElementById('statusFilter'); if(sf) sf.addEventListener('change', render);
         render();
 
+        // تعريض الدوال للـ onclick العام
+        window.addLine = addLine;
+        window.closeInv = closeInv;
+        window.exportInvoices = exportInvoices;
+        window.markPaid = markPaid;
+        window.openInv = openInv;
+        window.saveInv = saveInv;
+
     });
     </script>
 </body>
