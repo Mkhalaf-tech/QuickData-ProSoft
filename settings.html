@@ -40,68 +40,98 @@
         </nav>
 
         <div class="dashboard-content">
-
             <div class="page-header">
-                <div class="ph-left">
-                    <h2>إعدادات النظام</h2>
-                    <p>بيانات الشركة والتفضيلات العامة</p>
-                </div>
-                <div class="ph-right">
-                    <strong>اليوم</strong>
-                    <span id="headerDate">—</span>
-                </div>
+                <div class="ph-left"><h2>الإعدادات</h2><p>إدارة إعدادات الشركة والنظام والنسخ الاحتياطي</p></div>
+                <div class="ph-right"><strong>اليوم</strong><span id="headerDate">—</span></div>
             </div>
 
             <div class="row g-3">
                 <div class="col-lg-7">
                     <div class="panel">
-                        <div class="panel-header"><h5 class="panel-title"><i class="bi bi-building"></i> بيانات الشركة</h5></div>
+                        <div class="panel-header"><h5 class="panel-title"><i class="bi bi-building"></i> بيانات الشركة والنظام</h5></div>
                         <div style="padding:16px">
                             <div class="row g-2">
                                 <div class="col-12"><label class="form-label" style="font-size:12px;font-weight:600">اسم النظام</label>
-                                    <input class="form-control form-control-sm" value="QuickData ProSoft" id="setName"></div>
+                                    <input class="form-control form-control-sm" id="setName"></div>
                                 <div class="col-12"><label class="form-label" style="font-size:12px;font-weight:600">الوصف</label>
-                                    <input class="form-control form-control-sm" value="حلول إدارة الأعمال الاحترافية" id="setSub"></div>
+                                    <input class="form-control form-control-sm" id="setSub"></div>
                                 <div class="col-md-6"><label class="form-label" style="font-size:12px;font-weight:600">اسم الشركة</label>
-                                    <input class="form-control form-control-sm" value="شركة التجارة المتكاملة" id="setCompany"></div>
+                                    <input class="form-control form-control-sm" id="setCompany"></div>
                                 <div class="col-md-6"><label class="form-label" style="font-size:12px;font-weight:600">الرقم الضريبي</label>
-                                    <input class="form-control form-control-sm" value="123-456-789" id="setTaxNo"></div>
+                                    <input class="form-control form-control-sm" id="setTaxNo"></div>
                                 <div class="col-md-6"><label class="form-label" style="font-size:12px;font-weight:600">العملة</label>
-                                    <input class="form-control form-control-sm" value="ج.م — جنيه مصري" id="setCur"></div>
+                                    <input class="form-control form-control-sm" id="setCur"></div>
                                 <div class="col-md-6"><label class="form-label" style="font-size:12px;font-weight:600">نسبة الضريبة %</label>
-                                    <input class="form-control form-control-sm" type="number" value="14" id="setTax"></div>
+                                    <input class="form-control form-control-sm" type="number" id="setTax" min="0" max="100" step="0.5"></div>
                                 <div class="col-md-6"><label class="form-label" style="font-size:12px;font-weight:600">السنة المالية</label>
-                                    <input class="form-control form-control-sm" value="2024" id="setYear"></div>
+                                    <input class="form-control form-control-sm" id="setYear"></div>
                                 <div class="col-md-6"><label class="form-label" style="font-size:12px;font-weight:600">المدينة</label>
-                                    <input class="form-control form-control-sm" value="القاهرة" id="setCity"></div>
+                                    <input class="form-control form-control-sm" id="setCity"></div>
+                                <div class="col-md-6"><label class="form-label" style="font-size:12px;font-weight:600">الهاتف</label>
+                                    <input class="form-control form-control-sm" id="setPhone"></div>
+                                <div class="col-md-6"><label class="form-label" style="font-size:12px;font-weight:600">البريد</label>
+                                    <input class="form-control form-control-sm" id="setEmail"></div>
                                 <div class="col-12" style="margin-top:8px">
-                                    <button type="button" class="btn-erp btn-erp-primary" onclick="showToast('تم حفظ الإعدادات (تجريبي)','success')"><i class="bi bi-check-lg"></i> حفظ الإعدادات</button>
+                                    <button type="button" class="btn-erp btn-erp-primary" id="btnSaveSettings"><i class="bi bi-check-lg"></i> حفظ الإعدادات</button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-lg-5">
-                    <div class="panel">
-                        <div class="panel-header"><h5 class="panel-title"><i class="bi bi-info-circle"></i> معلومات النظام</h5></div>
-                        <div style="padding:16px;font-size:12.5px;line-height:1.9">
-                            <div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--border);padding:6px 0"><span style="color:var(--text-tertiary)">الإصدار</span><strong>1.0.0</strong></div>
-                            <div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--border);padding:6px 0"><span style="color:var(--text-tertiary)">الواجهة</span><strong>عربي RTL</strong></div>
-                            <div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--border);padding:6px 0"><span style="color:var(--text-tertiary)">البيانات</span><strong>تجريبية (Mock)</strong></div>
-                            <div style="display:flex;justify-content:space-between;padding:6px 0"><span style="color:var(--text-tertiary)">المنتج</span><strong>QuickData ProSoft</strong></div>
+
+                    <div class="panel" style="margin-top:14px">
+                        <div class="panel-header"><h5 class="panel-title"><i class="bi bi-clock-history"></i> سجل النشاط</h5></div>
+                        <div style="padding:12px 16px;max-height:280px;overflow-y:auto" id="activityList">
+                            <div style="text-align:center;color:var(--text-tertiary);padding:20px;font-size:13px">لا يوجد نشاط بعد</div>
                         </div>
                     </div>
+                </div>
+
+                <div class="col-lg-5">
                     <div class="panel">
+                        <div class="panel-header"><h5 class="panel-title"><i class="bi bi-database"></i> البيانات والنسخ الاحتياطي</h5></div>
+                        <div style="padding:16px">
+                            <p style="font-size:12.5px;color:var(--text-secondary);margin-bottom:8px" id="dataStatus">—</p>
+                            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+                                <button type="button" class="btn-erp btn-erp-outline" onclick="MockStore.exportAllJSON()"><i class="bi bi-download"></i> تصدير JSON</button>
+                                <label class="btn-erp btn-erp-outline" style="cursor:pointer;margin:0">
+                                    <i class="bi bi-upload"></i> استيراد JSON
+                                    <input type="file" id="importJson" accept=".json,application/json" style="display:none">
+                                </label>
+                                <button type="button" class="btn-erp btn-erp-outline" style="color:var(--danger);border-color:var(--danger)" onclick="if(confirm('سيتم حذف كل البيانات المحفوظة وإعادة البيانات الافتراضية. هل أنت متأكد؟')){MockStore.resetAll();showToast('تم إعادة التعيين','success');setTimeout(function(){location.reload()},600);}"><i class="bi bi-trash"></i> إعادة تعيين</button>
+                            </div>
+                            <div style="font-size:11.5px;color:var(--text-tertiary);line-height:1.7">
+                                البيانات تُحفظ تلقائياً في متصفحك. صدّر نسخة احتياطية دورياً. الاستيراد يستبدل البيانات الحالية.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel" style="margin-top:14px">
                         <div class="panel-header"><h5 class="panel-title"><i class="bi bi-palette"></i> المظهر</h5></div>
                         <div style="padding:16px">
-                            <p style="font-size:12.5px;color:var(--text-secondary);margin-bottom:10px">يمكنك تبديل الوضع الليلي من أيقونة القمر في الشريط العلوي.</p>
+                            <p style="font-size:12.5px;color:var(--text-secondary);margin-bottom:10px">يمكنك تبديل الوضع الليلي من أيقونة القمر أو بـ Ctrl+D.</p>
                             <button type="button" class="btn-erp btn-erp-outline" onclick="document.getElementById('darkModeToggle').click()"><i class="bi bi-moon-fill"></i> تبديل الوضع الليلي</button>
+                        </div>
+                    </div>
+
+                    <div class="panel" style="margin-top:14px">
+                        <div class="panel-header"><h5 class="panel-title"><i class="bi bi-info-circle"></i> حول النظام</h5></div>
+                        <div style="padding:16px;font-size:13px;line-height:1.9">
+                            <div><strong>QuickData ProSoft</strong></div>
+                            <div style="color:var(--text-secondary)">حلول إدارة الأعمال الاحترافية</div>
+                            <div style="margin-top:8px"><span class="badge badge-success">الإصدار 2.0.0</span></div>
+                            <div style="margin-top:10px;font-size:12px;color:var(--text-tertiary)">
+                                • لوحة تحكم برسوم بيانية حقيقية<br>
+                                • إشعارات حية وسجل نشاط<br>
+                                • إعدادات شركة قابلة للحفظ<br>
+                                • بحث سريع محسّن (Ctrl+K)<br>
+                                • تصميم حديث ووضع ليلي محسّن
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
+
         <footer class="footer-custom">
             <div class="footer-content">
                 <div class="footer-right">
@@ -109,7 +139,7 @@
                     <span class="footer-divider">|</span>
                     <span class="footer-copy">© 2026 جميع الحقوق محفوظة — حلول إدارة الأعمال الاحترافية</span>
                 </div>
-                <div class="footer-left"><span class="footer-version">الإصدار 1.0.0</span></div>
+                <div class="footer-left"><span class="footer-version">الإصدار 2.0.0</span></div>
             </div>
         </footer>
     </main>
@@ -119,22 +149,77 @@
     <script>
     document.addEventListener('DOMContentLoaded', function () {
         initERPPage({ title: 'الإعدادات', subtitle: 'إعدادات النظام والشركة', activeId: 'settings' });
-        var st=document.getElementById('dataStatus');
-        if(st) st.textContent = MockStore.hasCustomData() ? 'يوجد بيانات محفوظة محلياً' : 'البيانات الافتراضية (بدون تعديلات محفوظة)';
+
+        // Load settings
+        var s = MockStore.getSettings();
+        document.getElementById('setName').value = s.systemName || '';
+        document.getElementById('setSub').value = s.systemSub || '';
+        document.getElementById('setCompany').value = s.companyName || '';
+        document.getElementById('setTaxNo').value = s.taxNumber || '';
+        document.getElementById('setCur').value = (s.currency || 'ج.م') + (s.currencyLabel ? ' — ' + s.currencyLabel : '');
+        document.getElementById('setTax').value = s.taxRate != null ? s.taxRate : 14;
+        document.getElementById('setYear').value = s.fiscalYear || new Date().getFullYear();
+        document.getElementById('setCity').value = s.city || '';
+        document.getElementById('setPhone').value = s.phone || '';
+        document.getElementById('setEmail').value = s.email || '';
+
+        document.getElementById('btnSaveSettings').onclick = function () {
+            var curRaw = document.getElementById('setCur').value || 'ج.م';
+            var parts = curRaw.split('—').map(function(x){return x.trim();});
+            MockStore.saveSettings({
+                systemName: document.getElementById('setName').value,
+                systemSub: document.getElementById('setSub').value,
+                companyName: document.getElementById('setCompany').value,
+                taxNumber: document.getElementById('setTaxNo').value,
+                currency: parts[0] || 'ج.م',
+                currencyLabel: parts[1] || '',
+                taxRate: parseFloat(document.getElementById('setTax').value) || 14,
+                fiscalYear: document.getElementById('setYear').value,
+                city: document.getElementById('setCity').value,
+                phone: document.getElementById('setPhone').value,
+                email: document.getElementById('setEmail').value
+            });
+            MockStore.logActivity('حفظ الإعدادات', 'تم تحديث بيانات الشركة والنظام', 'settings');
+            showToast('تم حفظ الإعدادات بنجاح', 'success');
+            renderActivity();
+        };
+
+        var st = document.getElementById('dataStatus');
+        if (st) st.textContent = MockStore.hasCustomData() ? 'يوجد بيانات محفوظة محلياً' : 'البيانات الافتراضية (بدون تعديلات محفوظة)';
+
         var imp = document.getElementById('importJson');
-        if(imp) imp.addEventListener('change', function(e){
-          var f = e.target.files && e.target.files[0];
-          if(!f) return;
-          var reader = new FileReader();
-          reader.onload = function(){
-            try {
-              var obj = JSON.parse(reader.result);
-              if(MockStore.importAllJSON(obj)){ showToast('تمت الاستعادة بنجاح','success'); setTimeout(function(){location.reload()},800); }
-              else showToast('ملف غير صالح','error');
-            } catch(err){ showToast('تعذر قراءة الملف','error'); }
-          };
-          reader.readAsText(f);
+        if (imp) imp.addEventListener('change', function (e) {
+            var f = e.target.files && e.target.files[0];
+            if (!f) return;
+            var reader = new FileReader();
+            reader.onload = function () {
+                try {
+                    var obj = JSON.parse(reader.result);
+                    if (MockStore.importAllJSON(obj)) {
+                        showToast('تمت الاستعادة بنجاح', 'success');
+                        setTimeout(function () { location.reload(); }, 800);
+                    } else showToast('ملف غير صالح', 'error');
+                } catch (err) { showToast('تعذر قراءة الملف', 'error'); }
+            };
+            reader.readAsText(f);
         });
+
+        function renderActivity() {
+            var log = MockStore.get('activityLog') || [];
+            var box = document.getElementById('activityList');
+            if (!log.length) {
+                box.innerHTML = '<div style="text-align:center;color:var(--text-tertiary);padding:20px;font-size:13px">لا يوجد نشاط بعد</div>';
+                return;
+            }
+            box.innerHTML = log.slice(0, 30).map(function (a) {
+                var t = new Date(a.at);
+                var timeStr = t.toLocaleString('ar-EG', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short', year: 'numeric' });
+                return '<div style="padding:10px 0;border-bottom:1px solid var(--border-light);font-size:12.5px">' +
+                    '<div><strong>' + a.action + '</strong> — ' + (a.details || '') + '</div>' +
+                    '<div style="font-size:11px;color:var(--text-tertiary);margin-top:2px">' + timeStr + (a.user ? ' · ' + a.user : '') + '</div></div>';
+            }).join('');
+        }
+        renderActivity();
     });
     </script>
 </body>

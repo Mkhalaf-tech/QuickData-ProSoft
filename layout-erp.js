@@ -1,10 +1,11 @@
 /**
- * QuickData ProSoft — تخطيط مطابق 1:1 لتصميم النظام الأصلي
+ * QuickData ProSoft v2.0 — تخطيط وواجهة محسّنة بالكامل
  */
 (function () {
   'use strict';
   var SYSTEM_NAME = 'QuickData ProSoft';
   var SYSTEM_SUB = 'حلول إدارة الأعمال الاحترافية';
+  var VERSION = '2.0.0';
 
   var MENU = [
     { title: 'القائمة الرئيسية', items: [
@@ -76,7 +77,10 @@
       h += '</ul>';
     });
     h += '</nav>';
-    h += '<div class="sidebar-footer"><a href="#" class="logout-btn" onclick="logout();return false;"><i class="bi bi-box-arrow-left"></i> تسجيل الخروج</a></div>';
+    h += '<div class="sidebar-footer">';
+    h += '<div class="sidebar-version">v' + VERSION + '</div>';
+    h += '<a href="#" class="logout-btn" onclick="logout();return false;"><i class="bi bi-box-arrow-left"></i> تسجيل الخروج</a>';
+    h += '</div>';
     return h;
   }
 
@@ -103,38 +107,33 @@
     }
   };
 
-  
-
-  /** فتح نافذة بشكل موثوق: ينقلها لـ body ويرفع z-index */
-  window.openErpModal = function(id) {
+  /** فتح نافذة بشكل موثوق */
+  window.openErpModal = function (id) {
     var el = document.getElementById(id);
     if (!el) { console.error('Modal not found:', id); return; }
-    if (el.parentElement !== document.body) {
-      document.body.appendChild(el);
-    }
+    if (el.parentElement !== document.body) document.body.appendChild(el);
     el.classList.add('erp-modal-overlay', 'is-open');
     el.style.display = 'flex';
     el.style.zIndex = '10000';
     document.body.style.overflow = 'hidden';
   };
-  window.closeErpModal = function(id) {
+  window.closeErpModal = function (id) {
     var el = document.getElementById(id);
     if (!el) return;
     el.classList.remove('is-open');
     el.style.display = 'none';
     document.body.style.overflow = '';
   };
-  // إغلاق بالضغط على الخلفية
-  document.addEventListener('click', function(e) {
+  document.addEventListener('click', function (e) {
     if (e.target && e.target.classList && e.target.classList.contains('erp-modal-overlay') && e.target.classList.contains('is-open')) {
       e.target.classList.remove('is-open');
       e.target.style.display = 'none';
       document.body.style.overflow = '';
     }
   });
-  document.addEventListener('keydown', function(e) {
+  document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
-      document.querySelectorAll('.erp-modal-overlay.is-open').forEach(function(m) {
+      document.querySelectorAll('.erp-modal-overlay.is-open').forEach(function (m) {
         m.classList.remove('is-open');
         m.style.display = 'none';
       });
@@ -142,23 +141,25 @@
     }
   });
 
-
   window.showToast = function (message, type) {
     type = type || 'info';
     var c = document.getElementById('toastContainer');
     if (!c) {
       c = document.createElement('div');
       c.id = 'toastContainer';
-      c.style.cssText = 'position:fixed;top:16px;left:16px;z-index:9999;display:flex;flex-direction:column;gap:8px;';
+      c.className = 'toast-container-v2';
       document.body.appendChild(c);
     }
-    var colors = { success: '#1c7a4e', error: '#ad3f39', warning: '#ad7f2e', info: '#2d6088' };
     var icons = { success: 'bi-check-circle-fill', error: 'bi-x-circle-fill', warning: 'bi-exclamation-triangle-fill', info: 'bi-info-circle-fill' };
     var el = document.createElement('div');
-    el.style.cssText = 'display:flex;align-items:center;gap:8px;padding:10px 14px;background:#fff;border-radius:8px;box-shadow:0 8px 24px rgba(14,28,46,.12);border:1px solid #e0dccf;font-size:12.5px;font-weight:600;border-right:3px solid ' + (colors[type] || colors.info) + ';font-family:Cairo,sans-serif';
-    el.innerHTML = '<i class="bi ' + (icons[type] || icons.info) + '" style="color:' + (colors[type] || colors.info) + '"></i><span>' + message + '</span>';
+    el.className = 'toast-item toast-' + type;
+    el.innerHTML = '<i class="bi ' + (icons[type] || icons.info) + '"></i><span>' + message + '</span>';
     c.appendChild(el);
-    setTimeout(function () { el.style.opacity = '0'; setTimeout(function () { el.remove(); }, 250); }, 2800);
+    requestAnimationFrame(function () { el.classList.add('show'); });
+    setTimeout(function () {
+      el.classList.remove('show');
+      setTimeout(function () { el.remove(); }, 300);
+    }, 3200);
   };
 
   window.statusBadge = function (status) {
@@ -169,12 +170,26 @@
     return '<span class="badge badge-secondary">' + (status || '—') + '</span>';
   };
 
+  window.formatMoney = function (n) {
+    if (typeof MockData !== 'undefined' && MockData.formatCurrency) return MockData.formatCurrency(n);
+    return (Number(n) || 0).toLocaleString('ar-EG', { minimumFractionDigits: 2 }) + ' ج.م';
+  };
+
   window.initERPPage = function (opts) {
     opts = opts || {};
     document.title = (opts.title ? opts.title + ' - ' : '') + SYSTEM_NAME;
 
     try {
       if (localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
+    } catch (e) {}
+
+    // Apply company settings if available
+    try {
+      if (typeof MockStore !== 'undefined') {
+        var st = MockStore.getSettings();
+        if (st && st.systemName) SYSTEM_NAME = st.systemName;
+        if (st && st.systemSub) SYSTEM_SUB = st.systemSub;
+      }
     } catch (e) {}
 
     var sidebar = document.getElementById('sidebar');
@@ -194,10 +209,11 @@
     var fb = document.querySelector('.footer-brand');
     if (fb) fb.innerHTML = 'QuickData <span>ProSoft</span>';
 
+    var fv = document.querySelector('.footer-version');
+    if (fv) fv.textContent = 'الإصدار ' + VERSION;
+
     var toggle = document.getElementById('sidebarToggle');
-    if (toggle) {
-      toggle.onclick = function (e) { e.preventDefault(); toggleSidebar(); };
-    }
+    if (toggle) toggle.onclick = function (e) { e.preventDefault(); toggleSidebar(); };
 
     var overlay = document.getElementById('sidebarOverlay');
     if (overlay) {
@@ -226,9 +242,12 @@
     if (hd) {
       hd.textContent = new Date().toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     }
-  };
-})();
 
+    // Post-init enhancements
+    setupNavExtras();
+    ensureFAB();
+    updateNotifBadge();
+  };
 
   // ===== لوحة الأوامر Ctrl+K =====
   var CMD_PAGES = [
@@ -252,6 +271,7 @@
     { label: 'المصروفات', href: 'expenses.html', icon: 'bi-cash', group: 'صفحات' },
     { label: 'الموظفون', href: 'employees.html', icon: 'bi-person-badge-fill', group: 'صفحات' },
     { label: 'الأصول الثابتة', href: 'fixed-assets.html', icon: 'bi-building-gear', group: 'صفحات' },
+    { label: 'منخفض المخزون', href: 'low-stock.html', icon: 'bi-exclamation-triangle-fill', group: 'صفحات' },
     { label: 'الإعدادات', href: 'settings.html', icon: 'bi-gear-fill', group: 'صفحات' }
   ];
 
@@ -259,157 +279,181 @@
     if (document.getElementById('cmdOverlay')) return;
     var o = document.createElement('div');
     o.id = 'cmdOverlay';
-    o.style.cssText = 'display:none;position:fixed;inset:0;z-index:5000;background:rgba(14,28,46,.5);backdrop-filter:blur(3px);align-items:flex-start;justify-content:center;padding-top:12vh';
-    o.innerHTML = '<div style="width:100%;max-width:520px;background:var(--surface,#fff);border-radius:14px;box-shadow:0 20px 50px rgba(14,28,46,.25);border:1px solid var(--border,#e0dccf);overflow:hidden;font-family:Cairo,sans-serif">' +
-      '<div style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border,#e0dccf)">' +
-      '<i class="bi bi-search" style="color:var(--text-tertiary,#928c79)"></i>' +
-      '<input id="cmdInput" type="text" placeholder="ابحث عن صفحة أو إجراء..." style="flex:1;border:none;outline:none;background:transparent;font-family:inherit;font-size:14px;color:var(--text,#181712)" />' +
-      '<kbd style="font-size:11px;padding:2px 6px;border:1px solid var(--border);border-radius:4px;color:var(--text-tertiary)">Esc</kbd></div>' +
-      '<div id="cmdResults" style="max-height:340px;overflow-y:auto;padding:8px"></div>' +
-      '<div style="padding:8px 14px;border-top:1px solid var(--border);font-size:11px;color:var(--text-tertiary)">Ctrl+K للفتح · Enter للانتقال</div></div>';
+    o.className = 'cmd-overlay-v2';
+    o.innerHTML =
+      '<div class="cmd-box-v2">' +
+      '<div class="cmd-input-row">' +
+      '<i class="bi bi-search"></i>' +
+      '<input id="cmdInput" type="text" placeholder="ابحث عن صفحة أو عميل أو منتج أو فاتورة..." autocomplete="off" />' +
+      '<kbd>Esc</kbd></div>' +
+      '<div id="cmdResults" class="cmd-results-v2"></div>' +
+      '<div class="cmd-footer-v2">Ctrl+K للفتح · Enter للانتقال · ↑↓ للتنقل</div></div>';
     document.body.appendChild(o);
-    o.addEventListener('click', function(e){ if(e.target===o) closeCommandPalette(); });
+    o.addEventListener('click', function (e) { if (e.target === o) closeCommandPalette(); });
     document.getElementById('cmdInput').addEventListener('input', renderCmdResults);
-    document.getElementById('cmdInput').addEventListener('keydown', function(e){
-      if(e.key==='Escape') closeCommandPalette();
-      if(e.key==='Enter'){
+    document.getElementById('cmdInput').addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeCommandPalette();
+      if (e.key === 'Enter') {
         var first = document.querySelector('#cmdResults [data-href]');
-        if(first) location.href = first.getAttribute('data-href');
+        if (first) location.href = first.getAttribute('data-href');
       }
     });
   }
 
   function renderCmdResults() {
-    var q = (document.getElementById('cmdInput').value||'').toLowerCase();
-    var list = CMD_PAGES.filter(function(p){ return !q || p.label.toLowerCase().indexOf(q)>=0; });
+    var q = (document.getElementById('cmdInput').value || '').toLowerCase().trim();
+    var list = CMD_PAGES.filter(function (p) { return !q || p.label.toLowerCase().indexOf(q) >= 0; });
     var box = document.getElementById('cmdResults');
     var html = '';
     if (list.length) {
-      html += '<div style="font-size:10px;font-weight:700;color:var(--text-tertiary);padding:6px 10px">صفحات</div>';
-      html += list.map(function(p){
-        return '<a data-href="'+p.href+'" href="'+p.href+'" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;text-decoration:none;color:inherit">' +
-          '<i class="bi '+p.icon+'" style="font-size:16px;color:var(--text-secondary);width:22px;text-align:center"></i>' +
-          '<span style="font-size:13.5px;font-weight:600">'+p.label+'</span></a>';
+      html += '<div class="cmd-group">صفحات</div>';
+      html += list.slice(0, 8).map(function (p) {
+        return '<a data-href="' + p.href + '" href="' + p.href + '" class="cmd-item">' +
+          '<i class="bi ' + p.icon + '"></i><span>' + p.label + '</span></a>';
       }).join('');
     }
-    // Search records if MockStore / MockData available
     if (q && q.length >= 1) {
       try {
-        var custs = (typeof MockStore!=='undefined' ? MockStore.get('customers') : (MockData&&MockData.customers)) || [];
-        var prods = (typeof MockStore!=='undefined' ? MockStore.get('products') : (MockData&&MockData.products)) || [];
-        var invs = (typeof MockStore!=='undefined' ? MockStore.get('salesInvoices') : (MockData&&MockData.salesInvoices)) || [];
-        var mc = custs.filter(function(c){ return (c.name+c.code+(c.phone||'')).toLowerCase().indexOf(q)>=0; }).slice(0,5);
-        var mp = prods.filter(function(p){ return (p.name+p.code).toLowerCase().indexOf(q)>=0; }).slice(0,5);
-        var mi = invs.filter(function(i){ return (i.number||'').toLowerCase().indexOf(q)>=0; }).slice(0,5);
+        var custs = (typeof MockStore !== 'undefined' ? MockStore.get('customers') : (MockData && MockData.customers)) || [];
+        var prods = (typeof MockStore !== 'undefined' ? MockStore.get('products') : (MockData && MockData.products)) || [];
+        var invs = (typeof MockStore !== 'undefined' ? MockStore.get('salesInvoices') : (MockData && MockData.salesInvoices)) || [];
+        var mc = custs.filter(function (c) { return (c.name + c.code + (c.phone || '')).toLowerCase().indexOf(q) >= 0; }).slice(0, 5);
+        var mp = prods.filter(function (p) { return (p.name + p.code).toLowerCase().indexOf(q) >= 0; }).slice(0, 5);
+        var mi = invs.filter(function (i) { return ((i.number || '') + '').toLowerCase().indexOf(q) >= 0; }).slice(0, 5);
         if (mc.length) {
-          html += '<div style="font-size:10px;font-weight:700;color:var(--text-tertiary);padding:6px 10px">عملاء</div>';
-          html += mc.map(function(c){
-            return '<a data-href="customer-statement.html?id='+c.id+'" href="customer-statement.html?id='+c.id+'" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;text-decoration:none;color:inherit">'+
-              '<i class="bi bi-person" style="width:22px;text-align:center;color:var(--accent)"></i><span style="font-size:13px;font-weight:600">'+c.name+'</span><span style="margin-right:auto;font-size:11px;color:var(--text-tertiary)">'+c.code+'</span></a>';
+          html += '<div class="cmd-group">عملاء</div>';
+          html += mc.map(function (c) {
+            return '<a data-href="customer-statement.html?id=' + c.id + '" href="customer-statement.html?id=' + c.id + '" class="cmd-item">' +
+              '<i class="bi bi-person" style="color:var(--accent)"></i><span>' + c.name + '</span><span class="cmd-meta">' + c.code + '</span></a>';
           }).join('');
         }
         if (mp.length) {
-          html += '<div style="font-size:10px;font-weight:700;color:var(--text-tertiary);padding:6px 10px">منتجات</div>';
-          html += mp.map(function(p){
-            return '<a data-href="products.html" href="products.html" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;text-decoration:none;color:inherit">'+
-              '<i class="bi bi-box" style="width:22px;text-align:center;color:var(--accent)"></i><span style="font-size:13px;font-weight:600">'+p.name+'</span><span style="margin-right:auto;font-size:11px;color:var(--text-tertiary)">'+p.code+'</span></a>';
+          html += '<div class="cmd-group">منتجات</div>';
+          html += mp.map(function (p) {
+            return '<a data-href="products.html" href="products.html" class="cmd-item">' +
+              '<i class="bi bi-box" style="color:var(--accent)"></i><span>' + p.name + '</span><span class="cmd-meta">' + p.code + '</span></a>';
           }).join('');
         }
         if (mi.length) {
-          html += '<div style="font-size:10px;font-weight:700;color:var(--text-tertiary);padding:6px 10px">فواتير</div>';
-          html += mi.map(function(i){
-            return '<a data-href="print-invoice.html?id='+i.id+'" href="print-invoice.html?id='+i.id+'" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;text-decoration:none;color:inherit">'+
-              '<i class="bi bi-receipt" style="width:22px;text-align:center;color:var(--accent)"></i><span style="font-size:13px;font-weight:600">'+i.number+'</span></a>';
+          html += '<div class="cmd-group">فواتير</div>';
+          html += mi.map(function (i) {
+            return '<a data-href="print-invoice.html?id=' + i.id + '" href="print-invoice.html?id=' + i.id + '" class="cmd-item">' +
+              '<i class="bi bi-receipt" style="color:var(--accent)"></i><span>' + i.number + '</span></a>';
           }).join('');
         }
       } catch (err) {}
     }
-    if (!html) html = '<div style="text-align:center;padding:28px;color:var(--text-tertiary);font-size:13px">لا نتائج</div>';
+    if (!html) html = '<div class="cmd-empty">لا نتائج مطابقة</div>';
     box.innerHTML = html;
   }
 
-  window.openCommandPalette = function() {
+  window.openCommandPalette = function () {
     ensureCmdPalette();
     document.getElementById('cmdOverlay').style.display = 'flex';
     document.getElementById('cmdInput').value = '';
     renderCmdResults();
-    setTimeout(function(){ document.getElementById('cmdInput').focus(); }, 50);
+    setTimeout(function () { document.getElementById('cmdInput').focus(); }, 40);
   };
-  window.closeCommandPalette = function() {
+  window.closeCommandPalette = function () {
     var o = document.getElementById('cmdOverlay');
-    if(o) o.style.display = 'none';
+    if (o) o.style.display = 'none';
   };
 
-  document.addEventListener('keydown', function(e){
-    if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='k'){ e.preventDefault(); openCommandPalette(); }
-    if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='d'){
+  document.addEventListener('keydown', function (e) {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); openCommandPalette(); }
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'd') {
       e.preventDefault();
       var btn = document.getElementById('darkModeToggle');
-      if(btn) btn.click();
+      if (btn) btn.click();
     }
-    if(e.key==='Escape') closeCommandPalette();
+    if (e.key === 'Escape') closeCommandPalette();
   });
 
-  // ===== إشعارات =====
-  
-
+  // ===== FAB =====
   function ensureFAB() {
     if (document.getElementById('quickFab')) return;
     var wrap = document.createElement('div');
     wrap.id = 'quickFab';
-    wrap.style.cssText = 'position:fixed;bottom:24px;left:24px;z-index:1500;display:flex;flex-direction:column-reverse;align-items:flex-start;gap:8px;font-family:Cairo,sans-serif';
-    wrap.innerHTML = '<button type="button" id="fabMain" style="width:52px;height:52px;border-radius:50%;border:none;background:var(--accent,#dc2626);color:#fff;font-size:22px;box-shadow:0 4px 16px rgba(220,38,38,.4);cursor:pointer;display:flex;align-items:center;justify-content:center"><i class="bi bi-plus-lg"></i></button>'+
-      '<div id="fabMenu" style="display:none;flex-direction:column;gap:6px"></div>';
+    wrap.className = 'quick-fab-v2';
+    wrap.innerHTML =
+      '<button type="button" id="fabMain" class="fab-main" title="إجراءات سريعة"><i class="bi bi-plus-lg"></i></button>' +
+      '<div id="fabMenu" class="fab-menu"></div>';
     document.body.appendChild(wrap);
     var items = [
-      { href:'sales-invoices.html', icon:'bi-receipt', label:'فاتورة مبيعات' },
-      { href:'receipts.html', icon:'bi-cash-coin', label:'سند قبض' },
-      { href:'customers.html', icon:'bi-person-plus', label:'عميل جديد' },
-      { href:'products.html', icon:'bi-box-seam', label:'منتج جديد' },
-      { href:'journal-entries.html', icon:'bi-journal-plus', label:'قيد يومي' }
+      { href: 'sales-invoices.html', icon: 'bi-receipt', label: 'فاتورة مبيعات' },
+      { href: 'receipts.html', icon: 'bi-cash-coin', label: 'سند قبض' },
+      { href: 'customers.html', icon: 'bi-person-plus', label: 'عميل جديد' },
+      { href: 'products.html', icon: 'bi-box-seam', label: 'منتج جديد' },
+      { href: 'journal-entries.html', icon: 'bi-journal-plus', label: 'قيد يومي' },
+      { href: 'expenses.html', icon: 'bi-cash', label: 'مصروف جديد' }
     ];
     var menu = document.getElementById('fabMenu');
-    menu.innerHTML = items.map(function(it){
-      return '<a href="'+it.href+'" style="display:flex;align-items:center;gap:8px;background:var(--surface,#fff);border:1px solid var(--border,#e0dccf);padding:8px 14px;border-radius:9999px;box-shadow:0 4px 12px rgba(14,28,46,.1);text-decoration:none;color:inherit;font-size:12.5px;font-weight:600"><i class="bi '+it.icon+'" style="color:var(--accent)"></i>'+it.label+'</a>';
+    menu.innerHTML = items.map(function (it) {
+      return '<a href="' + it.href + '" class="fab-item"><i class="bi ' + it.icon + '"></i>' + it.label + '</a>';
     }).join('');
     var open = false;
-    document.getElementById('fabMain').onclick = function(){
+    document.getElementById('fabMain').onclick = function () {
       open = !open;
-      menu.style.display = open ? 'flex' : 'none';
-      this.style.transform = open ? 'rotate(45deg)' : '';
-      this.style.background = open ? '#ad3f39' : '';
+      menu.classList.toggle('open', open);
+      this.classList.toggle('open', open);
     };
   }
 
-  function ensureNotif() {
-    if(document.getElementById('notifPanel')) return;
-    var p = document.createElement('div');
-    p.id = 'notifPanel';
-    p.style.cssText = 'display:none;position:fixed;top:64px;left:20px;width:340px;max-height:400px;background:var(--surface,#fff);border-radius:12px;box-shadow:0 12px 40px rgba(14,28,46,.15);border:1px solid var(--border,#e0dccf);z-index:2000;overflow:hidden;flex-direction:column;font-family:Cairo,sans-serif';
+  // ===== إشعارات =====
+  function getNotifItems() {
     var items = [];
     try {
-      if(typeof MockData!=='undefined'){
-        var low = MockData.products.filter(function(x){return x.qty<=x.minQty;}).length;
-        if(low) items.push({t:'مخزون منخفض', d: low+' صنف تحت الحد الأدنى', c:'#ad7f2e'});
-        var unpaid = MockData.salesInvoices.filter(function(x){return x.status==='unpaid'||x.status==='partial';}).length;
-        if(unpaid) items.push({t:'فواتير معلقة', d: unpaid+' فاتورة بانتظار التحصيل', c:'#ad3f39'});
-        items.push({t:'مرحباً بك', d:'نظام QuickData ProSoft جاهز للاستخدام', c:'#2d6088'});
-      }
-    } catch(err){}
-    p.innerHTML = '<div style="display:flex;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--border);font-weight:700;font-size:13px">الإشعارات <button type="button" id="notifClose" style="border:none;background:none;cursor:pointer;font-size:16px">&times;</button></div>' +
-      '<div style="overflow-y:auto;flex:1">' + (items.map(function(n){
-        return '<div style="padding:12px 14px;border-bottom:1px solid var(--border-light,#ebe7db);border-right:3px solid '+n.c+'"><div style="font-weight:700;font-size:13px">'+n.t+'</div><div style="font-size:12px;color:var(--text-secondary);margin-top:2px">'+n.d+'</div></div>';
-      }).join('') || '<div style="padding:24px;text-align:center;color:var(--text-tertiary);font-size:13px">لا إشعارات</div>') + '</div>';
-    document.body.appendChild(p);
-    document.getElementById('notifClose').onclick = function(){ p.style.display='none'; };
+      var prods = (typeof MockStore !== 'undefined' ? MockStore.get('products') : MockData.products) || [];
+      var invs = (typeof MockStore !== 'undefined' ? MockStore.get('salesInvoices') : MockData.salesInvoices) || [];
+      var low = prods.filter(function (x) { return x.qty <= x.minQty; }).length;
+      if (low) items.push({ t: 'مخزون منخفض', d: low + ' صنف تحت الحد الأدنى', c: 'warning', href: 'low-stock.html' });
+      var unpaid = invs.filter(function (x) { return x.status === 'unpaid' || x.status === 'partial' || x.status === 'overdue'; }).length;
+      if (unpaid) items.push({ t: 'فواتير معلقة', d: unpaid + ' فاتورة بانتظار التحصيل', c: 'danger', href: 'sales-invoices.html' });
+      items.push({ t: 'تحديث النظام', d: 'مرحباً بك في QuickData ProSoft v' + VERSION, c: 'info', href: 'settings.html' });
+    } catch (err) {}
+    return items;
   }
 
-  // Hook notif button after init
-  var _origInit = window.initERPPage;
-  window.initERPPage = function(opts) {
-    _origInit(opts);
+  function updateNotifBadge() {
+    var items = getNotifItems();
+    var count = items.filter(function (i) { return i.c === 'warning' || i.c === 'danger'; }).length;
+    var btn = document.getElementById('notifBtn');
+    if (!btn) return;
+    var badge = btn.querySelector('.notif-badge');
+    if (count > 0) {
+      if (!badge) {
+        badge = document.createElement('span');
+        badge.className = 'notif-badge';
+        btn.style.position = 'relative';
+        btn.appendChild(badge);
+      }
+      badge.textContent = count > 9 ? '9+' : String(count);
+      badge.style.display = '';
+    } else if (badge) {
+      badge.style.display = 'none';
+    }
+  }
 
-    // زر البحث السريع بجانب الإشعارات
+  function ensureNotif() {
+    if (document.getElementById('notifPanel')) return;
+    var p = document.createElement('div');
+    p.id = 'notifPanel';
+    p.className = 'notif-panel-v2';
+    var items = getNotifItems();
+    p.innerHTML =
+      '<div class="notif-head"><span>الإشعارات</span><button type="button" id="notifClose">&times;</button></div>' +
+      '<div class="notif-body">' +
+      (items.map(function (n) {
+        return '<a href="' + (n.href || '#') + '" class="notif-item notif-' + n.c + '">' +
+          '<div class="notif-title">' + n.t + '</div>' +
+          '<div class="notif-desc">' + n.d + '</div></a>';
+      }).join('') || '<div class="notif-empty">لا إشعارات</div>') +
+      '</div>';
+    document.body.appendChild(p);
+    document.getElementById('notifClose').onclick = function () { p.style.display = 'none'; };
+  }
+
+  function setupNavExtras() {
     var notifRef = document.getElementById('notifBtn');
     if (notifRef && !document.getElementById('cmdNavBtn')) {
       var sb = document.createElement('button');
@@ -418,23 +462,24 @@
       sb.className = 'nav-btn';
       sb.title = 'بحث سريع (Ctrl+K)';
       sb.innerHTML = '<i class="bi bi-search"></i>';
-      sb.onclick = function(){ openCommandPalette(); };
+      sb.onclick = function () { openCommandPalette(); };
       notifRef.parentNode.insertBefore(sb, notifRef);
     }
-
     var nb = document.getElementById('notifBtn');
-    if(nb){
-      nb.onclick = function(e){
+    if (nb) {
+      nb.onclick = function (e) {
         e.stopPropagation();
         ensureNotif();
-        try { ensureFAB(); } catch(e){}
         var p = document.getElementById('notifPanel');
-        p.style.display = p.style.display==='flex' ? 'none' : 'flex';
+        p.style.display = p.style.display === 'flex' ? 'none' : 'flex';
       };
     }
-    // search trigger in navbar optional
-    document.addEventListener('click', function(){
+    document.addEventListener('click', function () {
       var p = document.getElementById('notifPanel');
-      if(p) p.style.display = 'none';
+      if (p) p.style.display = 'none';
     });
-  };
+  }
+
+  // Expose version
+  window.QDPS_VERSION = VERSION;
+})();

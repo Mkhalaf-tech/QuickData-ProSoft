@@ -11,6 +11,46 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     <link rel="stylesheet" href="theme.css" />
     <link rel="stylesheet" href="page-layout.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+      .dash-welcome {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #dc2626 150%);
+        border-radius: 16px;
+        padding: 22px 26px;
+        color: #fff;
+        margin-bottom: 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        box-shadow: 0 8px 28px rgba(15,23,42,.2);
+      }
+      .dash-welcome h2 { margin: 0; font-size: 20px; font-weight: 800; }
+      .dash-welcome p { margin: 6px 0 0; opacity: .85; font-size: 13px; }
+      .dash-welcome .ver-badge {
+        background: rgba(255,255,255,.15);
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+      .chart-canvas-wrap { position: relative; height: 240px; padding: 8px 4px 0; }
+      .activity-item {
+        display: flex; gap: 12px; padding: 12px 0;
+        border-bottom: 1px solid var(--border-light);
+        font-size: 12.5px;
+      }
+      .activity-item:last-child { border-bottom: none; }
+      .activity-dot {
+        width: 8px; height: 8px; border-radius: 50%;
+        background: var(--accent); margin-top: 5px; flex-shrink: 0;
+      }
+      .activity-time { color: var(--text-tertiary); font-size: 11px; margin-top: 2px; }
+      body.dark-mode .dash-welcome {
+        background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #7f1d1d 150%);
+      }
+    </style>
 </head>
 <body>
 <script>(function(){try{if(localStorage.getItem('darkMode')==='true')document.body.classList.add('dark-mode');}catch(e){}})();</script>
@@ -41,10 +81,18 @@
 
         <div class="dashboard-content">
 
+            <div class="dash-welcome">
+                <div>
+                    <h2>مرحباً بك في QuickData ProSoft</h2>
+                    <p>لوحة تحكم شاملة — راقب المبيعات والمخزون والمالية في مكان واحد · اضغط <strong>Ctrl+K</strong> للبحث السريع</p>
+                </div>
+                <div class="ver-badge"><i class="bi bi-rocket-takeoff"></i> الإصدار 2.0</div>
+            </div>
+
             <div class="page-header">
                 <div class="ph-left">
                     <h2>لوحة التحكم</h2>
-                    <p>نظرة شاملة على أداء الشركة — اضغط <strong>Ctrl+K</strong> للبحث السريع</p>
+                    <p>نظرة شاملة على أداء الشركة</p>
                 </div>
                 <div class="ph-right">
                     <strong>اليوم</strong>
@@ -60,7 +108,9 @@
                         <h6><i class="bi bi-bar-chart-fill"></i> المبيعات والمشتريات</h6>
                         <span class="chart-badge">آخر 6 أشهر</span>
                     </div>
-                    <div class="chart-bars" id="dashChart"></div>
+                    <div class="chart-canvas-wrap">
+                        <canvas id="salesChartCanvas"></canvas>
+                    </div>
                 </div>
                 <div class="chart-card">
                     <div class="chart-header">
@@ -73,6 +123,7 @@
                         <a class="btn-erp btn-erp-outline" href="customers.html" style="justify-content:center"><i class="bi bi-people"></i> العملاء</a>
                         <a class="btn-erp btn-erp-outline" href="products.html" style="justify-content:center"><i class="bi bi-box-seam"></i> المنتجات</a>
                         <a class="btn-erp btn-erp-outline" href="financial-reports.html" style="justify-content:center"><i class="bi bi-file-earmark-bar-graph"></i> التقارير المالية</a>
+                        <a class="btn-erp btn-erp-outline" href="settings.html" style="justify-content:center"><i class="bi bi-gear"></i> الإعدادات</a>
                     </div>
                 </div>
             </div>
@@ -104,16 +155,19 @@
                 </div>
                 <div class="panel" style="margin:0">
                     <div class="panel-header">
-                        <h5 class="panel-title"><i class="bi bi-info-circle"></i> تلميحات سريعة</h5>
+                        <h5 class="panel-title"><i class="bi bi-clock-history"></i> آخر النشاطات</h5>
                     </div>
-                    <div style="padding:14px 16px;font-size:12.5px;line-height:1.8;color:var(--text-secondary)">
-                        <div><kbd style="padding:2px 6px;border:1px solid var(--border);border-radius:4px;font-size:11px">Ctrl+K</kbd> بحث سريع في الصفحات</div>
-                        <div><kbd style="padding:2px 6px;border:1px solid var(--border);border-radius:4px;font-size:11px">Ctrl+D</kbd> الوضع الليلي</div>
-                        <div style="margin-top:8px">الإضافات تُحفظ في المتصفح تلقائياً حتى إعادة التعيين من الإعدادات.</div>
+                    <div style="padding:8px 16px" id="activityFeed">
+                        <div class="activity-item">
+                            <div class="activity-dot"></div>
+                            <div>
+                                <div>تم تحديث النظام إلى الإصدار 2.0</div>
+                                <div class="activity-time">الآن</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-
 
         </div>
         <footer class="footer-custom">
@@ -123,7 +177,7 @@
                     <span class="footer-divider">|</span>
                     <span class="footer-copy">© 2026 جميع الحقوق محفوظة — حلول إدارة الأعمال الاحترافية</span>
                 </div>
-                <div class="footer-left"><span class="footer-version">الإصدار 1.0.0</span></div>
+                <div class="footer-left"><span class="footer-version">الإصدار 2.0.0</span></div>
             </div>
         </footer>
     </main>
@@ -134,17 +188,16 @@
     document.addEventListener('DOMContentLoaded', function () {
         initERPPage({ title: 'لوحة التحكم', subtitle: 'نظرة شاملة على أداء الشركة', activeId: 'dashboard' });
 
-        
         var invs = MockStore.get('salesInvoices');
         var custs = MockStore.get('customers');
         var prods = MockStore.get('products');
         var banks = MockStore.get('bankAccounts');
         var s = {
-            salesMonth: invs.reduce(function(a,i){return a+i.total;},0),
-            receiptsMonth: MockStore.get('receipts').reduce(function(a,r){return a+r.amount;},0),
-            receivables: custs.reduce(function(a,c){return a+c.balance;},0),
-            payables: MockStore.get('suppliers').reduce(function(a,c){return a+c.balance;},0),
-            bankBalance: banks.reduce(function(a,b){return a+b.balance;},0),
+            salesMonth: invs.reduce(function(a,i){return a+(i.total||0);},0),
+            receiptsMonth: MockStore.get('receipts').reduce(function(a,r){return a+(r.amount||0);},0),
+            receivables: custs.reduce(function(a,c){return a+(c.balance||0);},0),
+            payables: MockStore.get('suppliers').reduce(function(a,c){return a+(c.balance||0);},0),
+            bankBalance: banks.reduce(function(a,b){return a+(b.balance||0);},0),
             lowStockCount: prods.filter(function(p){return p.qty<=p.minQty;}).length
         };
 
@@ -159,21 +212,91 @@
             return '<div class="stat-card '+x.c+'"><span class="stat-icon"><i class="bi '+x.i+'"></i></span><div class="stat-number" style="font-size:17px">'+x.v+'</div><div class="stat-label">'+x.l+'</div></div>';
         }).join('');
 
-        var chart = MockData.salesChart || {labels:[], sales:[], purchases:[]};
-        var maxV = Math.max.apply(null, chart.sales.concat(chart.purchases).concat([1]));
-        document.getElementById('dashChart').innerHTML = chart.labels.map(function(lab,i){
-            var sH=Math.round((chart.sales[i]/maxV)*100), pH=Math.round((chart.purchases[i]/maxV)*100);
-            return '<div class="chart-bar-col"><div class="chart-bar-group"><div class="chart-bar" style="height:'+sH+'%"></div><div class="chart-bar sec" style="height:'+pH+'%"></div></div><div class="chart-bar-label">'+lab+'</div></div>';
-        }).join('');
+        // Chart.js real chart
+        var chart = MockData.salesChart || { labels: [], sales: [], purchases: [] };
+        var ctx = document.getElementById('salesChartCanvas');
+        if (ctx && typeof Chart !== 'undefined') {
+            var isDark = document.body.classList.contains('dark-mode');
+            var gridColor = isDark ? 'rgba(148,163,184,.12)' : 'rgba(15,23,42,.06)';
+            var textColor = isDark ? '#94a3b8' : '#64748b';
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: chart.labels,
+                    datasets: [
+                        {
+                            label: 'المبيعات',
+                            data: chart.sales || chart.data || [],
+                            backgroundColor: 'rgba(220,38,38,.85)',
+                            borderRadius: 6,
+                            borderSkipped: false
+                        },
+                        {
+                            label: 'المشتريات',
+                            data: chart.purchases || [],
+                            backgroundColor: 'rgba(15,23,42,.55)',
+                            borderRadius: 6,
+                            borderSkipped: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            align: 'end',
+                            labels: { boxWidth: 12, boxHeight: 12, font: { family: 'Cairo', size: 11 }, color: textColor }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(ctx) {
+                                    return ctx.dataset.label + ': ' + (ctx.raw||0).toLocaleString('ar-EG') + ' ج.م';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { family: 'Cairo', size: 11 }, color: textColor }
+                        },
+                        y: {
+                            grid: { color: gridColor },
+                            ticks: {
+                                font: { family: 'Cairo', size: 10 },
+                                color: textColor,
+                                callback: function(v) { return (v/1000) + 'ك'; }
+                            }
+                        }
+                    }
+                }
+            });
+        }
 
         document.getElementById('topProdBody').innerHTML = (MockData.topProducts||[]).map(function(p,i){
             return '<tr><td>'+(i+1)+'</td><td style="font-weight:600">'+p.name+'</td><td style="font-weight:700">'+p.sales+'</td></tr>';
         }).join('');
+
         document.getElementById('recentInv').innerHTML = invs.slice(0,7).map(function(i){
             return '<tr><td style="font-weight:600;color:var(--accent)">'+i.number+'</td><td>'+MockData.formatDate(i.date)+'</td>'+
                 '<td style="font-weight:700">'+MockData.formatCurrency(i.total)+'</td><td>'+MockData.formatCurrency(i.paid)+'</td><td>'+statusBadge(i.status)+'</td></tr>';
         }).join('');
 
+        // Activity feed
+        var log = MockStore.get('activityLog') || [];
+        var feed = document.getElementById('activityFeed');
+        if (log.length) {
+            feed.innerHTML = log.slice(0, 6).map(function(a) {
+                var t = new Date(a.at);
+                var timeStr = t.toLocaleString('ar-EG', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' });
+                return '<div class="activity-item"><div class="activity-dot"></div><div><div><strong>'+a.action+'</strong> — '+a.details+'</div><div class="activity-time">'+timeStr+'</div></div></div>';
+            }).join('');
+        } else {
+            // Seed a welcome activity once
+            MockStore.logActivity('تحديث النظام', 'ترقية إلى الإصدار 2.0 بنجاح', 'system');
+        }
     });
     </script>
 </body>

@@ -204,12 +204,23 @@ const MockData = (function () {
 
   const salesChart = {
     labels: ["مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس"],
-    data: [180000, 210000, 195000, 250000, 280000, 335000],
+    sales: [180000, 210000, 195000, 250000, 280000, 335000],
+    purchases: [120000, 145000, 130000, 160000, 175000, 210000],
   };
   const topProducts = [
-    { name: "هاتف سامسونج A54", sales: 18 },
-    { name: "لابتوب ديل", sales: 9 },
-    { name: "سماعات بلوتوث", sales: 45 },
+    { name: "هاتف ذكي سامسونج A54", sales: 28 },
+    { name: "لابتوب ديل إنسبايرون 15", sales: 14 },
+    { name: "سماعات بلوتوث", sales: 52 },
+    { name: "شاشة سامسونج 27 بوصة", sales: 19 },
+    { name: "ثلاجة توشيبا 16 قدم", sales: 11 },
+  ];
+  const monthlyRevenue = [
+    { month: "مارس", value: 180000 },
+    { month: "أبريل", value: 210000 },
+    { month: "مايو", value: 195000 },
+    { month: "يونيو", value: 250000 },
+    { month: "يوليو", value: 280000 },
+    { month: "أغسطس", value: 335000 },
   ];
 
   return {
@@ -218,6 +229,6 @@ const MockData = (function () {
     salesInvoices, purchaseInvoices, receipts, paymentsList,
     accounts, journalEntries, treasuries, bankAccounts, transfers,
     expenseTypes, expenses, employees, departments, fixedAssets, users,
-    dashboardStats, salesChart, topProducts,
+    dashboardStats, salesChart, topProducts, monthlyRevenue,
   };
 })();
