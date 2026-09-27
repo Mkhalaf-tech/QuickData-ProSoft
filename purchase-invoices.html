@@ -60,7 +60,7 @@
                 </div>
                 <div id="pageInfo" style="padding-top:10px;font-size:12px;color:var(--text-secondary)"></div>
             </div>
-            <div id="invModal" style="display:none;position:fixed;inset:0;background:rgba(14,28,46,.45);z-index:1000;align-items:center;justify-content:center;padding:16px">
+            <div id="invModal" class="erp-modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(14,28,46,.45);z-index:10000;align-items:center;justify-content:center;padding:16px">
                 <div style="background:var(--surface);border-radius:14px;width:100%;max-width:820px;max-height:92vh;overflow:auto">
                     <div style="display:flex;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)">
                         <strong>فاتورة مشتريات جديدة</strong>
@@ -115,18 +115,28 @@
         var invoices = MockStore.get("purchaseInvoices");
         var supMap = {}; MockData.suppliers.forEach(function(s){supMap[s.id]=s.name;});
         function openInv(){
-            document.getElementById('invDate').value = new Date().toISOString().slice(0,10);
-            document.getElementById('invSup').innerHTML = MockData.suppliers.map(function(s){return '<option value="'+s.id+'">'+s.name+'</option>';}).join('');
-            document.getElementById('invWh').innerHTML = MockData.warehouses.map(function(w){return '<option value="'+w.id+'">'+w.name+'</option>';}).join('');
-            document.getElementById('linesBody').innerHTML = '';
-            addLine(); addLine();
-            document.getElementById('invModal').style.display = 'flex';
+            try {
+              var d = document.getElementById('invDate');
+              if (d) d.value = new Date().toISOString().slice(0,10);
+              var sups = (typeof MockStore!=='undefined' ? MockStore.get('suppliers') : MockData.suppliers) || [];
+              var whs = (typeof MockStore!=='undefined' ? MockStore.get('warehouses') : MockData.warehouses) || [];
+              var prods = (typeof MockStore!=='undefined' ? MockStore.get('products') : MockData.products) || [];
+              document.getElementById('invSup').innerHTML = sups.map(function(s){return '<option value="'+s.id+'">'+s.name+'</option>';}).join('') || '<option>—</option>';
+              document.getElementById('invWh').innerHTML = whs.map(function(w){return '<option value="'+w.id+'">'+w.name+'</option>';}).join('') || '<option>—</option>';
+              window._invProducts = prods;
+              document.getElementById('linesBody').innerHTML = '';
+              addLine(); addLine();
+              openErpModal('invModal');
+            } catch (err) {
+              console.error(err);
+              showToast('تعذر فتح النموذج: '+err.message, 'error');
+            }
         }
-        function closeInv(){ document.getElementById('invModal').style.display = 'none'; }
+        function closeInv(){ closeErpModal('invModal'); }
         function addLine(){
             var tr = document.createElement('tr');
             tr.innerHTML = '<td><select class="form-select form-select-sm ln-prod" onchange="onProd(this)">'+
-                MockData.products.map(function(p){return '<option value="'+p.id+'" data-price="'+p.purchasePrice+'">'+p.name+'</option>';}).join('')+
+                (window._invProducts||MockData.products||[]).map(function(p){return '<option value="'+p.id+'" data-price="'+p.purchasePrice+'">'+p.name+'</option>';}).join('')+
                 '</select></td>'+
                 '<td><input type="number" class="form-control form-control-sm ln-qty" value="1" min="1" style="width:70px" oninput="calcLines()"></td>'+
                 '<td><input type="number" class="form-control form-control-sm ln-price" value="0" min="0" step="0.01" style="width:90px" oninput="calcLines()"></td>'+

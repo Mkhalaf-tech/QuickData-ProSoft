@@ -103,6 +103,46 @@
     }
   };
 
+  
+
+  /** فتح نافذة بشكل موثوق: ينقلها لـ body ويرفع z-index */
+  window.openErpModal = function(id) {
+    var el = document.getElementById(id);
+    if (!el) { console.error('Modal not found:', id); return; }
+    if (el.parentElement !== document.body) {
+      document.body.appendChild(el);
+    }
+    el.classList.add('erp-modal-overlay', 'is-open');
+    el.style.display = 'flex';
+    el.style.zIndex = '10000';
+    document.body.style.overflow = 'hidden';
+  };
+  window.closeErpModal = function(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('is-open');
+    el.style.display = 'none';
+    document.body.style.overflow = '';
+  };
+  // إغلاق بالضغط على الخلفية
+  document.addEventListener('click', function(e) {
+    if (e.target && e.target.classList && e.target.classList.contains('erp-modal-overlay') && e.target.classList.contains('is-open')) {
+      e.target.classList.remove('is-open');
+      e.target.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.erp-modal-overlay.is-open').forEach(function(m) {
+        m.classList.remove('is-open');
+        m.style.display = 'none';
+      });
+      document.body.style.overflow = '';
+    }
+  });
+
+
   window.showToast = function (message, type) {
     type = type || 'info';
     var c = document.getElementById('toastContainer');
@@ -318,7 +358,7 @@
     var wrap = document.createElement('div');
     wrap.id = 'quickFab';
     wrap.style.cssText = 'position:fixed;bottom:24px;left:24px;z-index:1500;display:flex;flex-direction:column-reverse;align-items:flex-start;gap:8px;font-family:Cairo,sans-serif';
-    wrap.innerHTML = '<button type="button" id="fabMain" style="width:52px;height:52px;border-radius:50%;border:none;background:var(--accent,#9c7a3c);color:#fff;font-size:22px;box-shadow:0 4px 16px rgba(156,122,60,.4);cursor:pointer;display:flex;align-items:center;justify-content:center"><i class="bi bi-plus-lg"></i></button>'+
+    wrap.innerHTML = '<button type="button" id="fabMain" style="width:52px;height:52px;border-radius:50%;border:none;background:var(--accent,#dc2626);color:#fff;font-size:22px;box-shadow:0 4px 16px rgba(220,38,38,.4);cursor:pointer;display:flex;align-items:center;justify-content:center"><i class="bi bi-plus-lg"></i></button>'+
       '<div id="fabMenu" style="display:none;flex-direction:column;gap:6px"></div>';
     document.body.appendChild(wrap);
     var items = [

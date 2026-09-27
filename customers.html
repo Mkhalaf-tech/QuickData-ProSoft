@@ -71,7 +71,7 @@
             </div>
 
             <!-- Modal Form -->
-            <div id="formModal" class="modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(14,28,46,.45);z-index:1000;align-items:center;justify-content:center;padding:20px">
+            <div id="formModal" class="erp-modal-overlay modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(14,28,46,.45);z-index:10000;align-items:center;justify-content:center;padding:20px">
                 <div style="background:var(--surface);border-radius:14px;width:100%;max-width:560px;max-height:90vh;overflow:auto;box-shadow:0 10px 40px rgba(0,0,0,.15)">
                     <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--border)">
                         <strong id="formTitle" style="font-size:14px">إضافة عميل</strong>
@@ -138,9 +138,9 @@
             document.getElementById('fBalance').value = c ? c.balance : 0;
             document.getElementById('fStatus').value = c ? c.status : 'active';
             var m = document.getElementById('formModal');
-            m.style.display = 'flex';
+            openErpModal('formModal');
         }
-        function closeForm(){ document.getElementById('formModal').style.display = 'none'; }
+        function closeForm(){ closeErpModal('formModal'); }
         function saveCustomer(){
             var name = document.getElementById('fName').value.trim();
             var phone = document.getElementById('fPhone').value.trim();

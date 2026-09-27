@@ -58,7 +58,7 @@
                 </div>
                 <div id="pageInfo" style="padding-top:10px;font-size:12px;color:var(--text-secondary)"></div>
             </div>
-            <div id="jeModal" style="display:none;position:fixed;inset:0;background:rgba(14,28,46,.45);z-index:1000;align-items:center;justify-content:center;padding:16px">
+            <div id="jeModal" class="erp-modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(14,28,46,.45);z-index:10000;align-items:center;justify-content:center;padding:16px">
                 <div style="background:var(--surface);border-radius:14px;width:100%;max-width:780px;max-height:92vh;overflow:auto">
                     <div style="display:flex;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)">
                         <strong>قيد يومي جديد</strong>
@@ -114,9 +114,9 @@
             document.getElementById('jeDesc').value='';
             document.getElementById('jeLines').innerHTML='';
             addJELine(); addJELine();
-            document.getElementById('jeModal').style.display='flex';
+            openErpModal('jeModal');
         }
-        function closeJE(){ document.getElementById('jeModal').style.display='none'; }
+        function closeJE(){ closeErpModal('jeModal'); }
         function addJELine(){
             var tr=document.createElement('tr');
             tr.innerHTML='<td><select class="form-select form-select-sm je-acc">'+accounts.map(function(a){return '<option value="'+a.id+'">'+a.code+' — '+a.name+'</option>';}).join('')+'</select></td>'+

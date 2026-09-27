@@ -1,38 +1,41 @@
 /* ================================================================
-   حراء للسياحة — ملف التصميم المشترك (Theme)
-   مطابق لتصميم الشركة الموحّد (Corporate Navy & Gold) المستخدم في
-   بقية صفحات النظام — يُستخدم في: الرئيسية، الرحلات، الحجوزات،
-   العملاء، المناديب
+   QuickData ProSoft — نظام التصميم (Theme)
+   هوية احترافية عالمية: فحمي داكن + أحمر قرمزي + محايدات باردة
    ================================================================ */
 
 :root {
-    --primary: #0e1c2e;
-    --primary-light: #1a2e46;
-    --primary-dark: #08131f;
-    --accent: #9c7a3c;
-    --accent-light: #c9a86a;
-    --accent-dark: #755a29;
-    --accent-tint: rgba(156, 122, 60, 0.08);
-    --success: #1c7a4e;
-    --success-bg: #e6f3ec;
-    --danger: #ad3f39;
-    --danger-bg: #f7e8e6;
-    --info: #2d6088;
-    --info-bg: #e6edf4;
-    --warning: #ad7f2e;
-    --warning-bg: #f6eee1;
-    --bg: #f3f1eb;
+    /* —— QuickData ProSoft — هوية احترافية عالمية —— */
+    /* أساسي: فحمي داكن للشريط */
+    --primary: #0f172a;
+    --primary-light: #1e293b;
+    --primary-dark: #020617;
+    /* لمسة حمراء احترافية */
+    --accent: #dc2626;
+    --accent-light: #f87171;
+    --accent-dark: #b91c1c;
+    --accent-tint: rgba(220, 38, 38, 0.08);
+    /* حالات */
+    --success: #059669;
+    --success-bg: #ecfdf5;
+    --danger: #dc2626;
+    --danger-bg: #fef2f2;
+    --info: #0284c7;
+    --info-bg: #f0f9ff;
+    --warning: #d97706;
+    --warning-bg: #fffbeb;
+    /* خلفيات محايدة باردة (ليست بيج سياحي) */
+    --bg: #f1f5f9;
     --surface: #ffffff;
-    --surface-alt: #faf8f3;
-    --border: #e0dccf;
-    --border-light: #ebe7db;
-    --text: #181712;
-    --text-secondary: #5c5648;
-    --text-tertiary: #928c79;
-    --text-inverse: #f5f3ec;
-    --shadow-sm: 0 1px 2px rgba(14,28,46,0.04), 0 1px 3px rgba(14,28,46,0.06);
-    --shadow-md: 0 2px 8px rgba(14,28,46,0.06), 0 6px 16px rgba(14,28,46,0.06);
-    --shadow-lg: 0 10px 30px rgba(14,28,46,0.10);
+    --surface-alt: #f8fafc;
+    --border: #e2e8f0;
+    --border-light: #f1f5f9;
+    --text: #0f172a;
+    --text-secondary: #475569;
+    --text-tertiary: #94a3b8;
+    --text-inverse: #f8fafc;
+    --shadow-sm: 0 1px 2px rgba(15,23,42,0.05), 0 1px 3px rgba(15,23,42,0.06);
+    --shadow-md: 0 4px 12px rgba(15,23,42,0.07), 0 2px 4px rgba(15,23,42,0.04);
+    --shadow-lg: 0 12px 32px rgba(15,23,42,0.12);
     --radius-sm: 6px;
     --radius-md: 10px;
     --radius-lg: 14px;
@@ -124,7 +127,7 @@ body { background: var(--bg); color: var(--text); font-size: 13.5px; }
 }
 .sidebar .nav-link:hover i { background: none; opacity: 1; }
 .sidebar .nav-link.active {
-    background: rgba(156, 122, 60, 0.14);
+    background: rgba(220, 38, 38, 0.14);
     color: var(--text-inverse);
     font-weight: 600;
     border-right-color: transparent;
@@ -148,17 +151,17 @@ body { background: var(--bg); color: var(--text); font-size: 13.5px; }
     margin-right: auto;
     min-width: 20px;
     text-align: center;
-    background: rgba(156, 122, 60, 0.18);
+    background: rgba(220, 38, 38, 0.18);
     padding: 1px 8px;
     border-radius: var(--radius-full);
     font-size: 10px;
     font-variant-numeric: tabular-nums;
     color: var(--accent-light);
-    border: 1px solid rgba(156, 122, 60, 0.15);
+    border: 1px solid rgba(220, 38, 38, 0.15);
     transition: all 0.2s;
 }
 .sidebar .nav-link.active .badge {
-    background: rgba(156, 122, 60, 0.22);
+    background: rgba(220, 38, 38, 0.22);
     color: var(--accent-light);
 }
 .sidebar hr { border-color: rgba(255,255,255,0.06) !important; margin: 10px 16px !important; }
@@ -402,7 +405,7 @@ a:focus-visible {
     font-size: 13px; font-family: 'Cairo', sans-serif; transition: 0.2s; background: var(--surface); color: var(--text);
 }
 .form-field input:focus, .form-field select:focus, .form-field textarea:focus {
-    outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(156,122,60,0.12);
+    outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(220,38,38,0.12);
 }
 @keyframes modalPop {
     from { opacity: 0; transform: scale(0.96); }
