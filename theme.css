@@ -4,41 +4,41 @@
    ================================================================ */
 
 :root {
-    /* —— QuickData ProSoft — هوية مؤسسية متميزة —— */
-    /* أساسي: حبر داكن مائل للأزرق البترولي (بدلاً من الفحمي التقليدي) */
-    --primary: #10202f;
-    --primary-light: #1b3346;
-    --primary-dark: #071119;
-    /* لمسة نحاسية/ذهبية راقية — تميّز الهوية عن قوالب "أحمر على كحلي" الشائعة */
-    --accent: #b8863c;
-    --accent-light: #d9ac67;
-    --accent-dark: #8f6526;
-    --accent-tint: rgba(184, 134, 60, 0.10);
-    /* حالات — ألوان دلالية مستقلة عن لون الهوية */
-    --success: #1c7a4e;
-    --success-bg: #e8f4ee;
-    --danger: #b3382c;
-    --danger-bg: #faeae8;
-    --info: #2f6690;
-    --info-bg: #e8f1f7;
-    --warning: #ab5c1f;
-    --warning-bg: #f8ece0;
-    /* خلفيات محايدة باردة */
-    --bg: #f2f4f6;
+    /* —— QuickData ProSoft — هوية احترافية عالمية —— */
+    /* أساسي: فحمي داكن للشريط */
+    --primary: #0f172a;
+    --primary-light: #1e293b;
+    --primary-dark: #020617;
+    /* لمسة حمراء احترافية */
+    --accent: #dc2626;
+    --accent-light: #f87171;
+    --accent-dark: #b91c1c;
+    --accent-tint: rgba(220, 38, 38, 0.08);
+    /* حالات */
+    --success: #059669;
+    --success-bg: #ecfdf5;
+    --danger: #dc2626;
+    --danger-bg: #fef2f2;
+    --info: #0284c7;
+    --info-bg: #f0f9ff;
+    --warning: #d97706;
+    --warning-bg: #fffbeb;
+    /* خلفيات محايدة باردة (ليست بيج سياحي) */
+    --bg: #f1f5f9;
     --surface: #ffffff;
-    --surface-alt: #f7f8fa;
-    --border: #e3e7eb;
-    --border-light: #eef1f3;
-    --text: #131c26;
-    --text-secondary: #4b5a68;
-    --text-tertiary: #8b97a3;
-    --text-inverse: #f5f7f8;
-    --shadow-sm: 0 1px 2px rgba(16,32,47,0.05), 0 1px 3px rgba(16,32,47,0.05);
-    --shadow-md: 0 4px 14px rgba(16,32,47,0.08), 0 2px 4px rgba(16,32,47,0.04);
-    --shadow-lg: 0 14px 34px rgba(16,32,47,0.14);
-    --radius-sm: 5px;
-    --radius-md: 8px;
-    --radius-lg: 12px;
+    --surface-alt: #f8fafc;
+    --border: #e2e8f0;
+    --border-light: #f1f5f9;
+    --text: #0f172a;
+    --text-secondary: #475569;
+    --text-tertiary: #94a3b8;
+    --text-inverse: #f8fafc;
+    --shadow-sm: 0 1px 2px rgba(15,23,42,0.05), 0 1px 3px rgba(15,23,42,0.06);
+    --shadow-md: 0 4px 12px rgba(15,23,42,0.07), 0 2px 4px rgba(15,23,42,0.04);
+    --shadow-lg: 0 12px 32px rgba(15,23,42,0.12);
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
     --radius-full: 9999px;
     --t-base: 0.2s ease;
     --sidebar-width: 260px;
@@ -46,9 +46,6 @@
 
 * { font-family: 'Cairo', sans-serif; }
 body { background: var(--bg); color: var(--text); font-size: 13.5px; }
-.stat-card .number, .table-card td, .stat-number, td[data-num], .amount, .balance {
-    font-variant-numeric: tabular-nums;
-}
 
 /* ===== الشريط الجانبي ===== */
 .sidebar {
@@ -57,8 +54,8 @@ body { background: var(--bg); color: var(--text); font-size: 13.5px; }
     position: fixed;
     right: 0;
     top: 0;
-    background: #10202f;
-    background-color: #10202f;
+    background: #0f172a;
+    background-color: #0f172a;
     overflow-y: auto;
     z-index: 1050;
     transition: transform 0.3s ease;
@@ -131,7 +128,7 @@ body { background: var(--bg); color: var(--text); font-size: 13.5px; }
 }
 .sidebar .nav-link:hover i { background: none; opacity: 1; }
 .sidebar .nav-link.active {
-    background: rgba(184, 134, 60, 0.14);
+    background: rgba(220, 38, 38, 0.14);
     color: var(--text-inverse);
     font-weight: 600;
     border-right-color: transparent;
@@ -155,17 +152,17 @@ body { background: var(--bg); color: var(--text); font-size: 13.5px; }
     margin-right: auto;
     min-width: 20px;
     text-align: center;
-    background: rgba(184, 134, 60, 0.18);
+    background: rgba(220, 38, 38, 0.18);
     padding: 1px 8px;
     border-radius: var(--radius-full);
     font-size: 10px;
     font-variant-numeric: tabular-nums;
     color: var(--accent-light);
-    border: 1px solid rgba(184, 134, 60, 0.15);
+    border: 1px solid rgba(220, 38, 38, 0.15);
     transition: all 0.2s;
 }
 .sidebar .nav-link.active .badge {
-    background: rgba(184, 134, 60, 0.22);
+    background: rgba(220, 38, 38, 0.22);
     color: var(--accent-light);
 }
 .sidebar hr { border-color: rgba(255,255,255,0.06) !important; margin: 10px 16px !important; }
@@ -409,7 +406,7 @@ a:focus-visible {
     font-size: 13px; font-family: 'Cairo', sans-serif; transition: 0.2s; background: var(--surface); color: var(--text);
 }
 .form-field input:focus, .form-field select:focus, .form-field textarea:focus {
-    outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(184, 134, 60, 0.12);
+    outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(220,38,38,0.12);
 }
 @keyframes modalPop {
     from { opacity: 0; transform: scale(0.96); }

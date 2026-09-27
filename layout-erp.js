@@ -358,7 +358,7 @@
     var wrap = document.createElement('div');
     wrap.id = 'quickFab';
     wrap.style.cssText = 'position:fixed;bottom:24px;left:24px;z-index:1500;display:flex;flex-direction:column-reverse;align-items:flex-start;gap:8px;font-family:Cairo,sans-serif';
-    wrap.innerHTML = '<button type="button" id="fabMain" style="width:52px;height:52px;border-radius:50%;border:none;background:var(--accent,#b8863c);color:#fff;font-size:22px;box-shadow:0 4px 16px rgba(184, 134, 60, .4);cursor:pointer;display:flex;align-items:center;justify-content:center"><i class="bi bi-plus-lg"></i></button>'+
+    wrap.innerHTML = '<button type="button" id="fabMain" style="width:52px;height:52px;border-radius:50%;border:none;background:var(--accent,#dc2626);color:#fff;font-size:22px;box-shadow:0 4px 16px rgba(220,38,38,.4);cursor:pointer;display:flex;align-items:center;justify-content:center"><i class="bi bi-plus-lg"></i></button>'+
       '<div id="fabMenu" style="display:none;flex-direction:column;gap:6px"></div>';
     document.body.appendChild(wrap);
     var items = [

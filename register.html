@@ -26,36 +26,36 @@
            DESIGN SYSTEM - مطابق للصفحة الرئيسية
            ================================================================ */
         :root {
-            --primary: #10202f;
-            --primary-light: #1b3346;
-            --primary-dark: #071119;
-            --accent: #b8863c;
-            --accent-light: #d9ac67;
-            --accent-dark: #8f6526;
-            --accent-tint: rgba(184, 134, 60, 0.10);
+            --primary: #0f172a;
+            --primary-light: #1a2e46;
+            --primary-dark: #08131f;
+            --accent: #dc2626;
+            --accent-light: #f87171;
+            --accent-dark: #b91c1c;
+            --accent-tint: rgba(156, 122, 60, 0.08);
             --success: #1c7a4e;
-            --success-bg: #e8f4ee;
-            --danger: #b3382c;
-            --danger-bg: #faeae8;
-            --info: #2f6690;
-            --info-bg: #e8f1f7;
-            --warning: #ab5c1f;
-            --warning-bg: #f8ece0;
-            --bg: #f2f4f6;
+            --success-bg: #e6f3ec;
+            --danger: #ad3f39;
+            --danger-bg: #f7e8e6;
+            --info: #2d6088;
+            --info-bg: #e6edf4;
+            --warning: #ad7f2e;
+            --warning-bg: #f6eee1;
+            --bg: #f3f1eb;
             --surface: #ffffff;
-            --surface-alt: #f7f8fa;
-            --border: #e3e7eb;
-            --border-light: #eef1f3;
-            --text: #131c26;
-            --text-secondary: #4b5a68;
-            --text-tertiary: #8b97a3;
-            --text-inverse: #f5f7f8;
-            --shadow-lg: 0 14px 34px rgba(16,32,47,0.14);
-            --shadow-xl: 0 24px 64px rgba(7,17,25,0.38);
-            --radius-sm: 5px;
-            --radius-md: 8px;
-            --radius-lg: 12px;
-            --radius-xl: 16px;
+            --surface-alt: #faf8f3;
+            --border: #e0dccf;
+            --border-light: #ebe7db;
+            --text: #181712;
+            --text-secondary: #5c5648;
+            --text-tertiary: #928c79;
+            --text-inverse: #f5f3ec;
+            --shadow-lg: 0 10px 30px rgba(14,28,46,0.10);
+            --shadow-xl: 0 20px 60px rgba(8,19,31,0.35);
+            --radius-sm: 4px;
+            --radius-md: 6px;
+            --radius-lg: 10px;
+            --radius-xl: 14px;
             --radius-full: 9999px;
             --t-base: 0.2s ease;
             --font-display: 'Inter', 'Cairo', sans-serif;
@@ -66,7 +66,7 @@
 
         body {
             font-family: var(--font-body);
-            background: radial-gradient(circle at 20% 20%, #16283f 0%, #10202f 55%, #08131f 100%);
+            background: radial-gradient(circle at 20% 20%, #16283f 0%, #0f172a 55%, #08131f 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -136,7 +136,7 @@
 
         .register-card .form-control:focus {
             border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(184, 134, 60, 0.1);
+            box-shadow: 0 0 0 3px rgba(156, 122, 60, 0.1);
             outline: none;
         }
 
@@ -322,7 +322,7 @@
             var percentage = (strength / 5) * 100;
             fill.style.width = percentage + '%';
 
-            var colors = ['#b3382c', '#ab5c1f', '#c9962f', '#1c7a4e', '#1c7a4e'];
+            var colors = ['#ad3f39', '#ad7f2e', '#f87171', '#1c7a4e', '#1c7a4e'];
             var labels = ['ضعيفة جداً', 'ضعيفة', 'متوسطة', 'قوية', 'قوية جداً'];
             var colorIndex = Math.min(strength, 4);
 
