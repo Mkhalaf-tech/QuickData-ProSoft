@@ -189,14 +189,14 @@
             <div class="brand-icon">🕋</div>
             <h1>QuickData <span>ProSoft</span></h1>
             <p>إنشاء حساب جديد</p>
-            <div id="adminBadgeContainer" style="display:none;">
-                <span class="admin-badge">👑 المستخدم الأول - سيكون مديراً</span>
+            <div id="adminBadgeContainer">
+                <span class="admin-badge">👑 سيتم إنشاء شركتك الخاصة وستكون مديرها (Admin)</span>
             </div>
         </div>
 
-        <div id="infoMessage" class="info-message">
+        <div id="infoMessage" class="info-message show">
             <i class="bi bi-info-circle-fill"></i>
-            <span id="infoText">جاري التحقق من وجود مستخدمين...</span>
+            <span id="infoText">✅ كل حساب جديد يبدأ شركة منفصلة خاصة به على النظام.</span>
         </div>
 
         <form id="registerForm" onsubmit="handleRegister(event)">
@@ -243,12 +243,11 @@
     <!-- JAVASCRIPT -->
     <!-- ================================================================ -->
     <script>
-        var SUPABASE_URL = SUPABASE_CONFIG.URL;
-        var SUPABASE_ANON_KEY = SUPABASE_CONFIG.KEY;
-        var isFirstUser = false;
-
         document.addEventListener('DOMContentLoaded', function() {
-            checkIfUsersExist();
+            if (Supabase.isLoggedIn()) {
+                window.location.href = 'index.html';
+                return;
+            }
 
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter') {
@@ -260,53 +259,6 @@
                 }
             });
         });
-
-        async function checkIfUsersExist() {
-            try {
-                var response = await fetch(SUPABASE_URL + '/rest/v1/rpc/get_users_count', {
-                    method: 'POST',
-                    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({})
-                });
-
-                if (!response.ok) throw new Error('HTTP error! status: ' + response.status);
-
-                var count = await response.json();
-
-                if (count === 0) {
-                    isFirstUser = true;
-                    showAdminBadge();
-                } else {
-                    isFirstUser = false;
-                    hideAdminBadge();
-                }
-            } catch (error) {
-                console.error('❌ خطأ في التحقق من المستخدمين:', error);
-                var shouldContinue = confirm(
-                    '⚠️ لا يمكن الاتصال بقاعدة البيانات.\nتأكد من:\n1. أن RPC function "get_users_count" موجودة في Supabase\n2. أنك متصل بالإنترنت\n\nهل تريد المتابعة كمستخدم أول؟'
-                );
-                if (shouldContinue) {
-                    isFirstUser = true;
-                    showAdminBadge();
-                } else {
-                    var im = document.getElementById('infoMessage');
-                    im.classList.add('show');
-                    document.getElementById('infoText').textContent = '⚠️ يرجى إنشاء RPC function "get_users_count" في Supabase SQL Editor أولاً.';
-                }
-            }
-        }
-
-        function showAdminBadge() {
-            document.getElementById('adminBadgeContainer').style.display = 'block';
-            document.getElementById('infoMessage').classList.add('show');
-            document.getElementById('infoText').textContent = '🚀 لا يوجد مستخدمين حالياً. سيتم منحك صلاحية المدير (Admin) عند التسجيل!';
-        }
-
-        function hideAdminBadge() {
-            document.getElementById('adminBadgeContainer').style.display = 'none';
-            document.getElementById('infoMessage').classList.remove('show');
-            document.getElementById('infoText').textContent = '✅ يوجد مستخدمين مسجلين بالفعل. سيتم إنشاء حسابك كـ (User) عادي.';
-        }
 
         function checkPasswordStrength(password) {
             var fill = document.getElementById('strengthFill');
@@ -363,48 +315,31 @@
             registerSpinner.style.display = 'inline-block';
 
             try {
-                var response = await fetch(SUPABASE_URL + '/auth/v1/signup', {
-                    method: 'POST',
-                    headers: { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        email: email, password: password,
-                        data: { full_name: fullName, company_name: companyName, role: isFirstUser ? 'admin' : 'user' }
-                    })
-                });
-
-                var data = await response.json();
-                console.log('📩 رد Supabase الكامل على signup:', JSON.stringify(data));
-
-                if (response.status === 429) {
-                    throw new Error('⚠️ تم تجاوز معدل الطلبات. يرجى الانتظار دقيقة ثم المحاولة مرة أخرى.');
-                }
-                if (!response.ok) {
-                    var errorMsg = data.error_description || data.message || data.msg || data.error || 'فشل إنشاء الحساب';
-                    if (errorMsg.includes('already registered')) {
-                        errorMsg = 'هذا البريد الإلكتروني مسجل بالفعل. يرجى استخدام بريد آخر.';
-                    }
-                    throw new Error(errorMsg);
-                }
+                var data = await Supabase.signup(email, password, { full_name: fullName, company_name: companyName });
 
                 var userId = data.id || (data.user && data.user.id);
-                var userEmail = data.email || (data.user && data.user.email);
+                var userEmail = data.email || (data.user && data.user.email) || email;
                 var accessToken = data.access_token;
 
-                if (!userId || !userEmail) {
+                if (!userId) {
                     throw new Error('لم يتم استلام بيانات المستخدم بشكل صحيح');
                 }
+
                 if (!accessToken) {
-                    throw new Error('تم إنشاء الحساب لكن لم يتم تفعيل الجلسة تلقائيًا. يرجى تسجيل الدخول يدويًا لإكمال الملف الشخصي.');
+                    // تفعيل البريد مفعّل في إعدادات المصادقة: نؤجل إنشاء الشركة لحين أول تسجيل دخول ناجح
+                    Supabase.savePendingSignup(userEmail, companyName, fullName);
+                    successMessage.querySelector('span').textContent =
+                        '✅ تم إنشاء الحساب. يرجى تفعيل بريدك الإلكتروني ثم تسجيل الدخول لإكمال إنشاء شركتك.';
+                    successMessage.classList.add('show');
+                    setTimeout(function() { window.location.href = 'login.html'; }, 3000);
+                    return;
                 }
 
-                var role = isFirstUser ? 'admin' : 'user';
-                await addUserToDatabase(userId, fullName, userEmail, role, companyName, accessToken);
+                // الجلسة نشطة فورًا: أنشئ الشركة والمستخدم الإداري الآن
+                await Supabase.createTenantAndAdmin(companyName, fullName, userEmail, accessToken);
 
-                var successMsg = isFirstUser ?
-                    '✅ تم إنشاء حساب المدير بنجاح! سيتم تحويلك إلى صفحة تسجيل الدخول.' :
-                    '✅ تم إنشاء الحساب بنجاح! سيتم تحويلك إلى صفحة تسجيل الدخول.';
-
-                successMessage.querySelector('span').textContent = successMsg;
+                successMessage.querySelector('span').textContent =
+                    '✅ تم إنشاء شركتك وحساب المدير الخاص بك بنجاح! سيتم تحويلك إلى صفحة تسجيل الدخول.';
                 successMessage.classList.add('show');
 
                 setTimeout(function() { window.location.href = 'login.html'; }, 2500);
@@ -418,31 +353,6 @@
             registerBtn.disabled = false;
             registerText.textContent = 'إنشاء حساب';
             registerSpinner.style.display = 'none';
-        }
-
-        async function addUserToDatabase(userId, fullName, email, role, companyName, accessToken) {
-            try {
-                var response = await fetch(SUPABASE_URL + '/rest/v1/users', {
-                    method: 'POST',
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + accessToken,
-                        'Content-Type': 'application/json', 'Prefer': 'return=representation'
-                    },
-                    body: JSON.stringify({
-                        id: userId, full_name: fullName, email: email, role: role,
-                        company_name: companyName, created_at: new Date().toISOString()
-                    })
-                });
-
-                if (!response.ok) {
-                    var errText = await response.text();
-                    console.warn('⚠️ فشل إضافة المستخدم إلى جدول users:', errText);
-                    throw new Error('فشل إضافة المستخدم إلى قاعدة البيانات');
-                }
-            } catch (error) {
-                console.error('❌ خطأ في إضافة المستخدم:', error);
-                throw new Error('فشل إضافة المستخدم إلى قاعدة البيانات: ' + error.message);
-            }
         }
     </script>
 </body>
