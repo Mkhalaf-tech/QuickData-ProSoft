@@ -5,12 +5,12 @@
            DESIGN SYSTEM - مطابق للصفحة الرئيسية
            ================================================================ */
         :root {
-            --primary: var(--primary);
+            --primary: #0e1c2e;
             --primary-light: #1a2e46;
             --primary-dark: #08131f;
-            --accent: var(--accent);
-            --accent-light: var(--accent-light);
-            --accent-dark: var(--accent-dark);
+            --accent: #9c7a3c;
+            --accent-light: #c9a86a;
+            --accent-dark: #755a29;
             --accent-tint: rgba(156, 122, 60, 0.08);
             --success: #1c7a4e;
             --success-bg: #e6f3ec;
@@ -20,14 +20,14 @@
             --info-bg: #e6edf4;
             --warning: #ad7f2e;
             --warning-bg: #f6eee1;
-            --bg: var(--bg);
+            --bg: #f3f1eb;
             --surface: #ffffff;
-            --surface-alt: var(--surface-alt);
-            --border: var(--border);
-            --border-light: var(--border-light);
-            --text: var(--text);
-            --text-secondary: var(--text-secondary);
-            --text-tertiary: var(--text-tertiary);
+            --surface-alt: #faf8f3;
+            --border: #e0dccf;
+            --border-light: #ebe7db;
+            --text: #181712;
+            --text-secondary: #5c5648;
+            --text-tertiary: #928c79;
             --text-inverse: #f5f3ec;
             --shadow-sm: 0 1px 2px rgba(14,28,46,0.04), 0 1px 3px rgba(14,28,46,0.06);
             --shadow-md: 0 2px 8px rgba(14,28,46,0.06), 0 6px 16px rgba(14,28,46,0.06);
@@ -2249,4 +2249,102 @@ aside.sidebar,
     #mainContent {
         margin-right: 0 !important;
     }
+}
+
+
+/* ================================================================
+   خلفيات موحّدة مطابقة لنظام حراء (Corporate Navy & Gold)
+   ================================================================ */
+html, body {
+    background: #f3f1eb !important;
+    background-color: #f3f1eb !important;
+    color: #181712;
+}
+body.dark-mode,
+body.dark-mode html {
+    background: #0a121c !important;
+    background-color: #0a121c !important;
+}
+.main-content {
+    background: #f3f1eb !important;
+    background-color: #f3f1eb !important;
+    padding: 0 !important; /* الحشو داخل dashboard-content مثل حراء */
+}
+body.dark-mode .main-content {
+    background: #0a121c !important;
+    background-color: #0a121c !important;
+}
+.navbar-custom {
+    background: #f3f1eb !important;
+    background-color: #f3f1eb !important;
+}
+body.dark-mode .navbar-custom {
+    background: #0a121c !important;
+}
+.dashboard-content {
+    background: transparent !important;
+    padding: 20px 24px 30px !important;
+}
+.panel,
+.card-panel,
+.table-card,
+.chart-card,
+.stat-card {
+    background: #ffffff !important;
+    border-color: #e0dccf !important;
+}
+body.dark-mode .panel,
+body.dark-mode .card-panel,
+body.dark-mode .table-card,
+body.dark-mode .chart-card,
+body.dark-mode .stat-card {
+    background: #111d2b !important;
+    border-color: #1e3044 !important;
+}
+.footer-custom {
+    background: transparent !important;
+    border-top: 1px solid #e0dccf;
+}
+body.dark-mode .footer-custom {
+    border-top-color: #1e3044;
+}
+
+
+/* Bootstrap overrides — منع خلفيات رمادية باردة */
+.bg-light, .bg-body, .bg-body-tertiary {
+    background-color: #f3f1eb !important;
+}
+.card, .modal-content, .dropdown-menu, .offcanvas {
+    background-color: #ffffff !important;
+    border-color: #e0dccf !important;
+}
+.table, .table > :not(caption) > * > * {
+    background-color: transparent !important;
+    --bs-table-bg: transparent;
+}
+.form-control, .form-select {
+    background-color: #ffffff !important;
+    border-color: #e0dccf !important;
+    color: #181712 !important;
+}
+.form-control:focus, .form-select:focus {
+    border-color: #9c7a3c !important;
+    box-shadow: 0 0 0 3px rgba(156, 122, 60, 0.12) !important;
+}
+body.dark-mode .bg-light,
+body.dark-mode .bg-body,
+body.dark-mode .bg-body-tertiary {
+    background-color: #0a121c !important;
+}
+body.dark-mode .card,
+body.dark-mode .modal-content,
+body.dark-mode .dropdown-menu {
+    background-color: #111d2b !important;
+    border-color: #1e3044 !important;
+}
+body.dark-mode .form-control,
+body.dark-mode .form-select {
+    background-color: #111d2b !important;
+    border-color: #1e3044 !important;
+    color: #f5f3ec !important;
 }

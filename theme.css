@@ -45,7 +45,7 @@
 }
 
 * { font-family: 'Cairo', sans-serif; }
-body { background: var(--bg); color: var(--text); font-size: 13.5px; }
+html, body { background: var(--bg); background-color: var(--bg); color: var(--text); font-size: 13.5px; }
 
 /* ===== الشريط الجانبي ===== */
 .sidebar {
@@ -181,9 +181,10 @@ a:focus-visible {
 /* ===== المحتوى الرئيسي ===== */
 .main-content {
     margin-right: 260px;
-    padding: 22px 30px;
+    padding: 0;
     min-height: 100vh;
     transition: margin-right 0.3s ease;
+    background: var(--bg);
 }
 
 .page-title-main {
