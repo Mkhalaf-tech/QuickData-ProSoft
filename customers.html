@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>العملاء - QuickData ProSoft</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="css/erp-theme.css" />
+</head>
+<body>
+  <div class="sidebar" id="sidebar"></div>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <div class="main-content" id="main-content">
+    <header class="top-header">
+      <div class="header-right">
+        <button class="sidebar-toggle" id="sidebarToggle"><i class="bi bi-list"></i></button>
+        <div>
+          <div class="breadcrumb"><a href="index.html">الرئيسية</a><span class="sep">/</span><span>المبيعات</span><span class="sep">/</span><span>العملاء</span></div>
+          <div class="page-title-header">العملاء</div>
+        </div>
+      </div>
+      <div class="header-left">
+        <div class="user-chip"><div class="user-avatar">م</div><span class="user-name">مدير النظام</span></div>
+      </div>
+    </header>
+    <div class="content-area">
+      <div class="page-header">
+        <div>
+          <h1>إدارة العملاء</h1>
+          <div class="page-desc">عرض وإضافة وتعديل بيانات العملاء والأرصدة المدينة</div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-outline" onclick="App.showToast('جاري تصدير قائمة العملاء...','info')"><i class="bi bi-download"></i> تصدير Excel</button>
+          <button class="btn btn-outline" onclick="window.print()"><i class="bi bi-printer"></i> طباعة</button>
+          <button class="btn btn-primary" onclick="openAddModal()"><i class="bi bi-plus-lg"></i> إضافة عميل</button>
+        </div>
+      </div>
+
+      <div class="stats-grid" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr))" id="custStats"></div>
+
+      <div class="card">
+        <div class="table-toolbar">
+          <div class="search-box"><i class="bi bi-search"></i><input type="text" id="searchInput" placeholder="بحث بالكود أو الاسم أو الهاتف أو المدينة..." /></div>
+          <div class="filters">
+            <select class="form-control form-select" id="statusFilter" style="width:140px">
+              <option value="">كل الحالات</option>
+              <option value="active">نشط</option>
+              <option value="inactive">غير نشط</option>
+            </select>
+            <select class="form-control form-select" id="balanceFilter" style="width:150px">
+              <option value="">كل الأرصدة</option>
+              <option value="has">عليه رصيد</option>
+              <option value="zero">رصيد صفر</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>الكود</th>
+                <th>اسم العميل</th>
+                <th>الهاتف</th>
+                <th>البريد</th>
+                <th>المدينة</th>
+                <th>الرقم الضريبي</th>
+                <th>الرصيد المدين</th>
+                <th>الحالة</th>
+                <th>تاريخ التسجيل</th>
+                <th>الإجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+        <div class="pagination-bar">
+          <span id="pageInfo"></span>
+          <span style="margin-right:auto;font-weight:700" id="totalBalance"></span>
+        </div>
+      </div>
+    </div>
+    <footer class="app-footer"><span id="footerText"></span></footer>
+  </div>
+
+  <!-- Modal: Add / Edit -->
+  <div class="modal-overlay" id="formModal">
+    <div class="modal-box modal-lg">
+      <div class="modal-header">
+        <span class="modal-title" id="formTitle">إضافة عميل جديد</span>
+        <button class="modal-close" onclick="closeModal('formModal')"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">كود العميل</label>
+            <input class="form-control" id="fCode" placeholder="يُولَّد تلقائياً إن تُرك فارغاً" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">اسم العميل *</label>
+            <input class="form-control" id="fName" placeholder="الاسم الكامل أو اسم الشركة" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">رقم الهاتف *</label>
+            <input class="form-control" id="fPhone" placeholder="01xxxxxxxxx" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">البريد الإلكتروني</label>
+            <input class="form-control" type="email" id="fEmail" placeholder="email@example.com" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">المدينة</label>
+            <input class="form-control" id="fCity" placeholder="القاهرة" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">الرقم الضريبي</label>
+            <input class="form-control" id="fTax" placeholder="xxx-xxx-xxx" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">العنوان التفصيلي</label>
+          <textarea class="form-control" id="fAddress" rows="2" placeholder="الشارع، الحي، المبنى..."></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">الرصيد الافتتاحي (ج.م)</label>
+            <input class="form-control" type="number" id="fBalance" value="0" min="0" step="0.01" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">الحالة</label>
+            <select class="form-control form-select" id="fStatus">
+              <option value="active">نشط</option>
+              <option value="inactive">غير نشط</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="saveCustomer()"><i class="bi bi-check-lg"></i> حفظ العميل</button>
+        <button class="btn btn-outline" onclick="closeModal('formModal')">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: View -->
+  <div class="modal-overlay" id="viewModal">
+    <div class="modal-box modal-lg">
+      <div class="modal-header">
+        <span class="modal-title" id="viewTitle">تفاصيل العميل</span>
+        <button class="modal-close" onclick="closeModal('viewModal')"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <div class="modal-body" id="viewBody"></div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="viewStatementBtn"><i class="bi bi-file-text"></i> كشف الحساب</button>
+        <button class="btn btn-outline" onclick="closeModal('viewModal')">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/mock-data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    let customers = MockData.customers.map(function(c){ return Object.assign({}, c); });
+    let editId = null;
+
+    function openModal(id){ document.getElementById(id).classList.add("active"); }
+    function closeModal(id){ document.getElementById(id).classList.remove("active"); }
+
+    function openAddModal(){
+      editId = null;
+      document.getElementById("formTitle").textContent = "إضافة عميل جديد";
+      ["fCode","fName","fPhone","fEmail","fCity","fTax","fAddress"].forEach(function(id){ document.getElementById(id).value = ""; });
+      document.getElementById("fBalance").value = 0;
+      document.getElementById("fStatus").value = "active";
+      openModal("formModal");
+    }
+
+    function openEditModal(id){
+      var c = customers.find(function(x){ return x.id === id; });
+      if(!c) return;
+      editId = id;
+      document.getElementById("formTitle").textContent = "تعديل عميل: " + c.name;
+      document.getElementById("fCode").value = c.code;
+      document.getElementById("fName").value = c.name;
+      document.getElementById("fPhone").value = c.phone;
+      document.getElementById("fEmail").value = c.email || "";
+      document.getElementById("fCity").value = c.city || "";
+      document.getElementById("fTax").value = c.taxNumber || "";
+      document.getElementById("fAddress").value = c.address || "";
+      document.getElementById("fBalance").value = c.balance;
+      document.getElementById("fStatus").value = c.status;
+      openModal("formModal");
+    }
+
+    function saveCustomer(){
+      var name = document.getElementById("fName").value.trim();
+      var phone = document.getElementById("fPhone").value.trim();
+      if(!name){ App.showToast("اسم العميل مطلوب","error"); return; }
+      if(!phone){ App.showToast("رقم الهاتف مطلوب","error"); return; }
+      var data = {
+        code: document.getElementById("fCode").value.trim() || ("C-" + String(customers.length + 1).padStart(3,"0")),
+        name: name, phone: phone,
+        email: document.getElementById("fEmail").value.trim(),
+        city: document.getElementById("fCity").value.trim() || "—",
+        taxNumber: document.getElementById("fTax").value.trim(),
+        address: document.getElementById("fAddress").value.trim(),
+        balance: Number(document.getElementById("fBalance").value) || 0,
+        status: document.getElementById("fStatus").value,
+        createdAt: new Date().toISOString().slice(0,10)
+      };
+      if(editId){
+        var idx = customers.findIndex(function(x){ return x.id === editId; });
+        if(idx >= 0){ data.id = editId; data.createdAt = customers[idx].createdAt; customers[idx] = data; }
+        App.showToast("تم تحديث بيانات العميل بنجاح","success");
+      } else {
+        data.id = Date.now();
+        customers.unshift(data);
+        App.showToast("تم إضافة العميل بنجاح","success");
+      }
+      closeModal("formModal");
+      render();
+    }
+
+    function viewCustomer(id){
+      var c = customers.find(function(x){ return x.id === id; });
+      if(!c) return;
+      document.getElementById("viewTitle").textContent = c.name;
+      document.getElementById("viewBody").innerHTML =
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">' +
+        '<div><div class="form-label">الكود</div><div style="font-weight:700;color:var(--accent)">'+c.code+'</div></div>' +
+        '<div><div class="form-label">الحالة</div><div>'+App.statusBadge(c.status)+'</div></div>' +
+        '<div><div class="form-label">الهاتف</div><div style="font-weight:600">'+c.phone+'</div></div>' +
+        '<div><div class="form-label">البريد</div><div>'+(c.email||"—")+'</div></div>' +
+        '<div><div class="form-label">المدينة</div><div>'+c.city+'</div></div>' +
+        '<div><div class="form-label">الرقم الضريبي</div><div>'+(c.taxNumber||"—")+'</div></div>' +
+        '<div style="grid-column:1/-1"><div class="form-label">العنوان</div><div>'+(c.address||"—")+'</div></div>' +
+        '<div><div class="form-label">الرصيد المدين</div><div style="font-weight:800;font-size:20px;color:var(--danger)">'+MockData.formatCurrency(c.balance)+'</div></div>' +
+        '<div><div class="form-label">تاريخ التسجيل</div><div>'+MockData.formatDate(c.createdAt)+'</div></div>' +
+        '</div>';
+      document.getElementById("viewStatementBtn").onclick = function(){ location.href = "customer-statement.html?type=customer&id="+c.id; };
+      openModal("viewModal");
+    }
+
+    function deleteCustomer(id){
+      App.confirmAction("هل أنت متأكد من حذف هذا العميل؟ لا يمكن التراجع عن هذا الإجراء.", function(){
+        customers = customers.filter(function(x){ return x.id !== id; });
+        render();
+        App.showToast("تم حذف العميل","success");
+      });
+    }
+
+    function render(){
+      var q = (document.getElementById("searchInput").value || "").toLowerCase();
+      var st = document.getElementById("statusFilter").value;
+      var bf = document.getElementById("balanceFilter").value;
+      var list = customers.filter(function(c){
+        if(st && c.status !== st) return false;
+        if(bf === "has" && c.balance <= 0) return false;
+        if(bf === "zero" && c.balance > 0) return false;
+        if(q && !(c.code + c.name + c.phone + (c.city||"") + (c.email||"")).toLowerCase().includes(q)) return false;
+        return true;
+      });
+      var tbody = document.getElementById("tbody");
+      if(!list.length){
+        tbody.innerHTML = '<tr><td colspan="10">'+App.emptyState("لا يوجد عملاء مطابقون لبحثك")+'</td></tr>';
+      } else {
+        tbody.innerHTML = list.map(function(c){
+          return '<tr>' +
+            '<td style="font-weight:600;color:var(--accent)">'+c.code+'</td>' +
+            '<td style="font-weight:600">'+c.name+'</td>' +
+            '<td>'+c.phone+'</td>' +
+            '<td>'+(c.email||"—")+'</td>' +
+            '<td>'+c.city+'</td>' +
+            '<td>'+(c.taxNumber||"—")+'</td>' +
+            '<td style="font-weight:700;color:'+(c.balance>0?"var(--danger)":"var(--success)")+'">'+MockData.formatCurrency(c.balance)+'</td>' +
+            '<td>'+App.statusBadge(c.status)+'</td>' +
+            '<td>'+MockData.formatDate(c.createdAt)+'</td>' +
+            '<td class="actions-cell">' +
+              '<button class="btn-icon-sm" title="عرض" onclick="viewCustomer('+c.id+')"><i class="bi bi-eye"></i></button>' +
+              '<button class="btn-icon-sm" title="تعديل" onclick="openEditModal('+c.id+')"><i class="bi bi-pencil"></i></button>' +
+              '<button class="btn-icon-sm" title="كشف حساب" onclick="location.href=\'customer-statement.html?type=customer&id='+c.id+'\'"><i class="bi bi-file-text"></i></button>' +
+              '<button class="btn-icon-sm danger" title="حذف" onclick="deleteCustomer('+c.id+')"><i class="bi bi-trash"></i></button>' +
+            '</td></tr>';
+        }).join("");
+      }
+      document.getElementById("pageInfo").textContent = "عرض " + list.length + " من " + customers.length + " عميل";
+      var totalBal = list.reduce(function(s,c){ return s + c.balance; }, 0);
+      document.getElementById("totalBalance").textContent = "إجمالي الأرصدة: " + MockData.formatCurrency(totalBal);
+
+      var active = customers.filter(function(c){ return c.status==="active"; }).length;
+      var withBal = customers.filter(function(c){ return c.balance>0; }).length;
+      var sumBal = customers.reduce(function(s,c){ return s+c.balance; },0);
+      document.getElementById("custStats").innerHTML =
+        '<div class="stat-card"><div class="stat-label">إجمالي العملاء</div><div class="stat-value">'+customers.length+'</div></div>' +
+        '<div class="stat-card"><div class="stat-label">نشط</div><div class="stat-value" style="color:var(--success)">'+active+'</div></div>' +
+        '<div class="stat-card"><div class="stat-label">عليهم أرصدة</div><div class="stat-value" style="color:var(--danger)">'+withBal+'</div></div>' +
+        '<div class="stat-card"><div class="stat-label">إجمالي المدين</div><div class="stat-value" style="font-size:16px">'+MockData.formatCurrency(sumBal)+'</div></div>';
+    }
+
+    document.addEventListener("DOMContentLoaded", function(){
+      App.initPage({ title: "العملاء", activeId: "customers" });
+      document.getElementById("searchInput").addEventListener("input", render);
+      document.getElementById("statusFilter").addEventListener("change", render);
+      document.getElementById("balanceFilter").addEventListener("change", render);
+      render();
+    });
+  </script>
+</body>
+</html>

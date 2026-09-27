@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لوحة التحكم - QuickData ProSoft</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="css/erp-theme.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="sidebar" id="sidebar"></div>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <div class="main-content" id="main-content">
+    <header class="top-header">
+      <div class="header-right">
+        <button class="sidebar-toggle" id="sidebarToggle"><i class="bi bi-list"></i></button>
+        <div>
+          <div class="breadcrumb"><a href="index.html">الرئيسية</a></div>
+          <div class="page-title-header">لوحة التحكم</div>
+        </div>
+      </div>
+      <div class="header-left">
+        <div class="user-chip"><div class="user-avatar">م</div><span class="user-name">مدير النظام</span></div>
+      </div>
+    </header>
+    <div class="content-area">
+
+      <div class="page-header"><div><h1>لوحة التحكم</h1><div class="page-desc">نظرة شاملة على أداء الشركة</div></div></div>
+      <div id="insightsArea"></div>
+      <div class="quick-actions-bar">
+        <a href="sales-invoices.html" class="quick-action-btn"><i class="bi bi-receipt"></i> فاتورة مبيعات</a>
+        <a href="customers.html" class="quick-action-btn"><i class="bi bi-person-plus"></i> عميل جديد</a>
+        <a href="receipts.html" class="quick-action-btn"><i class="bi bi-cash-coin"></i> سند قبض</a>
+        <a href="products.html" class="quick-action-btn"><i class="bi bi-box-seam"></i> منتج</a>
+        <a href="journal-entries.html" class="quick-action-btn"><i class="bi bi-journal-plus"></i> قيد يومي</a>
+        <a href="low-stock.html" class="quick-action-btn"><i class="bi bi-exclamation-triangle"></i> مخزون منخفض</a>
+        <button class="quick-action-btn" onclick="App.openCommandPalette()"><i class="bi bi-search"></i> بحث سريع</button>
+      </div>
+      <div class="stats-grid" id="statsRow"></div>
+      <div class="charts-row">
+        <div class="card"><div class="card-header"><span class="card-title">المبيعات الشهرية</span></div><div class="card-body"><canvas id="salesChart" height="220"></canvas></div></div>
+        <div class="card"><div class="card-header"><span class="card-title">أفضل المنتجات</span></div><div class="card-body"><canvas id="productsChart" height="220"></canvas></div></div>
+      </div>
+      <div class="card"><div class="card-header"><span class="card-title">آخر فواتير المبيعات</span><a href="sales-invoices.html" class="btn btn-sm btn-outline">عرض الكل</a></div>
+        <div class="card-body p-0"><div class="table-responsive"><table class="data-table"><thead><tr><th>الرقم</th><th>العميل</th><th>التاريخ</th><th>الإجمالي</th><th>الحالة</th></tr></thead><tbody id="recentInvoices"></tbody></table></div></div>
+      </div>
+
+    </div>
+    <footer class="app-footer"><span id="footerText"></span></footer>
+  </div>
+  <script src="js/mock-data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      App.initPage({ title: "لوحة التحكم", activeId: "dashboard" });
+      
+var s=MockData.dashboardStats,custMap={};MockData.customers.forEach(function(c){custMap[c.id]=c.name;});
+document.getElementById("statsRow").innerHTML=[{label:"مبيعات الشهر",val:MockData.formatCurrency(s.salesMonth),icon:"bi-graph-up",cls:"gold"},{label:"مشتريات الشهر",val:MockData.formatCurrency(s.purchasesMonth),icon:"bi-cart-check",cls:"blue"},{label:"المقبوضات",val:MockData.formatCurrency(s.receiptsMonth),icon:"bi-cash-coin",cls:"green"},{label:"المصروفات",val:MockData.formatCurrency(s.expensesMonth),icon:"bi-cash",cls:"red"},{label:"الذمم المدينة",val:MockData.formatCurrency(s.receivables),icon:"bi-people",cls:"gold"},{label:"الذمم الدائنة",val:MockData.formatCurrency(s.payables),icon:"bi-truck",cls:"red"},{label:"رصيد البنوك",val:MockData.formatCurrency(s.bankBalance),icon:"bi-bank",cls:"green"},{label:"منخفض المخزون",val:s.lowStockCount,icon:"bi-exclamation-triangle",cls:"red"}].map(function(x){return '<div class="stat-card"><div class="stat-icon '+x.cls+'"><i class="bi '+x.icon+'"></i></div><div class="stat-label">'+x.label+'</div><div class="stat-value">'+x.val+'</div></div>';}).join("");
+var insights="";
+if(s.lowStockCount)insights+='<div class="insight-banner danger"><i class="bi bi-exclamation-triangle-fill"></i><div><strong>'+s.lowStockCount+' منتجات</strong> منخفضة المخزون — <a href="low-stock.html">عرض</a></div></div>';
+if(s.overdueInvoices)insights+='<div class="insight-banner warning"><i class="bi bi-clock-history"></i><div><strong>'+s.overdueInvoices+' فواتير متأخرة</strong> — <a href="sales-invoices.html">فتح</a></div></div>';
+document.getElementById("insightsArea").innerHTML=insights;
+document.getElementById("recentInvoices").innerHTML=MockData.salesInvoices.slice(0,5).map(function(i){return '<tr><td style="font-weight:600;color:var(--accent)">'+i.number+'</td><td>'+(custMap[i.customerId]||"—")+'</td><td>'+MockData.formatDate(i.date)+'</td><td style="font-weight:700">'+MockData.formatCurrency(i.total)+'</td><td>'+App.statusBadge(i.status)+'</td></tr>';}).join("");
+if(window.Chart){new Chart(document.getElementById("salesChart"),{type:"line",data:{labels:MockData.salesChart.labels,datasets:[{data:MockData.salesChart.data,borderColor:"#9c7a3c",backgroundColor:"rgba(156,122,60,0.1)",fill:true,tension:0.3}]},options:{responsive:true,plugins:{legend:{display:false}}}});new Chart(document.getElementById("productsChart"),{type:"bar",data:{labels:MockData.topProducts.map(function(p){return p.name;}),datasets:[{data:MockData.topProducts.map(function(p){return p.sales;}),backgroundColor:["#9c7a3c","#0e1c2e","#2d6088"]}]},options:{responsive:true,plugins:{legend:{display:false}},indexAxis:"y"}});}
+
+    });
+  </script>
+</body>
+</html>
