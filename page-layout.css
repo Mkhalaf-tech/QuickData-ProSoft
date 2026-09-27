@@ -11,7 +11,7 @@
             --accent: var(--accent);
             --accent-light: var(--accent-light);
             --accent-dark: var(--accent-dark);
-            --accent-tint: rgba(220, 38, 38, 0.08);
+            --accent-tint: rgba(156, 122, 60, 0.08);
             --success: #1c7a4e;
             --success-bg: #e6f3ec;
             --danger: #ad3f39;
@@ -229,7 +229,7 @@
         }
 
         .nav-list a.active {
-            background: rgba(220, 38, 38, 0.12);
+            background: rgba(156, 122, 60, 0.12);
             color: var(--text-inverse);
             font-weight: 600;
         }
@@ -263,9 +263,9 @@
             font-weight: 700;
             padding: 1px 8px;
             border-radius: var(--radius-full);
-            background: rgba(220, 38, 38, 0.18);
+            background: rgba(156, 122, 60, 0.18);
             color: var(--accent-light);
-            border: 1px solid rgba(220, 38, 38, 0.15);
+            border: 1px solid rgba(156, 122, 60, 0.15);
             font-family: var(--font-display);
         }
 
@@ -884,7 +884,7 @@
         .modal-box input:focus {
             outline: none;
             border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.08);
+            box-shadow: 0 0 0 3px rgba(156, 122, 60, 0.08);
         }
 
         .modal-actions {
@@ -1270,7 +1270,7 @@
         body.dark-mode .btn-outline:hover {
             border-color: var(--accent);
             color: var(--accent-light);
-            background: rgba(220, 38, 38, 0.1);
+            background: rgba(156, 122, 60, 0.1);
         }
 
         body.dark-mode .btn-primary {
@@ -1499,7 +1499,7 @@ body {
     border-bottom: 1px solid var(--border-light, var(--border-light));
     font-size: 12.5px;
 }
-.table-erp tbody tr:hover { background: rgba(220,38,38,0.05); }
+.table-erp tbody tr:hover { background: rgba(156, 122, 60, 0.05); }
 .toolbar-erp { display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between; margin-bottom:12px; }
 .search-erp {
     display:flex; align-items:center; gap:8px;
@@ -1575,7 +1575,7 @@ body {
 .chart-header h6 { font-size: 13px; font-weight: 700; margin: 0; }
 .chart-badge {
     font-size: 10.5px; padding: 2px 8px; border-radius: 9999px;
-    background: rgba(220,38,38,.1); color: var(--accent); font-weight: 600;
+    background: rgba(156, 122, 60, .1); color: var(--accent); font-weight: 600;
 }
 .chart-bars {
     display: flex; align-items: flex-end; gap: 10px; height: 180px; padding-top: 10px;
@@ -1603,7 +1603,7 @@ body {
 .table-custom tbody td {
     padding: 9px 12px; border-bottom: 1px solid var(--border-light, var(--border-light)); font-size: 12.5px;
 }
-.table-custom tbody tr:hover { background: rgba(220,38,38,.05); }
+.table-custom tbody tr:hover { background: rgba(156, 122, 60, .05); }
 .table-custom tfoot td { font-weight: 800; border-top: 2px solid var(--border); background: var(--surface-alt, var(--surface-alt)); }
 .table-wrap { overflow-x: auto; }
 
@@ -1620,7 +1620,7 @@ body {
 }
 .report-link-card .ric-icon {
     width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
-    background: rgba(220,38,38,.1); color: var(--accent); font-size: 18px; margin-bottom: 12px;
+    background: rgba(156, 122, 60, .1); color: var(--accent); font-size: 18px; margin-bottom: 12px;
 }
 .report-link-card h5 { font-size: 14px; font-weight: 700; margin: 0 0 4px; }
 .report-link-card p { font-size: 12px; color: var(--text-tertiary); margin: 0; }
@@ -1693,58 +1693,58 @@ body {
 
 /* هوية العلامة */
 .brand-mark {
-    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%) !important;
+    background: linear-gradient(135deg, #9c7a3c 0%, #755a29 100%) !important;
     color: #fff !important;
-    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.35);
+    box-shadow: 0 2px 8px rgba(156, 122, 60, 0.35);
 }
 .nav-list a.active {
-    background: rgba(220, 38, 38, 0.14) !important;
+    background: rgba(156, 122, 60, 0.14) !important;
 }
-.nav-list a.active i { color: #f87171 !important; }
+.nav-list a.active i { color: #c9a86a !important; }
 .nav-list a.active::before {
-    background: #dc2626 !important;
+    background: #9c7a3c !important;
 }
 .btn-erp-primary, .btn-primary {
-    background: #dc2626 !important;
-    border-color: #dc2626 !important;
+    background: #9c7a3c !important;
+    border-color: #9c7a3c !important;
     color: #fff !important;
 }
 .btn-erp-primary:hover, .btn-primary:hover {
-    background: #b91c1c !important;
+    background: #755a29 !important;
 }
-.stat-gold .stat-number { color: #dc2626 !important; }
-.chart-bar { background: #dc2626 !important; }
-.chart-bar.sec { background: #0f172a !important; opacity: 0.85; }
+.stat-gold .stat-number { color: #9c7a3c !important; }
+.chart-bar { background: #9c7a3c !important; }
+.chart-bar.sec { background: #0e1c2e !important; opacity: 0.85; }
 .chart-badge {
-    background: rgba(220, 38, 38, 0.1) !important;
-    color: #dc2626 !important;
+    background: rgba(156, 122, 60, 0.1) !important;
+    color: #9c7a3c !important;
 }
 #fabMain, .fab-main {
-    background: #dc2626 !important;
-    box-shadow: 0 4px 16px rgba(220, 38, 38, 0.4) !important;
+    background: #9c7a3c !important;
+    box-shadow: 0 4px 16px rgba(156, 122, 60, 0.4) !important;
 }
 .report-link-card .ric-icon {
-    background: rgba(220, 38, 38, 0.1) !important;
-    color: #dc2626 !important;
+    background: rgba(156, 122, 60, 0.1) !important;
+    color: #9c7a3c !important;
 }
 .report-tab.active {
-    color: #dc2626 !important;
-    border-bottom-color: #dc2626 !important;
+    color: #9c7a3c !important;
+    border-bottom-color: #9c7a3c !important;
 }
 
 /* QuickData dark — متوافق مع الهوية الحمراء */
 body.dark-mode, .dark-mode {
-    --bg: #020617;
-    --surface: #0f172a;
+    --bg: #08131f;
+    --surface: #0e1c2e;
     --surface-alt: #1e293b;
     --border: #334155;
     --border-light: #1e293b;
     --text: #f1f5f9;
     --text-secondary: #94a3b8;
     --text-tertiary: #64748b;
-    --accent-tint: rgba(220, 38, 38, 0.15);
+    --accent-tint: rgba(156, 122, 60, 0.15);
 }
-.dark-mode .sidebar { background: #020617; }
+.dark-mode .sidebar { background: #08131f; }
 .dark-mode .btn-erp-outline {
     background: var(--surface-alt);
     color: var(--text-secondary);
@@ -1757,14 +1757,14 @@ body.dark-mode, .dark-mode {
 /* خلفية ناعمة متدرجة خفيفة */
 body {
     background:
-        radial-gradient(ellipse 80% 50% at 0% -20%, rgba(220, 38, 38, 0.06), transparent),
+        radial-gradient(ellipse 80% 50% at 0% -20%, rgba(156, 122, 60, 0.06), transparent),
         radial-gradient(ellipse 60% 40% at 100% 0%, rgba(15, 23, 42, 0.04), transparent),
         var(--bg) !important;
 }
 
 /* الشريط الجانبي — زجاج داكن أنيق */
 .sidebar {
-    background: linear-gradient(180deg, #0f172a 0%, #0b1220 55%, #020617 100%) !important;
+    background: linear-gradient(180deg, #0e1c2e 0%, #0b1220 55%, #08131f 100%) !important;
     border-left: 1px solid rgba(255, 255, 255, 0.06) !important;
     box-shadow: -8px 0 32px rgba(15, 23, 42, 0.18) !important;
 }
@@ -1776,11 +1776,11 @@ body {
     width: 38px !important;
     height: 38px !important;
     border-radius: 10px !important;
-    background: linear-gradient(145deg, #ef4444, #b91c1c) !important;
+    background: linear-gradient(145deg, #c9a86a, #755a29) !important;
     font-size: 13px !important;
     font-weight: 800 !important;
     letter-spacing: -0.5px;
-    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4) !important;
+    box-shadow: 0 4px 12px rgba(156, 122, 60, 0.4) !important;
 }
 .brand-text {
     font-size: 14.5px !important;
@@ -1812,13 +1812,13 @@ body {
     color: #fff !important;
 }
 .nav-list a.active {
-    background: linear-gradient(90deg, rgba(220, 38, 38, 0.22), rgba(220, 38, 38, 0.08)) !important;
+    background: linear-gradient(90deg, rgba(156, 122, 60, 0.22), rgba(156, 122, 60, 0.08)) !important;
     color: #fff !important;
     font-weight: 700 !important;
-    box-shadow: inset -2px 0 0 #dc2626;
+    box-shadow: inset -2px 0 0 #9c7a3c;
 }
 .nav-list a.active i {
-    color: #f87171 !important;
+    color: #c9a86a !important;
 }
 .nav-list a.active::before {
     display: none !important; /* نستبدل بـ box-shadow */
@@ -1832,7 +1832,7 @@ body {
     transition: background 0.15s !important;
 }
 .logout-btn:hover {
-    background: rgba(220, 38, 38, 0.15) !important;
+    background: rgba(156, 122, 60, 0.15) !important;
     color: #fca5a5 !important;
 }
 
@@ -1865,7 +1865,7 @@ body {
 }
 .nav-btn:hover {
     border-color: #fca5a5 !important;
-    color: #dc2626 !important;
+    color: #9c7a3c !important;
     background: #fef2f2 !important;
     transform: translateY(-1px);
 }
@@ -1880,8 +1880,8 @@ body {
     border-color: #fca5a5 !important;
 }
 .user-avatar {
-    background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
-    box-shadow: 0 2px 6px rgba(220, 38, 38, 0.3) !important;
+    background: linear-gradient(135deg, #9c7a3c, #755a29) !important;
+    box-shadow: 0 2px 6px rgba(156, 122, 60, 0.3) !important;
 }
 
 /* رأس الصفحة */
@@ -1924,7 +1924,7 @@ body {
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, #dc2626, #f87171);
+    background: linear-gradient(90deg, #9c7a3c, #c9a86a);
     opacity: 0;
     transition: opacity 0.18s ease;
 }
@@ -1956,7 +1956,7 @@ body {
     justify-content: center;
     float: left !important;
     background: #fef2f2;
-    color: #dc2626 !important;
+    color: #9c7a3c !important;
     opacity: 1 !important;
     font-size: 16px !important;
 }
@@ -2007,15 +2007,15 @@ body {
     transition: all 0.15s ease !important;
 }
 .btn-erp-primary {
-    background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%) !important;
-    border: 1px solid #b91c1c !important;
+    background: linear-gradient(180deg, #c9a86a 0%, #9c7a3c 100%) !important;
+    border: 1px solid #755a29 !important;
     color: #fff !important;
     box-shadow: 0 1px 2px rgba(185, 28, 28, 0.25), inset 0 1px 0 rgba(255,255,255,0.15) !important;
 }
 .btn-erp-primary:hover {
-    background: linear-gradient(180deg, #dc2626 0%, #b91c1c 100%) !important;
+    background: linear-gradient(180deg, #9c7a3c 0%, #755a29 100%) !important;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3) !important;
+    box-shadow: 0 4px 12px rgba(156, 122, 60, 0.3) !important;
 }
 .btn-erp-outline {
     background: var(--surface) !important;
@@ -2024,7 +2024,7 @@ body {
 }
 .btn-erp-outline:hover {
     border-color: #fca5a5 !important;
-    color: #dc2626 !important;
+    color: #9c7a3c !important;
     background: #fef2f2 !important;
 }
 
@@ -2040,7 +2040,7 @@ body {
 }
 .search-erp:focus-within {
     border-color: #fca5a5 !important;
-    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12) !important;
+    box-shadow: 0 0 0 3px rgba(156, 122, 60, 0.12) !important;
     background: #fff !important;
 }
 
@@ -2052,8 +2052,8 @@ body {
     transition: border-color 0.15s, box-shadow 0.15s !important;
 }
 .form-control:focus, .form-select:focus {
-    border-color: #f87171 !important;
-    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12) !important;
+    border-color: #c9a86a !important;
+    box-shadow: 0 0 0 3px rgba(156, 122, 60, 0.12) !important;
 }
 
 /* نوافذ منبثقة */
@@ -2079,7 +2079,7 @@ body {
     padding: 10px 16px !important;
 }
 .report-tab.active {
-    background: rgba(220, 38, 38, 0.06) !important;
+    background: rgba(156, 122, 60, 0.06) !important;
 }
 
 /* بطاقات التقارير */
@@ -2095,7 +2095,7 @@ body {
 .report-link-card .ric-icon {
     border-radius: 12px !important;
     background: linear-gradient(145deg, #fef2f2, #fee2e2) !important;
-    color: #dc2626 !important;
+    color: #9c7a3c !important;
 }
 
 /* التذييل */
@@ -2105,7 +2105,7 @@ body {
     font-size: 11.5px !important;
 }
 .footer-brand span {
-    color: #dc2626 !important;
+    color: #9c7a3c !important;
 }
 
 /* شارات الحالة */
@@ -2115,14 +2115,14 @@ body {
     padding: 3px 10px !important;
 }
 .badge-success { background: #ecfdf5 !important; color: #059669 !important; }
-.badge-danger { background: #fef2f2 !important; color: #dc2626 !important; }
+.badge-danger { background: #fef2f2 !important; color: #9c7a3c !important; }
 .badge-warning { background: #fffbeb !important; color: #d97706 !important; }
 .badge-info { background: #f0f9ff !important; color: #0284c7 !important; }
 
 /* زر الإجراءات السريعة */
 #fabMain {
-    background: linear-gradient(145deg, #ef4444, #b91c1c) !important;
-    box-shadow: 0 6px 20px rgba(220, 38, 38, 0.45) !important;
+    background: linear-gradient(145deg, #c9a86a, #755a29) !important;
+    box-shadow: 0 6px 20px rgba(156, 122, 60, 0.45) !important;
 }
 #fabMain:hover {
     transform: scale(1.05);
@@ -2133,14 +2133,14 @@ body {
     background: rgba(15, 23, 42, 0.92) !important;
 }
 .dark-mode .stat-card:hover {
-    border-color: rgba(220, 38, 38, 0.4) !important;
+    border-color: rgba(156, 122, 60, 0.4) !important;
 }
 .dark-mode .table-custom tbody tr:hover,
 .dark-mode .table-erp tbody tr:hover {
-    background: rgba(220, 38, 38, 0.08) !important;
+    background: rgba(156, 122, 60, 0.08) !important;
 }
 .dark-mode .stat-card .stat-icon {
-    background: rgba(220, 38, 38, 0.15) !important;
+    background: rgba(156, 122, 60, 0.15) !important;
 }
 
 
@@ -2156,8 +2156,8 @@ aside.sidebar,
     width: 260px !important;
     height: 100vh !important;
     height: 100dvh !important;
-    background: #0f172a !important;
-    background-color: #0f172a !important;
+    background: #0e1c2e !important;
+    background-color: #0e1c2e !important;
     background-image: none !important;
     opacity: 1 !important;
     visibility: visible !important;
@@ -2175,7 +2175,7 @@ aside.sidebar,
 
 .sidebar-brand,
 .sidebar .sidebar-brand {
-    background: #0f172a !important;
+    background: #0e1c2e !important;
     flex-shrink: 0;
 }
 
@@ -2186,7 +2186,7 @@ aside.sidebar,
 }
 
 .sidebar-footer {
-    background: #0f172a !important;
+    background: #0e1c2e !important;
     flex-shrink: 0;
 }
 
@@ -2207,11 +2207,11 @@ aside.sidebar,
 }
 .nav-list a.active {
     color: #ffffff !important;
-    background: rgba(220, 38, 38, 0.2) !important;
-    box-shadow: inset -3px 0 0 #dc2626 !important;
+    background: rgba(156, 122, 60, 0.2) !important;
+    box-shadow: inset -3px 0 0 #9c7a3c !important;
 }
 .nav-list a.active i {
-    color: #f87171 !important;
+    color: #c9a86a !important;
 }
 .nav-section-title {
     color: rgba(255,255,255,0.3) !important;

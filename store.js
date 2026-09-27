@@ -4,7 +4,7 @@
  */
 var MockStore = (function () {
   var PREFIX = 'qdps_';
-  var VERSION = '2.0.0';
+  var VERSION = '2.1.0';
   var KEYS = [
     'customers', 'suppliers', 'products', 'salesInvoices', 'purchaseInvoices',
     'receipts', 'paymentsList', 'journalEntries', 'expenses', 'employees',

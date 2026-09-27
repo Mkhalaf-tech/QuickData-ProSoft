@@ -1,41 +1,41 @@
 /* ================================================================
-   QuickData ProSoft — نظام التصميم (Theme)
-   هوية احترافية عالمية: فحمي داكن + أحمر قرمزي + محايدات باردة
+   QuickData ProSoft — نظام التصميم (Theme) v2.1
+   هوية مستوحاة من التصميم الاحترافي: كحلي داكن + ذهبي دافئ
+   Corporate Navy & Gold
    ================================================================ */
 
 :root {
-    /* —— QuickData ProSoft — هوية احترافية عالمية —— */
-    /* أساسي: فحمي داكن للشريط */
-    --primary: #0f172a;
-    --primary-light: #1e293b;
-    --primary-dark: #020617;
-    /* لمسة حمراء احترافية */
-    --accent: #dc2626;
-    --accent-light: #f87171;
-    --accent-dark: #b91c1c;
-    --accent-tint: rgba(220, 38, 38, 0.08);
+    /* —— QuickData ProSoft — كحلي وذهبي احترافي —— */
+    --primary: #0e1c2e;
+    --primary-light: #1a2e46;
+    --primary-dark: #08131f;
+    /* لمسة ذهبية دافئة */
+    --accent: #9c7a3c;
+    --accent-light: #c9a86a;
+    --accent-dark: #755a29;
+    --accent-tint: rgba(156, 122, 60, 0.08);
     /* حالات */
-    --success: #059669;
-    --success-bg: #ecfdf5;
-    --danger: #dc2626;
-    --danger-bg: #fef2f2;
-    --info: #0284c7;
-    --info-bg: #f0f9ff;
-    --warning: #d97706;
-    --warning-bg: #fffbeb;
-    /* خلفيات محايدة باردة (ليست بيج سياحي) */
-    --bg: #f1f5f9;
+    --success: #1c7a4e;
+    --success-bg: #e6f3ec;
+    --danger: #ad3f39;
+    --danger-bg: #f7e8e6;
+    --info: #2d6088;
+    --info-bg: #e6edf4;
+    --warning: #ad7f2e;
+    --warning-bg: #f6eee1;
+    /* خلفيات دافئة محايدة */
+    --bg: #f3f1eb;
     --surface: #ffffff;
-    --surface-alt: #f8fafc;
-    --border: #e2e8f0;
-    --border-light: #f1f5f9;
-    --text: #0f172a;
-    --text-secondary: #475569;
-    --text-tertiary: #94a3b8;
-    --text-inverse: #f8fafc;
-    --shadow-sm: 0 1px 2px rgba(15,23,42,0.05), 0 1px 3px rgba(15,23,42,0.06);
-    --shadow-md: 0 4px 12px rgba(15,23,42,0.07), 0 2px 4px rgba(15,23,42,0.04);
-    --shadow-lg: 0 12px 32px rgba(15,23,42,0.12);
+    --surface-alt: #faf8f3;
+    --border: #e0dccf;
+    --border-light: #ebe7db;
+    --text: #181712;
+    --text-secondary: #5c5648;
+    --text-tertiary: #928c79;
+    --text-inverse: #f5f3ec;
+    --shadow-sm: 0 1px 2px rgba(14,28,46,0.04), 0 1px 3px rgba(14,28,46,0.06);
+    --shadow-md: 0 2px 8px rgba(14,28,46,0.06), 0 6px 16px rgba(14,28,46,0.06);
+    --shadow-lg: 0 10px 30px rgba(14,28,46,0.10);
     --radius-sm: 6px;
     --radius-md: 10px;
     --radius-lg: 14px;
@@ -54,8 +54,8 @@ body { background: var(--bg); color: var(--text); font-size: 13.5px; }
     position: fixed;
     right: 0;
     top: 0;
-    background: #0f172a;
-    background-color: #0f172a;
+    background: #0e1c2e;
+    background-color: #0e1c2e;
     overflow-y: auto;
     z-index: 1050;
     transition: transform 0.3s ease;
@@ -128,7 +128,7 @@ body { background: var(--bg); color: var(--text); font-size: 13.5px; }
 }
 .sidebar .nav-link:hover i { background: none; opacity: 1; }
 .sidebar .nav-link.active {
-    background: rgba(220, 38, 38, 0.14);
+    background: rgba(156, 122, 60, 0.14);
     color: var(--text-inverse);
     font-weight: 600;
     border-right-color: transparent;
@@ -152,17 +152,17 @@ body { background: var(--bg); color: var(--text); font-size: 13.5px; }
     margin-right: auto;
     min-width: 20px;
     text-align: center;
-    background: rgba(220, 38, 38, 0.18);
+    background: rgba(156, 122, 60, 0.18);
     padding: 1px 8px;
     border-radius: var(--radius-full);
     font-size: 10px;
     font-variant-numeric: tabular-nums;
     color: var(--accent-light);
-    border: 1px solid rgba(220, 38, 38, 0.15);
+    border: 1px solid rgba(156, 122, 60, 0.15);
     transition: all 0.2s;
 }
 .sidebar .nav-link.active .badge {
-    background: rgba(220, 38, 38, 0.22);
+    background: rgba(156, 122, 60, 0.22);
     color: var(--accent-light);
 }
 .sidebar hr { border-color: rgba(255,255,255,0.06) !important; margin: 10px 16px !important; }
@@ -406,7 +406,7 @@ a:focus-visible {
     font-size: 13px; font-family: 'Cairo', sans-serif; transition: 0.2s; background: var(--surface); color: var(--text);
 }
 .form-field input:focus, .form-field select:focus, .form-field textarea:focus {
-    outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(220,38,38,0.12);
+    outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(156,122,60,0.12);
 }
 @keyframes modalPop {
     from { opacity: 0; transform: scale(0.96); }
@@ -651,15 +651,15 @@ a:focus-visible {
   background: linear-gradient(135deg, var(--accent), var(--accent-dark));
   color: #fff;
   font-size: 24px;
-  box-shadow: 0 6px 20px rgba(220,38,38,.4);
+  box-shadow: 0 6px 20px rgba(156,122,60,.4);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: transform .25s, box-shadow .25s, background .2s;
 }
-.fab-main:hover { box-shadow: 0 8px 28px rgba(220,38,38,.5); transform: scale(1.05); }
-.fab-main.open { transform: rotate(45deg); background: #991b1b; }
+.fab-main:hover { box-shadow: 0 8px 28px rgba(156,122,60,.5); transform: scale(1.05); }
+.fab-main.open { transform: rotate(45deg); background: #755a29; }
 .fab-menu {
   display: none;
   flex-direction: column;
@@ -773,14 +773,14 @@ a:focus-visible {
 
 /* Dark mode refinements v2 */
 body.dark-mode {
-  --bg: #0b1220;
-  --surface: #111827;
-  --surface-alt: #1a2332;
-  --border: #1e293b;
-  --border-light: #1a2332;
-  --text: #f1f5f9;
-  --text-secondary: #94a3b8;
-  --text-tertiary: #64748b;
+  --bg: #0a121c;
+  --surface: #111d2b;
+  --surface-alt: #162433;
+  --border: #1e3044;
+  --border-light: #162433;
+  --text: #f5f3ec;
+  --text-secondary: #a89f8a;
+  --text-tertiary: #7a7260;
   --shadow-sm: 0 1px 2px rgba(0,0,0,.3);
   --shadow-md: 0 4px 12px rgba(0,0,0,.35);
   --shadow-lg: 0 12px 32px rgba(0,0,0,.45);

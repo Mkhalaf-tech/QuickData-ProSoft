@@ -14,7 +14,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <style>
       .dash-welcome {
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #dc2626 150%);
+        background: linear-gradient(135deg, #0e1c2e 0%, #1a2e46 50%, #9c7a3c 150%);
         border-radius: 16px;
         padding: 22px 26px;
         color: #fff;
@@ -48,7 +48,7 @@
       }
       .activity-time { color: var(--text-tertiary); font-size: 11px; margin-top: 2px; }
       body.dark-mode .dash-welcome {
-        background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #7f1d1d 150%);
+        background: linear-gradient(135deg, #08131f 0%, #0e1c2e 50%, #755a29 150%);
       }
     </style>
 </head>
@@ -86,7 +86,7 @@
                     <h2>مرحباً بك في QuickData ProSoft</h2>
                     <p>لوحة تحكم شاملة — راقب المبيعات والمخزون والمالية في مكان واحد · اضغط <strong>Ctrl+K</strong> للبحث السريع</p>
                 </div>
-                <div class="ver-badge"><i class="bi bi-rocket-takeoff"></i> الإصدار 2.0</div>
+                <div class="ver-badge"><i class="bi bi-rocket-takeoff"></i> الإصدار 2.1</div>
             </div>
 
             <div class="page-header">
@@ -161,7 +161,7 @@
                         <div class="activity-item">
                             <div class="activity-dot"></div>
                             <div>
-                                <div>تم تحديث النظام إلى الإصدار 2.0</div>
+                                <div>تم تحديث النظام إلى الإصدار 2.1</div>
                                 <div class="activity-time">الآن</div>
                             </div>
                         </div>
@@ -177,7 +177,7 @@
                     <span class="footer-divider">|</span>
                     <span class="footer-copy">© 2026 جميع الحقوق محفوظة — حلول إدارة الأعمال الاحترافية</span>
                 </div>
-                <div class="footer-left"><span class="footer-version">الإصدار 2.0.0</span></div>
+                <div class="footer-left"><span class="footer-version">الإصدار 2.1.0</span></div>
             </div>
         </footer>
     </main>
@@ -227,14 +227,14 @@
                         {
                             label: 'المبيعات',
                             data: chart.sales || chart.data || [],
-                            backgroundColor: 'rgba(220,38,38,.85)',
+                            backgroundColor: 'rgba(156,122,60,.85)',
                             borderRadius: 6,
                             borderSkipped: false
                         },
                         {
                             label: 'المشتريات',
                             data: chart.purchases || [],
-                            backgroundColor: 'rgba(15,23,42,.55)',
+                            backgroundColor: 'rgba(14,28,46,.55)',
                             borderRadius: 6,
                             borderSkipped: false
                         }
@@ -295,7 +295,7 @@
             }).join('');
         } else {
             // Seed a welcome activity once
-            MockStore.logActivity('تحديث النظام', 'ترقية إلى الإصدار 2.0 بنجاح', 'system');
+            MockStore.logActivity('تحديث النظام', 'ترقية إلى الإصدار 2.1 بنجاح', 'system');
         }
     });
     </script>

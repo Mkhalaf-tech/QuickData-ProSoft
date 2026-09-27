@@ -5,7 +5,7 @@
   'use strict';
   var SYSTEM_NAME = 'QuickData ProSoft';
   var SYSTEM_SUB = 'حلول إدارة الأعمال الاحترافية';
-  var VERSION = '2.0.0';
+  var VERSION = '2.1.0';
 
   var MENU = [
     { title: 'القائمة الرئيسية', items: [
