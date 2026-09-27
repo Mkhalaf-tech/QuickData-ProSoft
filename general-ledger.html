@@ -93,7 +93,7 @@
                     <span class="footer-divider">|</span>
                     <span class="footer-copy">© 2026 جميع الحقوق محفوظة — حلول إدارة الأعمال الاحترافية</span>
                 </div>
-                <div class="footer-left"><span class="footer-version">الإصدار 2.1.0</span></div>
+                <div class="footer-left"><span class="footer-version">الإصدار 2.2.0</span></div>
             </div>
         </footer>
     </main>
@@ -144,7 +144,7 @@
                     '<td>'+(m.credit?MockData.formatCurrency(m.credit):'—')+'</td>'+
                     '<td style="font-weight:700">'+MockData.formatCurrency(bal)+'</td></tr>';
             }).join('');
-            if (!moves.length) rows = '<tr><td colspan="6"><div class="empty-erp"><i class="bi bi-inbox"></i>لا توجد حركات على هذا الحساب في الفترة</div></td></tr>';
+            if (!moves.length) rows = '<tr><td colspan="6"><div class="empty-erp"><i class="bi bi-inbox"></i><div class="empty-title">لا توجد حركات على هذا الحساب في الفترة</div></div></td></tr>';
             document.getElementById('tbody').innerHTML = rows;
             document.getElementById('tfoot').innerHTML = moves.length ?
                 '<tr><td colspan="3">الإجمالي</td><td>'+MockData.formatCurrency(td)+'</td><td>'+MockData.formatCurrency(tc)+'</td><td style="font-weight:800">'+MockData.formatCurrency(bal)+'</td></tr>' : '';

@@ -5,7 +5,7 @@
   'use strict';
   var SYSTEM_NAME = 'QuickData ProSoft';
   var SYSTEM_SUB = 'حلول إدارة الأعمال الاحترافية';
-  var VERSION = '2.1.0';
+  var VERSION = '2.3.0';
 
   var MENU = [
     { title: 'القائمة الرئيسية', items: [
@@ -166,6 +166,17 @@
       el.classList.remove('show');
       setTimeout(function () { el.remove(); }, 300);
     }, 3200);
+  };
+
+
+  window.emptyState = function (icon, title, desc) {
+    icon = icon || 'bi-inbox';
+    title = title || 'لا توجد بيانات';
+    desc = desc || '';
+    return '<div class="empty-erp"><i class="bi ' + icon + '"></i>' +
+      (title ? '<div class="empty-title">' + title + '</div>' : '') +
+      (desc ? '<div class="empty-desc">' + desc + '</div>' : '') +
+      '</div>';
   };
 
   window.statusBadge = function (status) {

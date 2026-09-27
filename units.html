@@ -23,7 +23,7 @@
                 <div class="navbar-logo-container">
                     <span class="navbar-logo-text" id="navbarBrandText">QuickData <span>ProSoft</span></span>
                 </div>
-                <h4 class="page-title" id="pageTitleText">وحدات القياس<small>وحدات الأصناف</small></h4>
+                <h4 class="page-title" id="pageTitleText">وحدات القياس<small>الوحدات المستخدمة في المنتجات</small></h4>
             </div>
             <div class="navbar-right">
                 <button class="nav-btn" id="darkModeToggle" type="button" title="الوضع الليلي"><i class="bi bi-moon-fill"></i></button>
@@ -40,25 +40,42 @@
         </nav>
 
         <div class="dashboard-content">
-
             <div class="page-header">
-                <div class="ph-left"><h2>وحدات القياس</h2><p>الوحدات المستخدمة في المنتجات</p></div>
+                <div class="ph-left"><h2>وحدات القياس</h2><p>إدارة الوحدات المستخدمة في المنتجات</p></div>
                 <div class="ph-right"><strong>اليوم</strong><span id="headerDate">—</span></div>
             </div>
             <div class="card-panel">
                 <div class="toolbar-erp">
                     <div class="search-erp"><i class="bi bi-search"></i><input type="text" id="searchInput" placeholder="بحث..." /></div>
                     <a class="btn-erp btn-erp-outline" href="products.html"><i class="bi bi-box-seam"></i> المنتجات</a>
+                    <button type="button" class="btn-erp btn-erp-primary" onclick="openU()"><i class="bi bi-plus-lg"></i> وحدة جديدة</button>
                 </div>
                 <div class="table-responsive">
                     <table class="table-erp">
-                        <thead><tr><th>#</th><th>الوحدة</th><th>عدد المنتجات</th></tr></thead>
+                        <thead><tr><th>#</th><th>الوحدة</th><th>عدد المنتجات</th><th></th></tr></thead>
                         <tbody id="tbody"></tbody>
                     </table>
                 </div>
             </div>
-
         </div>
+
+        <div id="uModal" class="erp-modal-overlay" style="display:none">
+            <div class="erp-modal sm" style="max-width:420px">
+                <div class="erp-modal-header">
+                    <strong id="uTitle">وحدة جديدة</strong>
+                    <button type="button" class="erp-modal-close" onclick="closeErpModal('uModal')">&times;</button>
+                </div>
+                <div class="erp-modal-body">
+                    <label class="form-label" style="font-size:12px;font-weight:600">اسم الوحدة *</label>
+                    <input class="form-control form-control-sm" id="uName" placeholder="مثال: قطعة، كيلو، علبة">
+                </div>
+                <div class="erp-modal-footer">
+                    <button type="button" class="btn-erp btn-erp-primary" onclick="saveU()">حفظ</button>
+                    <button type="button" class="btn-erp btn-erp-outline" onclick="closeErpModal('uModal')">إلغاء</button>
+                </div>
+            </div>
+        </div>
+
         <footer class="footer-custom">
             <div class="footer-content">
                 <div class="footer-right">
@@ -66,7 +83,7 @@
                     <span class="footer-divider">|</span>
                     <span class="footer-copy">© 2026 جميع الحقوق محفوظة — حلول إدارة الأعمال الاحترافية</span>
                 </div>
-                <div class="footer-left"><span class="footer-version">الإصدار 2.1.0</span></div>
+                <div class="footer-left"><span class="footer-version">الإصدار 2.2.0</span></div>
             </div>
         </footer>
     </main>
@@ -75,19 +92,77 @@
     <script src="layout-erp.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function () {
-        initERPPage({ title: 'وحدات القياس', subtitle: 'وحدات الأصناف', activeId: 'products' });
+        initERPPage({ title: 'وحدات القياس', subtitle: 'وحدات الأصناف', activeId: 'units' });
 
-        function render(){
-            var q=(document.getElementById('searchInput').value||'').toLowerCase();
-            var units=MockData.units||[];
-            var list=units.filter(function(u){return !q||u.name.toLowerCase().indexOf(q)>=0;});
-            document.getElementById('tbody').innerHTML=list.map(function(u,i){
-                var cnt=MockData.products.filter(function(p){return p.unitId===u.id;}).length;
-                return '<tr><td>'+(i+1)+'</td><td style="font-weight:600">'+u.name+'</td><td>'+cnt+'</td></tr>';
-            }).join('')||'<tr><td colspan="3"><div class="empty-erp"><i class="bi bi-inbox"></i>لا وحدات</div></td></tr>';
+        // units stored under local key; seed from MockData
+        var units = MockStore.get('units');
+        if (!units || !units.length) {
+            units = JSON.parse(JSON.stringify(MockData.units || []));
+            MockStore.save('units', units);
         }
-        document.getElementById('searchInput').addEventListener('input',render); render();
+        var editId = null;
 
+        function productCount(unitId) {
+            var prods = MockStore.get('products') || [];
+            return prods.filter(function (p) { return p.unitId === unitId; }).length;
+        }
+
+        function openU(id) {
+            editId = id || null;
+            document.getElementById('uTitle').textContent = id ? 'تعديل وحدة' : 'وحدة جديدة';
+            var u = id ? units.find(function (x) { return x.id === id; }) : null;
+            document.getElementById('uName').value = u ? u.name : '';
+            openErpModal('uModal');
+            setTimeout(function () { document.getElementById('uName').focus(); }, 50);
+        }
+
+        function saveU() {
+            var name = document.getElementById('uName').value.trim();
+            if (!name) { showToast('أدخل اسم الوحدة', 'error'); return; }
+            if (editId) {
+                var u = units.find(function (x) { return x.id === editId; });
+                if (u) u.name = name;
+                MockStore.logActivity('تعديل وحدة', name, 'units');
+            } else {
+                units.push({ id: MockStore.nextId(units), name: name });
+                MockStore.logActivity('إضافة وحدة', name, 'units');
+            }
+            MockStore.save('units', units);
+            closeErpModal('uModal');
+            render();
+            showToast('تم الحفظ', 'success');
+        }
+
+        function delU(id) {
+            var cnt = productCount(id);
+            if (cnt > 0) { showToast('لا يمكن الحذف: مرتبطة بـ ' + cnt + ' منتج', 'error'); return; }
+            if (!confirm('حذف هذه الوحدة؟')) return;
+            units = units.filter(function (x) { return x.id !== id; });
+            MockStore.save('units', units);
+            MockStore.logActivity('حذف وحدة', String(id), 'units');
+            render();
+            showToast('تم الحذف', 'success');
+        }
+
+        function render() {
+            var q = (document.getElementById('searchInput').value || '').toLowerCase();
+            var list = units.filter(function (u) { return !q || u.name.toLowerCase().indexOf(q) >= 0; });
+            document.getElementById('tbody').innerHTML = list.length ? list.map(function (u, i) {
+                var cnt = productCount(u.id);
+                return '<tr><td>' + (i + 1) + '</td><td style="font-weight:600">' + u.name + '</td><td>' + cnt + '</td>' +
+                    '<td style="white-space:nowrap">' +
+                    '<button class="btn-erp btn-erp-outline" style="padding:3px 8px;font-size:11px" onclick="openU(' + u.id + ')">تعديل</button> ' +
+                    '<button class="btn-erp btn-erp-outline" style="padding:3px 8px;font-size:11px;color:var(--danger)" onclick="delU(' + u.id + ')">حذف</button>' +
+                    '</td></tr>';
+            }).join('') : '<tr><td colspan="4"><div class="empty-erp"><i class="bi bi-inbox"></i><div class="empty-title">لا وحدات</div></div></td></tr>';
+        }
+
+        document.getElementById('searchInput').addEventListener('input', render);
+        render();
+
+        window.openU = openU;
+        window.saveU = saveU;
+        window.delU = delU;
     });
     </script>
 </body>

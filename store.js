@@ -1,15 +1,15 @@
 /**
- * QuickData ProSoft v2.0 — طبقة حفظ محلي محسّنة
+ * QuickData ProSoft v2.2 — طبقة حفظ محلي محسّنة
  * localStorage + أحداث + سجل نشاط + إعدادات الشركة
  */
 var MockStore = (function () {
   var PREFIX = 'qdps_';
-  var VERSION = '2.1.0';
+  var VERSION = '2.2.0';
   var KEYS = [
     'customers', 'suppliers', 'products', 'salesInvoices', 'purchaseInvoices',
     'receipts', 'paymentsList', 'journalEntries', 'expenses', 'employees',
     'treasuries', 'bankAccounts', 'transfers', 'fixedAssets', 'users',
-    'categories', 'warehouses', 'activityLog', 'companySettings'
+    'categories', 'warehouses', 'units', 'activityLog', 'companySettings'
   ];
 
   var listeners = {};
@@ -175,6 +175,86 @@ var MockStore = (function () {
     return Math.max.apply(null, list.map(function (x) { return x.id || 0; })) + 1;
   }
 
+
+  /** جمع بنود الفاتورة من جدول HTML */
+  function collectLines(tbodySelector) {
+    var lines = [];
+    document.querySelectorAll((tbodySelector || '#linesBody') + ' tr').forEach(function (tr) {
+      var prod = tr.querySelector('.ln-prod');
+      if (!prod) return;
+      var qty = Number(tr.querySelector('.ln-qty') && tr.querySelector('.ln-qty').value) || 0;
+      var price = Number(tr.querySelector('.ln-price') && tr.querySelector('.ln-price').value) || 0;
+      var disc = Number(tr.querySelector('.ln-disc') && tr.querySelector('.ln-disc').value) || 0;
+      if (qty <= 0) return;
+      lines.push({
+        productId: Number(prod.value),
+        qty: qty,
+        price: price,
+        discount: disc,
+        total: Math.max(0, qty * price - disc)
+      });
+    });
+    return lines;
+  }
+
+  /** تعديل كمية منتج في المخزون (delta سالب = خصم) */
+  function adjustStock(productId, delta) {
+    var products = get('products');
+    var p = products.find(function (x) { return x.id === productId; });
+    if (!p) return false;
+    p.qty = Math.max(0, (Number(p.qty) || 0) + delta);
+    save('products', products);
+    return true;
+  }
+
+  /** تطبيق بنود فاتورة مبيعات على المخزون (خصم) */
+  function applySalesStock(lines) {
+    if (!lines || !lines.length) return;
+    lines.forEach(function (ln) {
+      adjustStock(ln.productId, -Math.abs(ln.qty || 0));
+    });
+  }
+
+  /** تطبيق بنود فاتورة مشتريات على المخزون (إضافة) */
+  function applyPurchaseStock(lines) {
+    if (!lines || !lines.length) return;
+    lines.forEach(function (ln) {
+      adjustStock(ln.productId, Math.abs(ln.qty || 0));
+    });
+  }
+
+  /** تحديث رصيد عميل */
+  function adjustCustomerBalance(customerId, delta) {
+    var list = get('customers');
+    var c = list.find(function (x) { return x.id === customerId; });
+    if (!c) return false;
+    c.balance = Math.max(0, (Number(c.balance) || 0) + delta);
+    save('customers', list);
+    return true;
+  }
+
+  /** تحديث رصيد مورد */
+  function adjustSupplierBalance(supplierId, delta) {
+    var list = get('suppliers');
+    var s = list.find(function (x) { return x.id === supplierId; });
+    if (!s) return false;
+    s.balance = Math.max(0, (Number(s.balance) || 0) + delta);
+    save('suppliers', list);
+    return true;
+  }
+
+  /** رقم تسلسلي للفواتير */
+  function nextNumber(prefix, list, field) {
+    field = field || 'number';
+    var max = 0;
+    (list || []).forEach(function (item) {
+      var n = String(item[field] || '');
+      var m = n.match(/(\d+)\s*$/);
+      if (m) max = Math.max(max, parseInt(m[1], 10));
+    });
+    return prefix + String(max + 1).padStart(3, '0');
+  }
+
   return {
     get: get,
     save: persist,
@@ -190,6 +270,13 @@ var MockStore = (function () {
     logActivity: logActivity,
     on: on,
     off: off,
-    nextId: nextId
+    nextId: nextId,
+    collectLines: collectLines,
+    adjustStock: adjustStock,
+    applySalesStock: applySalesStock,
+    applyPurchaseStock: applyPurchaseStock,
+    adjustCustomerBalance: adjustCustomerBalance,
+    adjustSupplierBalance: adjustSupplierBalance,
+    nextNumber: nextNumber
   };
 })();

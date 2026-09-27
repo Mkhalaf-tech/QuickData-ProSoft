@@ -69,13 +69,13 @@
                 <div id="pageInfo" style="padding-top:10px;font-size:12px;color:var(--text-secondary)"></div>
             </div>
 
-            <div id="invModal" class="erp-modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(14,28,46,.45);z-index:10000;align-items:center;justify-content:center;padding:16px">
-                <div style="background:var(--surface);border-radius:14px;width:100%;max-width:820px;max-height:92vh;overflow:auto;box-shadow:0 12px 40px rgba(0,0,0,.18)">
-                    <div style="display:flex;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)">
-                        <strong style="font-size:14px">فاتورة مبيعات جديدة</strong>
-                        <button type="button" onclick="closeInv()" style="border:none;background:none;font-size:18px;cursor:pointer">&times;</button>
+            <div id="invModal" class="erp-modal-overlay" style="display:none">
+                <div class="erp-modal wide">
+                    <div class="erp-modal-header">
+                        <strong><i class="bi bi-receipt"></i> فاتورة مبيعات جديدة</strong>
+                        <button type="button" class="erp-modal-close" onclick="closeInv()" aria-label="إغلاق">&times;</button>
                     </div>
-                    <div style="padding:16px 18px">
+                    <div class="erp-modal-body">
                         <div class="row g-2 mb-3">
                             <div class="col-md-5"><label class="form-label" style="font-size:12px;font-weight:600">العميل *</label>
                                 <select class="form-select form-select-sm" id="invCustomer"></select></div>
@@ -102,7 +102,7 @@
                         <div class="mt-2"><label class="form-label" style="font-size:12px;font-weight:600">ملاحظات</label>
                             <input class="form-control form-control-sm" id="invNotes"></div>
                     </div>
-                    <div style="padding:12px 18px;border-top:1px solid var(--border);display:flex;gap:8px">
+                    <div class="erp-modal-footer">
                         <button type="button" class="btn-erp btn-erp-primary" onclick="saveInv(false)"><i class="bi bi-check2-all"></i> حفظ واعتماد</button>
                         <button type="button" class="btn-erp btn-erp-outline" onclick="saveInv(true)">حفظ كمسودة</button>
                         <button type="button" class="btn-erp btn-erp-outline" onclick="closeInv()">إلغاء</button>
@@ -118,7 +118,7 @@
                     <span class="footer-divider">|</span>
                     <span class="footer-copy">© 2026 جميع الحقوق محفوظة — حلول إدارة الأعمال الاحترافية</span>
                 </div>
-                <div class="footer-left"><span class="footer-version">الإصدار 2.1.0</span></div>
+                <div class="footer-left"><span class="footer-version">الإصدار 2.2.0</span></div>
             </div>
         </footer>
     </main>
@@ -134,7 +134,7 @@
         function markPaid(id){
             var inv = invoices.find(function(x){return x.id===id;});
             if(!inv) return;
-            var rem = inv.total - inv.paid;
+            var rem = inv.total - (inv.paid||0);
             var amount = prompt('مبلغ التحصيل (المتبقي: '+MockData.formatCurrency(rem)+')', rem);
             if(amount===null) return;
             amount = Number(amount);
@@ -142,11 +142,23 @@
             inv.paid = Math.min(inv.total, (inv.paid||0) + amount);
             inv.status = inv.paid >= inv.total ? 'paid' : 'partial';
             MockStore.save('salesInvoices', invoices);
-            // auto receipt
+            // خفض ذمة العميل
+            MockStore.adjustCustomerBalance(inv.customerId, -amount);
+            // سند قبض تلقائي
             var receipts = MockStore.get('receipts');
-            receipts.unshift({id:Date.now(), number:'RCP-'+String(receipts.length+1).padStart(3,'0'), customerId:inv.customerId, date:new Date().toISOString().slice(0,10), amount:amount, method:'cash', status:'confirmed', notes:'تحصيل فاتورة '+inv.number});
+            receipts.unshift({
+              id: Date.now(),
+              number: MockStore.nextNumber('RCP-', receipts),
+              customerId: inv.customerId,
+              date: new Date().toISOString().slice(0,10),
+              amount: amount,
+              method: 'cash',
+              status: 'confirmed',
+              notes: 'تحصيل فاتورة '+inv.number
+            });
             MockStore.save('receipts', receipts);
-            render(); showToast('تم تسجيل التحصيل','success');
+            MockStore.logActivity('تحصيل', 'تحصيل '+MockData.formatCurrency(amount)+' من فاتورة '+inv.number, 'sales');
+            render(); showToast('تم تسجيل التحصيل وإنشاء سند قبض','success');
         }
         function exportInvoices(){
             MockStore.exportCSV('sales-invoices.csv', ['الرقم','التاريخ','الإجمالي','المدفوع','الحالة'],
@@ -214,19 +226,43 @@
         function saveInv(draft){
             var t = calcLines();
             if(t.sub <= 0){ showToast('أضف بنوداً للفاتورة','error'); return; }
-            invoices.unshift({
+            var lines = MockStore.collectLines('#linesBody');
+            if(!lines.length){ showToast('أضف بنوداً صالحة','error'); return; }
+            // تحقق من المخزون عند الاعتماد
+            if(!draft){
+              var prods = MockStore.get('products');
+              for(var i=0;i<lines.length;i++){
+                var pr = prods.find(function(x){return x.id===lines[i].productId;});
+                if(pr && (pr.qty||0) < lines[i].qty){
+                  showToast('الكمية غير كافية للمنتج: '+(pr.name||'')+' (المتاح: '+pr.qty+')','error');
+                  return;
+                }
+              }
+            }
+            var custId = Number(document.getElementById('invCustomer').value);
+            var inv = {
                 id: Date.now(),
-                number: 'INV-2024-' + String(invoices.length+1).padStart(3,'0'),
-                customerId: Number(document.getElementById('invCustomer').value),
+                number: MockStore.nextNumber('INV-', invoices),
+                customerId: custId,
                 date: document.getElementById('invDate').value,
                 dueDate: document.getElementById('invDate').value,
                 warehouseId: Number(document.getElementById('invWh').value),
                 subtotal: t.sub, discount: 0, tax: t.tax, total: t.total,
                 paid: 0, status: draft ? 'draft' : 'unpaid',
-                notes: document.getElementById('invNotes').value
-            });
-            MockStore.save('salesInvoices', invoices); closeInv(); render();
-            showToast(draft ? 'تم حفظ المسودة' : 'تم حفظ الفاتورة','success');
+                notes: document.getElementById('invNotes').value || '',
+                lines: lines
+            };
+            invoices.unshift(inv);
+            MockStore.save('salesInvoices', invoices);
+            if(!draft){
+              MockStore.applySalesStock(lines);
+              MockStore.adjustCustomerBalance(custId, inv.total);
+              MockStore.logActivity('فاتورة مبيعات', inv.number+' بمبلغ '+MockData.formatCurrency(inv.total), 'sales');
+            } else {
+              MockStore.logActivity('مسودة فاتورة', inv.number, 'sales');
+            }
+            closeInv(); render();
+            showToast(draft ? 'تم حفظ المسودة' : 'تم حفظ الفاتورة وخصم المخزون','success');
         }
         function render(){
             var q = (document.getElementById('searchInput').value||'').toLowerCase();
@@ -248,7 +284,7 @@
                     '<a class="btn-erp btn-erp-outline" style="padding:3px 8px;font-size:11px" href="print-invoice.html?id='+i.id+'" target="_blank">طباعة</a> '+
                     (i.status!=='paid' && i.status!=='draft' ? '<button type="button" class="btn-erp btn-erp-outline" style="padding:3px 8px;font-size:11px;color:var(--success)" onclick="markPaid('+i.id+')">تحصيل</button> ' : '')+
                     '</td></tr>';
-            }).join('') : '<tr><td colspan="8"><div class="empty-erp"><i class="bi bi-inbox"></i>لا توجد فواتير</div></td></tr>';
+            }).join('') : '<tr><td colspan="8"><div class="empty-erp"><i class="bi bi-receipt"></i><div class="empty-title">لا توجد فواتير</div><div class="empty-desc">ابدأ بإصدار فاتورة جديدة من الزر أعلاه</div></div></td></tr>';
             document.getElementById('pageInfo').textContent = 'عرض '+rows.length+' فاتورة';
             var tot = invoices.reduce(function(s,i){return s+i.total;},0);
             var paid = invoices.reduce(function(s,i){return s+i.paid;},0);

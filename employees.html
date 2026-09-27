@@ -59,13 +59,13 @@
                 </div>
                 <div id="pageInfo" style="padding-top:10px;font-size:12px;color:var(--text-secondary)"></div>
             </div>
-            <div id="eModal" class="erp-modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(14,28,46,.45);z-index:10000;align-items:center;justify-content:center;padding:16px">
-                <div style="background:var(--surface);border-radius:14px;width:100%;max-width:520px;max-height:90vh;overflow:auto">
-                    <div style="display:flex;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)">
+            <div id="eModal" class="erp-modal-overlay" style="display:none">
+                <div class="erp-modal sm" style="max-width:520px">
+                    <div class="erp-modal-header">
                         <strong id="eTitle">إضافة موظف</strong>
-                        <button type="button" onclick="closeErpModal('eModal')" style="border:none;background:none;font-size:18px;cursor:pointer">&times;</button>
+                        <button type="button" class="erp-modal-close" onclick="closeErpModal('eModal')" aria-label="إغلاق">&times;</button>
                     </div>
-                    <div style="padding:16px" class="row g-2">
+                    <div class="erp-modal-body"><div class="row g-2">
                         <div class="col-6"><label class="form-label" style="font-size:12px;font-weight:600">الكود</label><input class="form-control form-control-sm" id="eCode" placeholder="تلقائي"></div>
                         <div class="col-6"><label class="form-label" style="font-size:12px;font-weight:600">الاسم *</label><input class="form-control form-control-sm" id="eName"></div>
                         <div class="col-6"><label class="form-label" style="font-size:12px;font-weight:600">القسم</label><input class="form-control form-control-sm" id="eDept"></div>
@@ -75,7 +75,7 @@
                         <div class="col-6"><label class="form-label" style="font-size:12px;font-weight:600">الحالة</label>
                             <select class="form-select form-select-sm" id="eStatus"><option value="active">نشط</option><option value="inactive">غير نشط</option></select></div>
                     </div>
-                    <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px">
+                    <div class="erp-modal-footer">
                         <button type="button" class="btn-erp btn-erp-primary" onclick="saveE()">حفظ</button>
                         <button type="button" class="btn-erp btn-erp-outline" onclick="closeErpModal('eModal')">إلغاء</button>
                     </div>
@@ -90,7 +90,7 @@
                     <span class="footer-divider">|</span>
                     <span class="footer-copy">© 2026 جميع الحقوق محفوظة — حلول إدارة الأعمال الاحترافية</span>
                 </div>
-                <div class="footer-left"><span class="footer-version">الإصدار 2.1.0</span></div>
+                <div class="footer-left"><span class="footer-version">الإصدار 2.2.0</span></div>
             </div>
         </footer>
     </main>
@@ -137,7 +137,7 @@
                     '<td>'+(e.phone||'—')+'</td><td style="font-weight:700">'+MockData.formatCurrency(e.salary)+'</td><td>'+statusBadge(e.status)+'</td>'+
                     '<td style="white-space:nowrap"><button class="btn-erp btn-erp-outline" style="padding:3px 8px;font-size:11px" onclick="openE('+e.id+')">تعديل</button> '+
                     '<button class="btn-erp btn-erp-outline" style="padding:3px 8px;font-size:11px;color:var(--danger)" onclick="delE('+e.id+')">حذف</button></td></tr>';
-            }).join(''):'<tr><td colspan="8"><div class="empty-erp"><i class="bi bi-inbox"></i>لا توجد بيانات</div></td></tr>';
+            }).join(''):'<tr><td colspan="8"><div class="empty-erp"><i class="bi bi-inbox"></i><div class="empty-title">لا توجد بيانات</div></div></td></tr>';
             document.getElementById('pageInfo').textContent='عرض '+list.length+' موظف';
             var pay=items.reduce(function(s,e){return s+(e.status==='active'?e.salary:0);},0);
             document.getElementById('statsRow').innerHTML=

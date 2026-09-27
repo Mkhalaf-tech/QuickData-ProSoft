@@ -82,7 +82,7 @@
                     <span class="footer-divider">|</span>
                     <span class="footer-copy">© 2026 جميع الحقوق محفوظة — حلول إدارة الأعمال الاحترافية</span>
                 </div>
-                <div class="footer-left"><span class="footer-version">الإصدار 2.1.0</span></div>
+                <div class="footer-left"><span class="footer-version">الإصدار 2.2.0</span></div>
             </div>
         </footer>
     </main>
@@ -144,7 +144,7 @@
                     '<td>'+(t.credit?MockData.formatCurrency(t.credit):'—')+'</td>'+
                     '<td style="font-weight:700;color:'+(bal>0?'var(--danger)':'var(--success)')+'">'+MockData.formatCurrency(bal)+'</td></tr>';
             }).join('');
-            if(!txs.length) rows = '<tr><td colspan="6"><div class="empty-erp"><i class="bi bi-inbox"></i>لا توجد حركات</div></td></tr>';
+            if(!txs.length) rows = '<tr><td colspan="6"><div class="empty-erp"><i class="bi bi-inbox"></i><div class="empty-title">لا توجد حركات</div></div></td></tr>';
             else {
                 var td = txs.reduce(function(s,t){return s+t.debit;},0);
                 var tc = txs.reduce(function(s,t){return s+t.credit;},0);

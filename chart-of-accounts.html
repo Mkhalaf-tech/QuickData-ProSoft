@@ -75,7 +75,7 @@
                     <span class="footer-divider">|</span>
                     <span class="footer-copy">© 2026 جميع الحقوق محفوظة — حلول إدارة الأعمال الاحترافية</span>
                 </div>
-                <div class="footer-left"><span class="footer-version">الإصدار 2.1.0</span></div>
+                <div class="footer-left"><span class="footer-version">الإصدار 2.2.0</span></div>
             </div>
         </footer>
     </main>
@@ -103,7 +103,7 @@
                     '<td>'+(typeAr[a.type]||a.type||'—')+'</td>'+
                     '<td>'+(a.isGroup?'مجموعة':'حساب')+'</td>'+
                     '<td style="font-weight:700">'+(a.balance!=null?MockData.formatCurrency(a.balance):'—')+'</td></tr>';
-            }).join('')||'<tr><td colspan="5"><div class="empty-erp"><i class="bi bi-inbox"></i>لا بيانات</div></td></tr>';
+            }).join('')||'<tr><td colspan="5"><div class="empty-erp"><i class="bi bi-inbox"></i><div class="empty-title">لا بيانات</div></div></td></tr>';
             document.getElementById('pageInfo').textContent='عرض '+list.length+' حساب';
             var leaf=MockData.accounts.filter(function(a){return !a.isGroup;});
             document.getElementById('statsRow').innerHTML=
