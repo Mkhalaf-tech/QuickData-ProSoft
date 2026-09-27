@@ -90,31 +90,56 @@
             </div>
         </footer>
     </main>
+    <script src="supabase.js"></script>
     <script src="mock-data.js"></script>
     <script src="store.js"></script>
     <script src="layout-erp.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function () {
         initERPPage({ title: 'التصنيفات', subtitle: 'تصنيفات المنتجات', activeId: 'products' });
-        
-        var cats = MockStore.get("categories");
+
+        var cats = [];
+        var productCounts = {};
+
+        async function loadCategories(){
+            try {
+                cats = await Supabase.rest('/categories?select=*&order=id.asc');
+                var prods = await Supabase.rest('/products?select=id,category_id');
+                productCounts = {};
+                prods.forEach(function(p){
+                    if (p.category_id) productCounts[p.category_id] = (productCounts[p.category_id]||0) + 1;
+                });
+            } catch(e) {
+                showToast(e.message || 'تعذّر تحميل التصنيفات', 'error');
+                cats = []; productCounts = {};
+            }
+            render();
+        }
+
         function openC(){ document.getElementById('cName').value=''; openErpModal('cModal'); }
-        function saveC(){
+        async function saveC(){
             var n=document.getElementById('cName').value.trim();
             if(!n){showToast('الاسم مطلوب','error');return;}
-            cats.push({id:Date.now(), name:n});
-            MockStore.save("categories", cats); closeErpModal('cModal'); render(); showToast('تم الحفظ','success');
+            try {
+                await Supabase.rest('/categories', { method:'POST', body:{ name: n }, prefer:'return=minimal' });
+                closeErpModal('cModal');
+                await loadCategories();
+                showToast('تم الحفظ','success');
+            } catch(e) {
+                showToast(e.message || 'فشل الحفظ', 'error');
+            }
         }
         function render(){
             var q=(document.getElementById('searchInput').value||'').toLowerCase();
             var list=cats.filter(function(c){return !q||c.name.toLowerCase().indexOf(q)>=0;});
             document.getElementById('tbody').innerHTML=list.map(function(c,i){
-                var cnt=MockData.products.filter(function(p){return p.categoryId===c.id;}).length;
+                var cnt = productCounts[c.id] || 0;
                 return '<tr><td>'+(i+1)+'</td><td style="font-weight:600">'+c.name+'</td><td>'+cnt+'</td><td></td></tr>';
             }).join('')||'<tr><td colspan="4"><div class="empty-erp"><i class="bi bi-inbox"></i><div class="empty-title">لا تصنيفات</div></div></td></tr>';
             document.getElementById('statsRow').innerHTML='<div class="stat-card stat-gold"><div class="stat-number">'+cats.length+'</div><div class="stat-label">التصنيفات</div></div>';
         }
-        document.getElementById('searchInput').addEventListener('input',render); render();
+        document.getElementById('searchInput').addEventListener('input',render);
+        loadCategories();
 
         // تعريض الدوال للـ onclick العام
         window.openC = openC;

@@ -85,7 +85,9 @@
   }
 
   window.logout = function () {
-    if (confirm('هل أنت متأكد من تسجيل الخروج؟')) location.href = 'login.html';
+    if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+      if (typeof Supabase !== 'undefined') { Supabase.logout(); } else { location.href = 'login.html'; }
+    }
   };
 
   window.toggleSidebar = function () {
@@ -194,6 +196,13 @@
 
   window.initERPPage = function (opts) {
     opts = opts || {};
+
+    // حارس الدخول: أي صفحة تحمّل supabase.js يجب أن يكون المستخدم مسجّل دخوله فيها
+    if (typeof Supabase !== 'undefined' && !Supabase.isLoggedIn()) {
+      window.location.href = 'login.html';
+      return;
+    }
+
     document.title = (opts.title ? opts.title + ' - ' : '') + SYSTEM_NAME;
 
     try {
@@ -202,7 +211,21 @@
 
     // Apply company settings if available
     try {
-      if (typeof MockStore !== 'undefined') {
+      if (typeof Supabase !== 'undefined' && Supabase.isLoggedIn()) {
+        Supabase.getCompanySettings().then(function (st) {
+          if (!st) return;
+          if (st.system_name) SYSTEM_NAME = st.system_name;
+          if (st.system_sub) SYSTEM_SUB = st.system_sub;
+          document.title = (opts.title ? opts.title + ' - ' : '') + SYSTEM_NAME;
+          var role2 = document.getElementById('userRole');
+          if (role2) role2.textContent = SYSTEM_NAME;
+        }).catch(function () {});
+
+        Supabase.getAppUser().then(function (u) {
+          var un = document.querySelector('.user-name');
+          if (un && u && u.name) un.textContent = u.name;
+        }).catch(function () {});
+      } else if (typeof MockStore !== 'undefined') {
         var st = MockStore.getSettings();
         if (st && st.systemName) SYSTEM_NAME = st.systemName;
         if (st && st.systemSub) SYSTEM_SUB = st.systemSub;

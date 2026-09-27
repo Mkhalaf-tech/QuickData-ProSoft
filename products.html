@@ -95,17 +95,29 @@
             </div>
         </footer>
     </main>
+    <script src="supabase.js"></script>
     <script src="mock-data.js"></script>
     <script src="store.js"></script>
     <script src="layout-erp.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function () {
         initERPPage({ title: 'المنتجات', subtitle: 'الأصناف والأسعار والمخزون', activeId: 'products' });
-        
-        var products = MockStore.get("products");
+
+        var products = [];
+
+        async function loadProducts(){
+            try {
+                products = await Supabase.rest('/products?select=*&order=id.desc');
+            } catch(e) {
+                showToast(e.message || 'تعذّر تحميل المنتجات', 'error');
+                products = [];
+            }
+            render();
+        }
+
         function exportProducts(){
             MockStore.exportCSV('products.csv', ['الكود','الاسم','سعر البيع','سعر الشراء','الكمية','الحد الأدنى'],
-                products.map(function(x){ return [x.code,x.name,x.salePrice,x.purchasePrice,x.qty,x.minQty]; }));
+                products.map(function(x){ return [x.code,x.name,x.sale_price,x.purchase_price,x.qty,x.min_qty]; }));
             showToast('تم تصدير المنتجات','success');
         }
         function openP(){
@@ -114,54 +126,59 @@
             document.getElementById('pQty').value=0; document.getElementById('pMin').value=5;
             openErpModal('pModal');
         }
-        function saveP(){
+        async function saveP(){
             var name=document.getElementById('pName').value.trim();
             var sale=Number(document.getElementById('pSale').value)||0;
             if(!name||sale<=0){showToast('الاسم وسعر البيع مطلوبان','error');return;}
-            products.unshift({
-                id:Date.now(), code:document.getElementById('pCode').value.trim()||('P-'+String(products.length+1).padStart(3,'0')),
-                name:name, brand:'', categoryId:1, unitId:1, salePrice:sale,
-                purchasePrice:Number(document.getElementById('pBuy').value)||0,
-                qty:Number(document.getElementById('pQty').value)||0,
-                minQty:Number(document.getElementById('pMin').value)||5,
-                warehouseId:1, status:'active'
-            });
-            closeErpModal('pModal');
-            MockStore.save('products', products);
-            MockStore.logActivity('إضافة منتج', name, 'products');
-            render(); showToast('تم حفظ المنتج','success');
+            var payload = {
+                code: document.getElementById('pCode').value.trim()||('P-'+String(products.length+1).padStart(3,'0')),
+                name: name, brand: '',
+                sale_price: sale,
+                purchase_price: Number(document.getElementById('pBuy').value)||0,
+                qty: Number(document.getElementById('pQty').value)||0,
+                min_qty: Number(document.getElementById('pMin').value)||5,
+                status: 'active'
+            };
+            try {
+                await Supabase.rest('/products', { method:'POST', body: payload, prefer:'return=minimal' });
+                closeErpModal('pModal');
+                await loadProducts();
+                showToast('تم حفظ المنتج','success');
+            } catch(e) {
+                showToast(e.message || 'فشل حفظ المنتج', 'error');
+            }
         }
         function render(){
             var q=(document.getElementById('searchInput').value||'').toLowerCase();
             var list=products.filter(function(p){return !q||(p.code+p.name).toLowerCase().indexOf(q)>=0;});
             document.getElementById('tbody').innerHTML=list.length?list.map(function(p){
-                var low=p.qty<=p.minQty;
+                var low=p.qty<=p.min_qty;
                 return '<tr><td style="font-weight:600;color:var(--accent)">'+p.code+'</td><td style="font-weight:600">'+p.name+'</td>'+
-                    '<td>'+MockData.formatCurrency(p.salePrice)+'</td><td>'+MockData.formatCurrency(p.purchasePrice)+'</td>'+
-                    '<td style="font-weight:700;color:'+(low?'var(--danger)':'inherit')+'">'+p.qty+'</td><td>'+p.minQty+'</td>'+
+                    '<td>'+MockData.formatCurrency(p.sale_price)+'</td><td>'+MockData.formatCurrency(p.purchase_price)+'</td>'+
+                    '<td style="font-weight:700;color:'+(low?'var(--danger)':'inherit')+'">'+p.qty+'</td><td>'+p.min_qty+'</td>'+
                     '<td>'+(low?'<span class="badge badge-danger">منخفض</span>':statusBadge(p.status))+'</td>'+
                     '<td><button class="btn-erp btn-erp-outline" style="padding:3px 8px;font-size:11px;color:var(--danger)" onclick="delP('+p.id+')">حذف</button></td></tr>';
             }).join(''):'<tr><td colspan="8"><div class="empty-erp"><i class="bi bi-box-seam"></i><div class="empty-title">لا توجد منتجات</div><div class="empty-desc">أضف أول منتج لبدء إدارة المخزون</div></div></td></tr>';
             document.getElementById('pageInfo').textContent='عرض '+list.length+' منتج';
-            var lowC=products.filter(function(p){return p.qty<=p.minQty;}).length;
-            var val=products.reduce(function(s,p){return s+p.qty*p.purchasePrice;},0);
+            var lowC=products.filter(function(p){return p.qty<=p.min_qty;}).length;
+            var val=products.reduce(function(s,p){return s+p.qty*p.purchase_price;},0);
             document.getElementById('statsRow').innerHTML=
                 '<div class="stat-card"><div class="stat-label">عدد المنتجات</div><div class="stat-value">'+products.length+'</div></div>'+
                 '<div class="stat-card"><div class="stat-label">منخفض المخزون</div><div class="stat-value" style="color:var(--danger)">'+lowC+'</div></div>'+
                 '<div class="stat-card"><div class="stat-label">قيمة المخزون</div><div class="stat-value" style="font-size:15px">'+MockData.formatCurrency(val)+'</div></div>';
         }
         document.getElementById('searchInput').addEventListener('input',render);
-        render();
+        loadProducts();
 
-        
-        function delP(id){
+        async function delP(id){
             if(!confirm('حذف هذا المنتج؟')) return;
-            var pr = products.find(function(x){return x.id===id;});
-            products = products.filter(function(x){return x.id!==id;});
-            MockStore.save('products', products);
-            MockStore.logActivity('حذف منتج', pr ? pr.name : String(id), 'products');
-            render();
-            showToast('تم حذف المنتج','success');
+            try {
+                await Supabase.rest('/products?id=eq.'+id, { method:'DELETE' });
+                showToast('تم حذف المنتج','success');
+                await loadProducts();
+            } catch(e) {
+                showToast(e.message || 'فشل الحذف', 'error');
+            }
         }
 
         // تعريض الدوال للـ onclick العام

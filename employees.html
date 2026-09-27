@@ -94,46 +94,97 @@
             </div>
         </footer>
     </main>
+    <script src="supabase.js"></script>
     <script src="mock-data.js"></script>
     <script src="store.js"></script>
     <script src="layout-erp.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function () {
         initERPPage({ title: 'الموظفون', subtitle: 'بيانات الموظفين والرواتب', activeId: 'employees' });
-        
-        var items = MockStore.get("employees");
+
+        var items = [];
+        var departments = [];
         var editId=null;
+
+        async function loadEmployees(){
+            try {
+                items = await Supabase.rest('/employees?select=*,departments(name)&order=id.desc');
+                departments = await Supabase.rest('/departments?select=*');
+            } catch(e) {
+                showToast(e.message || 'تعذّر تحميل الموظفين', 'error');
+                items = []; departments = [];
+            }
+            render();
+        }
+
+        function deptName(e){ return (e.departments && e.departments.name) || '—'; }
+
+        /** يبحث عن قسم بنفس الاسم أو ينشئه، ويرجّع الـ id الخاص به */
+        async function resolveDepartmentId(name){
+            name = (name||'').trim();
+            if(!name) return null;
+            var existing = departments.find(function(d){ return d.name === name; });
+            if(existing) return existing.id;
+            var created = await Supabase.rest('/departments', { method:'POST', body:{ name:name }, prefer:'return=representation' });
+            var row = created && created[0];
+            if(row) departments.push(row);
+            return row ? row.id : null;
+        }
+
         function openE(id){
             editId=id||null;
             document.getElementById('eTitle').textContent=id?'تعديل موظف':'إضافة موظف';
             var e=id?items.find(function(x){return x.id===id;}):null;
             document.getElementById('eCode').value=e?e.code:'';
             document.getElementById('eName').value=e?e.name:'';
-            document.getElementById('eDept').value=e?e.department:'';
-            document.getElementById('eJob').value=e?e.job:'';
+            document.getElementById('eDept').value=e?deptName(e):'';
+            document.getElementById('eJob').value=e?(e.job||''):'';
             document.getElementById('ePhone').value=e?(e.phone||''):'';
             document.getElementById('eSal').value=e?e.salary:0;
             document.getElementById('eStatus').value=e?e.status:'active';
             openErpModal('eModal');
         }
-        function saveE(){
+        async function saveE(){
             var name=document.getElementById('eName').value.trim();
             if(!name){showToast('الاسم مطلوب','error');return;}
-            var data={code:document.getElementById('eCode').value.trim()||('EMP-'+String(items.length+1).padStart(3,'0')),
-                name:name, department:document.getElementById('eDept').value||'—',
-                job:document.getElementById('eJob').value||'—', phone:document.getElementById('ePhone').value,
-                salary:Number(document.getElementById('eSal').value)||0, status:document.getElementById('eStatus').value,
-                hireDate:new Date().toISOString().slice(0,10)};
-            if(editId){var i=items.findIndex(function(x){return x.id===editId;});if(i>=0){data.id=editId;data.hireDate=items[i].hireDate;items[i]=data;}showToast('تم التحديث','success');}
-            else{data.id=Date.now();items.unshift(data);showToast('تم الإضافة','success');}
-            MockStore.save('employees', items); closeErpModal('eModal');render();
+            try {
+                var deptId = await resolveDepartmentId(document.getElementById('eDept').value);
+                var payload={
+                    code: document.getElementById('eCode').value.trim() || ('EMP-'+String(items.length+1).padStart(3,'0')),
+                    name: name, department_id: deptId,
+                    job: document.getElementById('eJob').value || '—',
+                    phone: document.getElementById('ePhone').value,
+                    salary: Number(document.getElementById('eSal').value)||0,
+                    status: document.getElementById('eStatus').value
+                };
+                if(editId){
+                    await Supabase.rest('/employees?id=eq.'+editId, { method:'PATCH', body: payload, prefer:'return=minimal' });
+                    showToast('تم التحديث','success');
+                } else {
+                    await Supabase.rest('/employees', { method:'POST', body: payload, prefer:'return=minimal' });
+                    showToast('تم الإضافة','success');
+                }
+                closeErpModal('eModal');
+                await loadEmployees();
+            } catch(e) {
+                showToast(e.message || 'فشل الحفظ', 'error');
+            }
         }
-        function delE(id){if(!confirm('حذف الموظف؟'))return;items=items.filter(function(x){return x.id!==id;});MockStore.save('employees', items);render();showToast('تم الحذف','success');}
+        async function delE(id){
+            if(!confirm('حذف الموظف؟'))return;
+            try {
+                await Supabase.rest('/employees?id=eq.'+id, { method:'DELETE' });
+                showToast('تم الحذف','success');
+                await loadEmployees();
+            } catch(e) {
+                showToast(e.message || 'فشل الحذف', 'error');
+            }
+        }
         function render(){
             var q=(document.getElementById('searchInput').value||'').toLowerCase();
-            var list=items.filter(function(e){return !q||(e.code+e.name+e.department+e.job).toLowerCase().indexOf(q)>=0;});
+            var list=items.filter(function(e){return !q||(e.code+e.name+deptName(e)+(e.job||'')).toLowerCase().indexOf(q)>=0;});
             document.getElementById('tbody').innerHTML=list.length?list.map(function(e){
-                return '<tr><td style="font-weight:600;color:var(--accent)">'+e.code+'</td><td style="font-weight:600">'+e.name+'</td><td>'+e.department+'</td><td>'+e.job+'</td>'+
+                return '<tr><td style="font-weight:600;color:var(--accent)">'+e.code+'</td><td style="font-weight:600">'+e.name+'</td><td>'+deptName(e)+'</td><td>'+(e.job||'—')+'</td>'+
                     '<td>'+(e.phone||'—')+'</td><td style="font-weight:700">'+MockData.formatCurrency(e.salary)+'</td><td>'+statusBadge(e.status)+'</td>'+
                     '<td style="white-space:nowrap"><button class="btn-erp btn-erp-outline" style="padding:3px 8px;font-size:11px" onclick="openE('+e.id+')">تعديل</button> '+
                     '<button class="btn-erp btn-erp-outline" style="padding:3px 8px;font-size:11px;color:var(--danger)" onclick="delE('+e.id+')">حذف</button></td></tr>';
@@ -146,7 +197,7 @@
                 '<div class="stat-card stat-blue"><div class="stat-number" style="font-size:15px">'+MockData.formatCurrency(pay)+'</div><div class="stat-label">إجمالي الرواتب</div></div>';
         }
         document.getElementById('searchInput').addEventListener('input',render);
-        render();
+        loadEmployees();
 
         // تعريض الدوال للـ onclick العام
         window.delE = delE;

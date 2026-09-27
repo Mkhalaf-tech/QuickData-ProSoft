@@ -49,7 +49,7 @@
             <div class="card-panel">
                 <div class="toolbar-erp">
                     <div class="search-erp"><i class="bi bi-search"></i><input type="text" id="searchInput" placeholder="بحث..." /></div>
-                    <button type="button" class="btn-erp btn-erp-outline" onclick="MockStore.exportCSV('suppliers.csv',['الكود','الاسم','الهاتف','الرصيد'],items.map(function(x){return[x.code,x.name,x.phone,x.balance];}));showToast('تم التصدير','success')"><i class="bi bi-download"></i> تصدير</button>
+                    <button type="button" class="btn-erp btn-erp-outline" onclick="exportSuppliers()"><i class="bi bi-download"></i> تصدير</button>
                     <button type="button" class="btn-erp btn-erp-primary" onclick="openS()"><i class="bi bi-plus-lg"></i> إضافة مورد</button>
                 </div>
                 <div class="table-responsive">
@@ -94,15 +94,27 @@
             </div>
         </footer>
     </main>
+    <script src="supabase.js"></script>
     <script src="mock-data.js"></script>
     <script src="store.js"></script>
     <script src="layout-erp.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function () {
         initERPPage({ title: 'الموردون', subtitle: 'إدارة الموردين والأرصدة الدائنة', activeId: 'suppliers' });
-        
-        var items=MockStore.get("suppliers");
+
+        var items = [];
         var editId=null;
+
+        async function loadSuppliers(){
+            try {
+                items = await Supabase.rest('/suppliers?select=*&order=id.desc');
+            } catch(e) {
+                showToast(e.message || 'تعذّر تحميل الموردين', 'error');
+                items = [];
+            }
+            render();
+        }
+
         function openS(id){
             editId=id||null;
             document.getElementById('sTitle').textContent=id?'تعديل مورد':'إضافة مورد';
@@ -115,23 +127,41 @@
             document.getElementById('sStatus').value=s?s.status:'active';
             openErpModal('sModal');
         }
-        function saveS(){
+        async function saveS(){
             var name=document.getElementById('sName').value.trim(), phone=document.getElementById('sPhone').value.trim();
             if(!name||!phone){showToast('الاسم والهاتف مطلوبان','error');return;}
-            var data={code:document.getElementById('sCode').value.trim()||('S-'+String(items.length+1).padStart(3,'0')),
+            var payload={code:document.getElementById('sCode').value.trim()||('S-'+String(items.length+1).padStart(3,'0')),
                 name:name,phone:phone,city:document.getElementById('sCity').value||'—',
-                balance:Number(document.getElementById('sBal').value)||0,status:document.getElementById('sStatus').value,
-                email:'',address:'',taxNumber:'',createdAt:new Date().toISOString().slice(0,10)};
-            if(editId){var i=items.findIndex(function(x){return x.id===editId;}); if(i>=0){data.id=editId;data.createdAt=items[i].createdAt;items[i]=data;} showToast('تم التحديث','success');}
-            else {data.id=Date.now();items.unshift(data);showToast('تم الإضافة','success');}
-            MockStore.save('suppliers', items); closeErpModal('sModal'); render();
+                balance:Number(document.getElementById('sBal').value)||0,status:document.getElementById('sStatus').value};
+            try {
+                if(editId){
+                    await Supabase.rest('/suppliers?id=eq.'+editId, { method:'PATCH', body: payload, prefer:'return=minimal' });
+                    showToast('تم التحديث','success');
+                } else {
+                    await Supabase.rest('/suppliers', { method:'POST', body: payload, prefer:'return=minimal' });
+                    showToast('تم الإضافة','success');
+                }
+                closeErpModal('sModal');
+                await loadSuppliers();
+            } catch(e) {
+                showToast(e.message || 'فشل الحفظ', 'error');
+            }
         }
-        function delS(id){ if(!confirm('حذف المورد؟'))return; items=items.filter(function(x){return x.id!==id;}); MockStore.save('suppliers', items); render(); showToast('تم الحذف','success'); }
+        async function delS(id){
+            if(!confirm('حذف المورد؟'))return;
+            try {
+                await Supabase.rest('/suppliers?id=eq.'+id, { method:'DELETE' });
+                showToast('تم الحذف','success');
+                await loadSuppliers();
+            } catch(e) {
+                showToast(e.message || 'فشل الحذف', 'error');
+            }
+        }
         function render(){
             var q=(document.getElementById('searchInput').value||'').toLowerCase();
             var list=items.filter(function(s){return !q||(s.code+s.name+s.phone).toLowerCase().indexOf(q)>=0;});
             document.getElementById('tbody').innerHTML=list.length?list.map(function(s){
-                return '<tr><td style="font-weight:600;color:var(--accent)">'+s.code+'</td><td style="font-weight:600">'+s.name+'</td><td>'+s.phone+'</td><td>'+s.city+'</td>'+
+                return '<tr><td style="font-weight:600;color:var(--accent)">'+s.code+'</td><td style="font-weight:600">'+s.name+'</td><td>'+s.phone+'</td><td>'+(s.city||'—')+'</td>'+
                     '<td style="font-weight:700;color:var(--danger)">'+MockData.formatCurrency(s.balance)+'</td><td>'+statusBadge(s.status)+'</td>'+
                     '<td style="white-space:nowrap"><button class="btn-erp btn-erp-outline" style="padding:3px 8px;font-size:11px" onclick="openS('+s.id+')">تعديل</button> '+
                     '<a class="btn-erp btn-erp-outline" style="padding:3px 8px;font-size:11px" href="customer-statement.html?type=supplier&id='+s.id+'">كشف</a> '+
@@ -143,13 +173,19 @@
                 '<div class="stat-card"><div class="stat-label">الموردون</div><div class="stat-value">'+items.length+'</div></div>'+
                 '<div class="stat-card"><div class="stat-label">إجمالي الدائن</div><div class="stat-value" style="font-size:15px">'+MockData.formatCurrency(sum)+'</div></div>';
         }
+        function exportSuppliers(){
+            MockStore.exportCSV('suppliers.csv',['الكود','الاسم','الهاتف','الرصيد'],
+                items.map(function(x){return [x.code,x.name,x.phone,x.balance];}));
+            showToast('تم التصدير','success');
+        }
         document.getElementById('searchInput').addEventListener('input',render);
-        render();
+        loadSuppliers();
 
         // تعريض الدوال للـ onclick العام
         window.delS = delS;
         window.openS = openS;
         window.saveS = saveS;
+        window.exportSuppliers = exportSuppliers;
 
     });
     </script>

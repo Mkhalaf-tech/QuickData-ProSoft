@@ -87,6 +87,7 @@
             </div>
         </footer>
     </main>
+    <script src="supabase.js"></script>
     <script src="mock-data.js"></script>
     <script src="store.js"></script>
     <script src="layout-erp.js"></script>
@@ -94,18 +95,26 @@
     document.addEventListener('DOMContentLoaded', function () {
         initERPPage({ title: 'وحدات القياس', subtitle: 'وحدات الأصناف', activeId: 'units' });
 
-        // units stored under local key; seed from MockData
-        var units = MockStore.get('units');
-        if (!units || !units.length) {
-            units = JSON.parse(JSON.stringify(MockData.units || []));
-            MockStore.save('units', units);
-        }
+        var units = [];
+        var productCounts = {};
         var editId = null;
 
-        function productCount(unitId) {
-            var prods = MockStore.get('products') || [];
-            return prods.filter(function (p) { return p.unitId === unitId; }).length;
+        async function loadUnits() {
+            try {
+                units = await Supabase.rest('/units?select=*&order=id.asc');
+                var prods = await Supabase.rest('/products?select=id,unit_id');
+                productCounts = {};
+                prods.forEach(function(p){
+                    if (p.unit_id) productCounts[p.unit_id] = (productCounts[p.unit_id]||0) + 1;
+                });
+            } catch(e) {
+                showToast(e.message || 'تعذّر تحميل الوحدات', 'error');
+                units = []; productCounts = {};
+            }
+            render();
         }
+
+        function productCount(unitId) { return productCounts[unitId] || 0; }
 
         function openU(id) {
             editId = id || null;
@@ -116,32 +125,34 @@
             setTimeout(function () { document.getElementById('uName').focus(); }, 50);
         }
 
-        function saveU() {
+        async function saveU() {
             var name = document.getElementById('uName').value.trim();
             if (!name) { showToast('أدخل اسم الوحدة', 'error'); return; }
-            if (editId) {
-                var u = units.find(function (x) { return x.id === editId; });
-                if (u) u.name = name;
-                MockStore.logActivity('تعديل وحدة', name, 'units');
-            } else {
-                units.push({ id: MockStore.nextId(units), name: name });
-                MockStore.logActivity('إضافة وحدة', name, 'units');
+            try {
+                if (editId) {
+                    await Supabase.rest('/units?id=eq.'+editId, { method:'PATCH', body:{ name: name }, prefer:'return=minimal' });
+                } else {
+                    await Supabase.rest('/units', { method:'POST', body:{ name: name }, prefer:'return=minimal' });
+                }
+                closeErpModal('uModal');
+                await loadUnits();
+                showToast('تم الحفظ', 'success');
+            } catch(e) {
+                showToast(e.message || 'فشل الحفظ', 'error');
             }
-            MockStore.save('units', units);
-            closeErpModal('uModal');
-            render();
-            showToast('تم الحفظ', 'success');
         }
 
-        function delU(id) {
+        async function delU(id) {
             var cnt = productCount(id);
             if (cnt > 0) { showToast('لا يمكن الحذف: مرتبطة بـ ' + cnt + ' منتج', 'error'); return; }
             if (!confirm('حذف هذه الوحدة؟')) return;
-            units = units.filter(function (x) { return x.id !== id; });
-            MockStore.save('units', units);
-            MockStore.logActivity('حذف وحدة', String(id), 'units');
-            render();
-            showToast('تم الحذف', 'success');
+            try {
+                await Supabase.rest('/units?id=eq.'+id, { method:'DELETE' });
+                await loadUnits();
+                showToast('تم الحذف', 'success');
+            } catch(e) {
+                showToast(e.message || 'فشل الحذف', 'error');
+            }
         }
 
         function render() {
@@ -158,7 +169,7 @@
         }
 
         document.getElementById('searchInput').addEventListener('input', render);
-        render();
+        loadUnits();
 
         window.openU = openU;
         window.saveU = saveU;

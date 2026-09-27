@@ -115,15 +115,27 @@
         </footer>
     </main>
 
+    <script src="supabase.js"></script>
     <script src="mock-data.js"></script>
     <script src="store.js"></script>
     <script src="layout-erp.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function () {
         initERPPage({ title: 'العملاء', subtitle: 'إدارة العملاء والأرصدة المدينة', activeId: 'customers' });
-        
-        var customers = MockStore.get("customers");
+
+        var customers = [];
         var editId = null;
+
+        async function loadCustomers() {
+            try {
+                customers = await Supabase.rest('/customers?select=*&order=id.desc');
+            } catch (e) {
+                showToast(e.message || 'تعذّر تحميل العملاء', 'error');
+                customers = [];
+            }
+            render();
+        }
+
         function openForm(id) {
             editId = id || null;
             document.getElementById('formTitle').textContent = id ? 'تعديل عميل' : 'إضافة عميل';
@@ -133,44 +145,50 @@
             document.getElementById('fPhone').value = c ? c.phone : '';
             document.getElementById('fEmail').value = c ? (c.email||'') : '';
             document.getElementById('fCity').value = c ? (c.city||'') : '';
-            document.getElementById('fTax').value = c ? (c.taxNumber||'') : '';
+            document.getElementById('fTax').value = c ? (c.tax_number||'') : '';
             document.getElementById('fAddress').value = c ? (c.address||'') : '';
             document.getElementById('fBalance').value = c ? c.balance : 0;
             document.getElementById('fStatus').value = c ? c.status : 'active';
-            var m = document.getElementById('formModal');
             openErpModal('formModal');
         }
         function closeForm(){ closeErpModal('formModal'); }
-        function saveCustomer(){
+        async function saveCustomer(){
             var name = document.getElementById('fName').value.trim();
             var phone = document.getElementById('fPhone').value.trim();
             if(!name||!phone){ showToast('الاسم والهاتف مطلوبان','error'); return; }
-            var data = {
+            var payload = {
                 code: document.getElementById('fCode').value.trim() || ('C-'+String(customers.length+1).padStart(3,'0')),
                 name: name, phone: phone,
                 email: document.getElementById('fEmail').value.trim(),
                 city: document.getElementById('fCity').value.trim()||'—',
-                taxNumber: document.getElementById('fTax').value.trim(),
+                tax_number: document.getElementById('fTax').value.trim(),
                 address: document.getElementById('fAddress').value.trim(),
                 balance: Number(document.getElementById('fBalance').value)||0,
-                status: document.getElementById('fStatus').value,
-                createdAt: new Date().toISOString().slice(0,10)
+                status: document.getElementById('fStatus').value
             };
-            if(editId){
-                var i = customers.findIndex(function(x){return x.id===editId;});
-                if(i>=0){ data.id=editId; data.createdAt=customers[i].createdAt; customers[i]=data; }
-                showToast('تم تحديث العميل','success');
-            } else {
-                data.id = Date.now();
-                customers.unshift(data);
-                showToast('تم إضافة العميل','success');
+            try {
+                if(editId){
+                    await Supabase.rest('/customers?id=eq.'+editId, { method:'PATCH', body: payload, prefer:'return=minimal' });
+                    showToast('تم تحديث العميل','success');
+                } else {
+                    await Supabase.rest('/customers', { method:'POST', body: payload, prefer:'return=minimal' });
+                    showToast('تم إضافة العميل','success');
+                }
+                closeForm();
+                await loadCustomers();
+            } catch (e) {
+                showToast(e.message || 'فشل حفظ العميل', 'error');
             }
-            MockStore.save("customers", customers); closeForm(); render();
         }
-        function delCustomer(id){
+        async function delCustomer(id){
             if(!confirm('حذف هذا العميل؟')) return;
-            customers = customers.filter(function(x){return x.id!==id;});
-            MockStore.save('customers', customers); render(); showToast('تم الحذف','success');
+            try {
+                await Supabase.rest('/customers?id=eq.'+id, { method:'DELETE' });
+                showToast('تم الحذف','success');
+                await loadCustomers();
+            } catch (e) {
+                showToast(e.message || 'فشل الحذف', 'error');
+            }
         }
         function exportCustomers(){
             MockStore.exportCSV('customers.csv', ['الكود','الاسم','الهاتف','المدينة','الرصيد','الحالة'],
@@ -208,7 +226,7 @@
         }
         document.getElementById('searchInput').addEventListener('input', render);
         document.getElementById('statusFilter').addEventListener('change', render);
-        render();
+        loadCustomers();
 
         // تعريض الدوال للـ onclick العام
         window.closeForm = closeForm;

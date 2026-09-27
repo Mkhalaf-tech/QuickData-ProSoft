@@ -87,30 +87,50 @@
             </div>
         </footer>
     </main>
+    <script src="supabase.js"></script>
     <script src="mock-data.js"></script>
     <script src="store.js"></script>
     <script src="layout-erp.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function () {
         initERPPage({ title: 'المخازن', subtitle: 'مواقع التخزين', activeId: 'warehouses' });
-        
-        var items = MockStore.get("warehouses");
+
+        var items = [];
+
+        async function loadWarehouses(){
+            try {
+                items = await Supabase.rest('/warehouses?select=*&order=id.desc');
+            } catch(e) {
+                showToast(e.message || 'تعذّر تحميل المخازن', 'error');
+                items = [];
+            }
+            render();
+        }
+
         function openW(){document.getElementById('wName').value='';document.getElementById('wLoc').value='';openErpModal('wModal');}
-        function saveW(){
+        async function saveW(){
             var n=document.getElementById('wName').value.trim();
             if(!n){showToast('الاسم مطلوب','error');return;}
-            items.unshift({id:Date.now(),name:n,location:document.getElementById('wLoc').value||'—',status:'active'});
-            MockStore.save("warehouses", items); closeErpModal('wModal');render();showToast('تم الحفظ','success');
+            var payload = { name:n, location:document.getElementById('wLoc').value||'—', status:'active' };
+            try {
+                await Supabase.rest('/warehouses', { method:'POST', body: payload, prefer:'return=minimal' });
+                closeErpModal('wModal');
+                await loadWarehouses();
+                showToast('تم الحفظ','success');
+            } catch(e) {
+                showToast(e.message || 'فشل الحفظ', 'error');
+            }
         }
         function render(){
             var q=(document.getElementById('searchInput').value||'').toLowerCase();
-            var list=items.filter(function(w){return !q||(w.name+w.location).toLowerCase().indexOf(q)>=0;});
+            var list=items.filter(function(w){return !q||(w.name+(w.location||'')).toLowerCase().indexOf(q)>=0;});
             document.getElementById('tbody').innerHTML=list.map(function(w){
-                return '<tr><td style="font-weight:600">'+w.name+'</td><td>'+w.location+'</td><td>'+statusBadge(w.status)+'</td></tr>';
+                return '<tr><td style="font-weight:600">'+w.name+'</td><td>'+(w.location||'—')+'</td><td>'+statusBadge(w.status)+'</td></tr>';
             }).join('')||'<tr><td colspan="3"><div class="empty-erp"><i class="bi bi-inbox"></i><div class="empty-title">لا بيانات</div></div></td></tr>';
             document.getElementById('statsRow').innerHTML='<div class="stat-card stat-gold"><div class="stat-number">'+items.length+'</div><div class="stat-label">المخازن</div></div>';
         }
-        document.getElementById('searchInput').addEventListener('input',render);render();
+        document.getElementById('searchInput').addEventListener('input',render);
+        loadWarehouses();
 
         // تعريض الدوال للـ onclick العام
         window.openW = openW;
